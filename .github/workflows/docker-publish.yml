@@ -52,15 +52,15 @@ jobs:
           replace: "docker buildx $(DARGS)"
           include: "/Makefile" 
           
-    # Validate change
-    - uses: pCYSl5EDgo/cat@master
-      id: cat
-      with:
-        path: Makefile
+      # Validate change
+      - uses: pCYSl5EDgo/cat@master
+        id: cat
+        with:
+          path: Makefile
 
-    - run: echo $TEXT
-      env:
-        TEXT: ${{ steps.cat.outputs.text }}
+      - run: echo $TEXT
+        env:
+          TEXT: ${{ steps.cat.outputs.text }}
           
           
 #       - name: Set up QEMU

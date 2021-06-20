@@ -36,9 +36,9 @@ jobs:
     permissions:
       contents: read
       packages: write
-    strategy:
-      matrix:
-        image: ["base-notebook", "minimal-notebook", "scipy-notebook", "datascience-notebook"]
+#     strategy:
+#       matrix:
+#         image: ["base-notebook", "minimal-notebook", "scipy-notebook", "datascience-notebook"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -50,13 +50,13 @@ jobs:
         with:
           find: "docker build $(DARGS)"
           replace: "docker buildx $(DARGS)"
-          include: "/Makefile" 
+          include: "{{ $GITHUB_WORKSPACE }}/Makefile" 
           
       # Validate change
       - uses: pCYSl5EDgo/cat@master
         id: cat
         with:
-          path: Makefile
+          path: "{{ $GITHUB_WORKSPACE }}/Makefile" 
 
       - run: echo $TEXT
         env:

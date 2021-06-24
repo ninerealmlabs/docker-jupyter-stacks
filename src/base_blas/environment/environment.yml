@@ -1,0 +1,89 @@
+name: base
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+### package managers
+  # - conda
+  # - mamba
+  - mamba_gator  # Web UI for managing conda environments
+  - pip
+### python version specified in compose BASE_CONTAINER arg
+### blas
+  # - conda-forge::blas=*=mkl
+  - conda-forge::blas=*=openblas
+  - nomkl
+### core deps
+  - cython
+  - distributed
+  - joblib
+  - more-itertools
+  - numba
+  - numexpr
+  - setuptools
+  - xarray
+### data & ml
+  - cloudpickle
+  - dill
+  - numpy==1.20
+  - openpyxl
+  - pandas
+  - pytables
+  - scikit-learn
+  - scipy
+  - shap
+  - statsmodels
+  - sympy
+  - xlrd
+### jupyter
+  # - ipykernel
+  # - ipython
+  # - jupyter
+  # - jupyter_contrib_nbextensions
+  # - jupyter_nbextensions_configurator
+  # # - jupyterlab==2.3.*
+  # - jupyterlab==3.0.*
+  # # - jupyterlab-git
+  # # - jupytext
+  - nbdime
+### plotting
+  - ipympl
+  - ipywidgets
+  - matplotlib-base
+  - plotnine  # ggplot style
+  - plotly
+  - seaborn
+  - widgetsnbextension
+### utils
+  - attrs
+  - black
+  - click
+  - cookiecutter
+  - colorama
+  - flake8
+  - flake8-bugbear
+  - flake8-builtins
+  - flake8-colors
+  - flake8-comprehensions
+  - ipdb
+  - isort
+  - markdown
+  # - nodejs
+  - pep8
+  - pep8-naming
+  - pycodestyle
+  - pylint
+  - pytest
+  - python-dotenv
+  - pyyaml
+  - sphinx
+  - yaml
+# ### web scraping
+# SEE webmodels_env
+# ### pip
+#   - pip:
+#     - jupytext
+#     - jupyterlab-git
+#     - aquirdturtle_collapsible_headings
+
+# prefix: /opt/conda/

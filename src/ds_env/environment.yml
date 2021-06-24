@@ -1,0 +1,42 @@
+name: base
+channels:
+  - conda-forge
+  - districtdatalabs  ## for yellowbrick
+  - defaults
+dependencies:
+### package managers
+  - pip  # to prevent warnings
+### data & ml
+  - category_encoders
+  - conda-forge::faker==8.*
+  - imbalanced-learn
+  - jenkspy
+  - lightgbm
+  - missingno
+  # - pandas-datareader
+  # - pandas-profiling  # replaced with `dataprep`
+  - xgboost
+### plotting
+  - altair
+  - bokeh
+  - yellowbrick  # sklearn viz
+### sql
+  - h5py
+  - hdf5
+  - pyodbc
+  - pyarrow
+  - snowflake-connector-python
+  - snowflake-sqlalchemy
+  - sqlalchemy
+  - sqlite
+### utils
+  - tqdm
+### dataprep deps
+  - async-timeout
+  - multidict
+  - yarl
+# ### pip
+#   - pip:
+#     - dataprep==0.3.*
+
+# prefix: /opt/conda/

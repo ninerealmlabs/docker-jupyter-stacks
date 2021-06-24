@@ -1,0 +1,23 @@
+# docker-compose..yml
+version: "3.7"
+
+services:
+  recommender_env:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: ds_env
+      cache_from:
+        - ds_env:latest
+    image: recommender_env:latest     # provide a name and tag for the image
+    # depends_on:                       # specify dependencies for build
+    #   - ds_env
+
+
+  # volumes:  # Optional, same as `docker volume create`
+
+  # networks:  # Optional, same as `docker network create`
+
+    ### build command
+# docker build . --no-cache --build-arg BASE_IMAGE="ds_env" --build-arg BUILD_DATE=$(date +'%Y-%m-%d') -t recommender_env:latest
+# docker build https://github.com/docker/rootfs.git#container:docker --build-arg PYTHON_VERSION=3.8.8 --build-arg BUILD_DATE=$(date +'%Y-%m-%d')  -t recommender_env:latest

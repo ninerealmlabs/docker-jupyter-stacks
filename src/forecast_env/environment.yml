@@ -1,0 +1,51 @@
+name: base
+channels:
+  - conda-forge
+  - intel
+  - pytorch-lts
+  # - pytorch
+  - districtdatalabs  ## for yellowbrick
+  - defaults
+dependencies:
+# ### package managers
+#   # - conda
+#   # - mamba
+#   - mamba_gator
+  - pip
+### Additional dependencies on top of `ds_env` sstandards
+  - arch-py
+  # - cesium
+  - darts
+  - fbprophet  # deprecated, use 'prophet'
+  # - pmdarima  # auto included by darts(?) and sktime
+  # - prophet  # greykite still expects "fbprophet"
+  - pystan
+  - pywavelets
+  # - sktime
+  # - sktime-dl  # still WIP / may require pip
+  - statsmodels
+  - stumpy
+  - tslearn
+# ### pip
+  # - pip:
+  #   - darts
+  #   - greykite
+  #   - neuralprophet[live]
+  #   - orbit
+  #   - sktime-dl  # still WIP
+### darts deps
+### greykite deps
+  - cvxpy
+  - osqp
+  - overrides
+  - testfixtures
+### neuralprophet deps
+  - attrdict
+# ### orbit deps
+  - pyro-ppl
+  - tensorboard
+# ### sktime-dl deps
+
+
+
+# prefix: /opt/conda/

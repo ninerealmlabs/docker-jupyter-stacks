@@ -1,0 +1,10 @@
+!**.gitkeep
+
+# OS Junk
+.DS_Store
+Thumbs.db
+settings.json
+.vscode
+
+# ignore local .env from versioning
+**.env

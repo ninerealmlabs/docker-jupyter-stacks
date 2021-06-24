@@ -1,0 +1,36 @@
+name: base
+channels:
+  - huggingface
+  - conda-forge
+  - districtdatalabs  ## for yellowbrick
+  - defaults
+dependencies:
+### package managers
+  - pip  # to prevent warnings
+### Additional dependencies on top of `ds_env` sstandards
+  - gensim==4.0.*
+  # - huggingface::tokenizers
+  # - huggingface::transformers
+  - nltk==3.6.*
+  - pattern==3.6.*
+  - pyldavis==3.3.*
+  - spacy==3.0.*
+  - spacy-lookups-data
+  - tokenizers
+  - transformers
+# ### pip
+#   - pip:
+#     - pattern==3.6.0
+# ### pattern deps
+#   - beautifulsoup4
+#   - cherrypy
+#   - feedparser
+#   - future
+#   - lxml
+#   - mysqlclient
+#   - pdfminer
+#   - python-docx
+
+
+
+# prefix: /opt/conda/

@@ -1,0 +1,102 @@
+# docker-compose.from-jupyter.yml
+# ref: https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/multi-container-applications-docker-compose
+# ref: https://vgarcia.dev/blog/2019-06-17-building-docker-images-using-docker-compose-and-gitlab/
+version: "3.7"
+
+services:
+  # base image for PMI projects
+  base_env:
+    build:
+      context: ./base_env/
+      args:
+        BASE_IMAGE: jupyter/minimal-notebook
+        PYTHON_VERSION: 3.8.8
+        BUILD_DATE: ${DATE}
+    image: base_env:latest              # provide a name and tag for the image
+
+  # general datasci image
+  ds_env:
+    build:
+      context: ./ds_env/
+      args:
+        BASE_IMAGE: base_env:latest
+        BUILD_DATE: ${DATE}
+      cache_from:
+        - base_env:latest
+    image: ds_env:latest              # provide a name and tag for the image
+    depends_on:                       # specify dependencies for build
+      - base_env
+
+  # project-specific images
+  clv_env:
+    build:
+      context: ./clv_env/
+      args:
+        BASE_IMAGE: ds_env:latest
+        BUILD_DATE: ${DATE}
+      cache_from:
+        - ds_env:latest
+    image: clv_env:latest       # provide a name and tag for the image
+    depends_on:                       # specify dependencies for build
+      - ds_env
+
+  forecast_env:
+    build:
+      context: ./forecast_env/
+      args:
+        BASE_IMAGE: ds_env:latest
+        BUILD_DATE: ${DATE}
+      cache_from:
+        - pytorch_env:latest
+    image: forecast_env:latest  # provide a name and tag for the image
+    depends_on:                       # specify dependencies for build
+      - pytorch_env
+
+  pytorch_env:
+    build:
+      context: ./pytorch_env/
+      args:
+        BASE_IMAGE: ds_env:latest
+        BUILD_DATE: ${DATE}
+      cache_from:
+        - ds_env:latest
+    image: pytorch_env:latest  # provide a name and tag for the image
+    depends_on:                       # specify dependencies for build
+      - ds_env
+
+  nlp_env:
+    build:
+      context: ./nlp_env/
+      args:
+        BASE_IMAGE: ds_env:latest
+        BUILD_DATE: ${DATE}
+      cache_from:
+        - ds_env:latest
+    image: nlp_env:latest     # provide a name and tag for the image
+    depends_on:                       # specify dependencies for build
+      - ds_env
+
+  recommender_env:
+    build:
+      context: ./recommender_env/
+      args:
+        BASE_IMAGE: ds_env:latest
+        BUILD_DATE: ${DATE}
+      cache_from:
+        - ds_env:latest
+    image: recommender_env:latest     # provide a name and tag for the image
+    depends_on:                       # specify dependencies for build
+      - ds_env
+
+  web_env:
+    build:
+      context: ./web_env/
+      args:
+        BASE_IMAGE: ds_env:latest
+        BUILD_DATE: ${DATE}
+        # CHROMEDRIVER: "https://chromedriver.storage.googleapis.com/92.0.4515.43/chromedriver_linux64.zip"
+      cache_from:
+        - ds_env:latest
+    image: web_env:latest     # provide a name and tag for the image
+    depends_on:                       # specify dependencies for build
+      - ds_env

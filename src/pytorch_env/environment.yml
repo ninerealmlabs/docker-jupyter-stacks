@@ -1,0 +1,26 @@
+name: base
+channels:
+  - conda-forge
+  - intel
+  - pytorch-lts
+  # - pytorch
+  - districtdatalabs  ## for yellowbrick
+  - defaults
+dependencies:
+# ### package managers
+#   # - conda
+#   # - mamba
+#   - mamba_gator
+  - pip
+### Additional dependencies on top of `ds_env` sstandards
+  # reinstall numpy with mkl; pinned version should persist
+  - numpy
+### pytorch
+  - pytorch-lts::pytorch
+  - pytorch-lts::cpuonly
+  # - pytorch::pytorch
+  # - pytorch::cpuonly
+
+
+
+# prefix: /opt/conda/

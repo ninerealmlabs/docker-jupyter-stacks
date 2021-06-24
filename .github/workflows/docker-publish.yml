@@ -23,46 +23,46 @@ on:
 #       - "*.md"
 #       - "LICENSE"
 
-env:
-  # Use docker.io for Docker Hub if empty
-  REGISTRY: docker.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ninerealmlabs/jupyter-docker-stacks
+# env:
+#   # Use docker.io for Docker Hub if empty
+#   REGISTRY: docker.io
+#   # github.repository as <account>/<repo>
+#   IMAGE_NAME: ninerealmlabs/jupyter-docker-stacks
 
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-#     strategy:
-#       matrix:
-#         image: ["base-notebook", "minimal-notebook", "scipy-notebook", "datascience-notebook"]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          repository: jupyter/docker-stacks
-        
-      - name: Convert to buildx
-        uses: jacobtomlinson/gha-find-replace@master
-        with:
-          find: "docker build $(DARGS)"
-          replace: "docker buildx $(DARGS)"
-          include: "{{ $GITHUB_WORKSPACE }}/Makefile" 
-          
-      # Validate change
-      - uses: pCYSl5EDgo/cat@master
-        id: cat
-        with:
-          path: "{{ $GITHUB_WORKSPACE }}/Makefile" 
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: read
+#       packages: write
+# #     strategy:
+# #       matrix:
+# #         image: ["base-notebook", "minimal-notebook", "scipy-notebook", "datascience-notebook"]
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+#         with:
+#           repository: jupyter/docker-stacks
 
-      - run: echo $TEXT
-        env:
-          TEXT: ${{ steps.cat.outputs.text }}
-          
-          
+#       - name: Convert to buildx
+#         uses: jacobtomlinson/gha-find-replace@master
+#         with:
+#           find: "docker build $(DARGS)"
+#           replace: "docker buildx $(DARGS)"
+#           include: "{{ $GITHUB_WORKSPACE }}/Makefile"
+
+#       # Validate change
+#       - uses: pCYSl5EDgo/cat@master
+#         id: cat
+#         with:
+#           path: "{{ $GITHUB_WORKSPACE }}/Makefile"
+
+#       - run: echo $TEXT
+#         env:
+#           TEXT: ${{ steps.cat.outputs.text }}
+
+
 #       - name: Set up QEMU
 #         uses: docker/setup-qemu-action@v1
 
@@ -75,7 +75,7 @@ jobs:
 #         with:
 #           username: ${{ secrets.DOCKERHUB_USERNAME }}
 #           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
+
 #       # Build and push Docker image with Buildx (don't push on PR)
 #       # https://github.com/docker/build-push-action
 #       - name: Build and push Docker image

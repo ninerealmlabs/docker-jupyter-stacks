@@ -42,3 +42,9 @@ This repo contains the source files for 'Data Science Anywhere' Data Science env
 
 ## Known Bugs
 *  *jupyter-sql* extensions are currently not update for JupyterLab 3.  Docker images will need to be rebuilt if/when the bugfixes/patches are released.
+
+## Roadmap
+* [ ] BLAS-specific images
+* [ ] Add ARM64 architectures
+<!-- * [ ] Add Tensorflow/Keras (if requested) -->
+<!-- * [ ] Add CUDA and ROCm (if requested) -->

@@ -13,9 +13,10 @@ on:
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
     paths-ignore:
-#       - ".github/**"
+      - ".github/**"
       - "*.md"
       - "LICENSE"
+      - "*"
 #   pull_request:
 #     branches: [ main ]
 #     paths-ignore:

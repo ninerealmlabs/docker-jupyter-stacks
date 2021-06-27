@@ -50,7 +50,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           # platforms: linux/amd64,linux/arm64
           build-args: |
-            BASE_IMAGE="jupyter/minimal-notebook:latest"
+            BASE_IMAGE=jupyter/minimal-notebook:latest
             PYTHON_VERSION=3.8.*
           load: true  # make available in gha workflow for `docker` commands
           # outputs: type=image

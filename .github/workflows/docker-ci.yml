@@ -13,6 +13,9 @@ on:
 jobs:
   base_env:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.7.*, 3.8.*, 3.9.*]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -55,7 +58,7 @@ jobs:
           # platforms: linux/amd64,linux/arm64
           build-args: |
             BASE_IMAGE=jupyter/minimal-notebook:latest
-            PYTHON_VERSION=3.8.*
+            PYTHON_VERSION=${{ matrix.python }}
             BUILD_DATE=${{ steps.date.outputs.date }}
           load: true  # make available in gha workflow for `docker` commands
           # outputs: type=image

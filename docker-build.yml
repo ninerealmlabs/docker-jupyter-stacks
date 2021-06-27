@@ -7,96 +7,84 @@ services:
   # base image for PMI projects
   base_env:
     build:
-      context: ./base_env/
+      context: ./src/base_env/
       args:
         BASE_IMAGE: jupyter/minimal-notebook
-        PYTHON_VERSION: 3.8.8
+        PYTHON_VERSION: ${PYTHON_VERSION}
         BUILD_DATE: ${DATE}
-    image: base_env:latest              # provide a name and tag for the image
+    image: base_env:${PYTHON_VERSION}              # provide a name and tag for the image
 
   # general datasci image
   ds_env:
     build:
-      context: ./ds_env/
+      context: ./src/ds_env/
       args:
-        BASE_IMAGE: base_env:latest
+        BASE_IMAGE: base_env:${PYTHON_VERSION}
         BUILD_DATE: ${DATE}
       cache_from:
-        - base_env:latest
-    image: ds_env:latest              # provide a name and tag for the image
+        - base_env:${PYTHON_VERSION}
+    image: ds_env:${PYTHON_VERSION}              # provide a name and tag for the image
     depends_on:                       # specify dependencies for build
       - base_env
 
   # project-specific images
   clv_env:
     build:
-      context: ./clv_env/
+      context: ./src/clv_env/
       args:
-        BASE_IMAGE: ds_env:latest
+        BASE_IMAGE: ds_env:${PYTHON_VERSION}
         BUILD_DATE: ${DATE}
       cache_from:
-        - ds_env:latest
-    image: clv_env:latest       # provide a name and tag for the image
+        - ds_env:${PYTHON_VERSION}
+    image: clv_env:${PYTHON_VERSION}       # provide a name and tag for the image
     depends_on:                       # specify dependencies for build
       - ds_env
 
   forecast_env:
     build:
-      context: ./forecast_env/
+      context: ./src/forecast_env/
       args:
-        BASE_IMAGE: ds_env:latest
+        BASE_IMAGE: ds_env:${PYTHON_VERSION}
         BUILD_DATE: ${DATE}
       cache_from:
-        - pytorch_env:latest
-    image: forecast_env:latest  # provide a name and tag for the image
+        - pytorch_env:${PYTHON_VERSION}
+    image: forecast_env:${PYTHON_VERSION}  # provide a name and tag for the image
     depends_on:                       # specify dependencies for build
       - pytorch_env
 
   pytorch_env:
     build:
-      context: ./pytorch_env/
+      context: ./src/pytorch_env/
       args:
-        BASE_IMAGE: ds_env:latest
+        BASE_IMAGE: ds_env:${PYTHON_VERSION}
         BUILD_DATE: ${DATE}
       cache_from:
-        - ds_env:latest
-    image: pytorch_env:latest  # provide a name and tag for the image
+        - ds_env:${PYTHON_VERSION}
+    image: pytorch_env:${PYTHON_VERSION}  # provide a name and tag for the image
     depends_on:                       # specify dependencies for build
       - ds_env
 
   nlp_env:
     build:
-      context: ./nlp_env/
+      context: ./src/nlp_env/
       args:
-        BASE_IMAGE: ds_env:latest
+        BASE_IMAGE: ds_env:${PYTHON_VERSION}
         BUILD_DATE: ${DATE}
       cache_from:
-        - ds_env:latest
-    image: nlp_env:latest     # provide a name and tag for the image
-    depends_on:                       # specify dependencies for build
-      - ds_env
-
-  recommender_env:
-    build:
-      context: ./recommender_env/
-      args:
-        BASE_IMAGE: ds_env:latest
-        BUILD_DATE: ${DATE}
-      cache_from:
-        - ds_env:latest
-    image: recommender_env:latest     # provide a name and tag for the image
+        - ds_env:${PYTHON_VERSION}
+    image: nlp_env:${PYTHON_VERSION}     # provide a name and tag for the image
     depends_on:                       # specify dependencies for build
       - ds_env
 
   web_env:
     build:
-      context: ./web_env/
+      context: ./src/web_env/
       args:
-        BASE_IMAGE: ds_env:latest
+        BASE_IMAGE: ds_env:${PYTHON_VERSION}
         BUILD_DATE: ${DATE}
         # CHROMEDRIVER: "https://chromedriver.storage.googleapis.com/92.0.4515.43/chromedriver_linux64.zip"
       cache_from:
-        - ds_env:latest
-    image: web_env:latest     # provide a name and tag for the image
+        - ds_env:${PYTHON_VERSION}
+    image: web_env:${PYTHON_VERSION}     # provide a name and tag for the image
     depends_on:                       # specify dependencies for build
       - ds_env

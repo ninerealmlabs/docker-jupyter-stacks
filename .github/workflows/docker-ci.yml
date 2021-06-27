@@ -57,7 +57,7 @@ jobs:
             BASE_IMAGE=jupyter/minimal-notebook:latest
             PYTHON_VERSION=3.8.*
             BUILD_DATE=${{ steps.date.outputs.date }}
-          load: true  # make available in gha workflow for `docker` commands
+          # load: true  # make available in gha workflow for `docker` commands
           outputs: |
             type=image
             type=docker,dest=/tmp/base_env.tar  # for `upload-artifact` action

@@ -58,9 +58,8 @@ jobs:
             PYTHON_VERSION=3.8.*
             BUILD_DATE=${{ steps.date.outputs.date }}
           # load: true  # make available in gha workflow for `docker` commands
-          outputs: |
-            type=image
-            type=docker,dest=/tmp/base_env.tar  # for `upload-artifact` action
+          outputs: type=image
+            # type=docker,dest=/tmp/base_env.tar  # for `upload-artifact` action
           push: false  # ci build only
           tags: base_env:ci
           ### https://github.com/docker/build-push-action/blob/master/docs/advanced/cache.md

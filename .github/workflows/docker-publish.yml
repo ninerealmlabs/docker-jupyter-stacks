@@ -1,22 +1,22 @@
-name: Publish to DockerHub
+# name: Publish to DockerHub
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
+# # This workflow uses actions that are not certified by GitHub.
+# # They are provided by a third-party and are governed by
+# # separate terms of service, privacy policy, and support
+# # documentation.
 
-on:
-#   schedule:
-#     - cron: '42 7 * * *'
-  push:
-    branches: [ main ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
-    paths-ignore:
-      - ".github/**"
-      - "*.md"
-      - "LICENSE"
-      - "*"
+# on:
+# #   schedule:
+# #     - cron: '42 7 * * *'
+#   push:
+#     branches: [ main ]
+#     # Publish semver tags as releases.
+#     tags: [ 'v*.*.*' ]
+#     paths-ignore:
+#       - ".github/**"
+#       - "*.md"
+#       - "LICENSE"
+
 #   pull_request:
 #     branches: [ main ]
 #     paths-ignore:

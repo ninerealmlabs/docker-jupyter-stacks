@@ -2,8 +2,9 @@
 # NAME: base_env
 
 ARG BASE_IMAGE
-ARG PYTHON_VERSION
-FROM "${BASE_IMAGE}:python-${PYTHON_VERSION}"
+FROM "${BASE_IMAGE}"
+# ARG PYTHON_VERSION
+# FROM "${BASE_IMAGE}:python-${PYTHON_VERSION}"
 
 # Labels
 ARG BUILD_DATE
@@ -44,8 +45,16 @@ USER ${NB_UID}
 COPY --chown=${NB_UID}:${NB_GID} environment.yml "/home/${NB_USER}/tmp/"
 COPY --chown=${NB_UID}:${NB_GID} requirements.txt "/home/${NB_USER}/tmp/"
 
-# pin numpy version (major.minor)
+## unpin python, change version, pin python
+# RUN sed -i s"/python.*/python ${PYTHON_VERSION}/" ${CONDA_DIR}/conda-meta/pinned \
+RUN sed -i "/python/d" ${CONDA_DIR}/conda-meta/pinned \
+ && mamba install -n base python=${PYTHON_VERSION} -y -f \
+ && mamba update -n base --all -y \
+ && echo "python ${PYTHON_VERSION}" >> "${CONDA_DIR}/conda-meta/pinned"
+
+## pin blas
 # RUN  echo "blas=*=openblas" >> "${CONDA_DIR}/conda-meta/pinned"
+## pin numpy version (major.minor)
 RUN echo $(awk '/numpy==*/{print $2}' /home/${NB_USER}/tmp/environment.yml).* >> "${CONDA_DIR}/conda-meta/pinned"
 
 RUN mamba env update -n base -f "/home/${NB_USER}/tmp/environment.yml" \

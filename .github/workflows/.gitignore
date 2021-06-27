@@ -1,2 +1,2 @@
-docker-ci.yml
 *publish.yml
+docker*.yml

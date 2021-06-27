@@ -3,10 +3,14 @@ name: Docker Image CI
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+  #       - ".github/**"
+      - "*.md"
+      - "LICENSE"
   pull_request:
     branches: [ main ]
     paths-ignore:
-#       - ".github/**"
+  #       - ".github/**"
       - "*.md"
       - "LICENSE"
 

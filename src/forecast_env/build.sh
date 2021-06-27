@@ -1,6 +1,22 @@
 #!/bin/bash
-docker build . \
+###
+# call with `build.sh <PYTHON_VERSION>`
+###
+
+PYTHON_VERSION=${1:-3.8.*}
+
+# Docker doesn't like `*`, so drop trailing ".*" from tag
+TAG_VERSION=${PYTHON_VERSION}
+if [[ ${TAG_VERSION: -1} == "*" ]]; then
+    TAG_VERSION=${TAG_VERSION: 0:${#TAG_VERSION}-2}
+fi
+# echo ${TAG_VERSION}
+
+# `$(dirname $0)` is equivalent to `.` if building from /src/base_env
+# but is required if referencing `build.sh` from any other location
+docker build $(dirname $0) \
     --no-cache \
-    --build-arg BASE_IMAGE="pytorch_env" \
+    --build-arg BASE_IMAGE="pytorch_env:python-${TAG_VERSION}" \
+    --build-arg PYTHON_VERSION=${PYTHON_VERSION} \
     --build-arg BUILD_DATE=$(date +'%Y-%m-%d') \
-    -t forecast_env:latest
+    --tag forecast_env:python-${TAG_VERSION}

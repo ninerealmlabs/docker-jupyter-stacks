@@ -7,14 +7,19 @@ This repo contains the source files for 'Data Science Anywhere' Data Science env
     *  [Download Docker Desktop](https://www.docker.com/products/docker-desktop)
     *  [Getting started with Docker](https://docs.docker.com/)
 2.	Build process
-    *  To build all images in the stack, run `bash ./src/build-all.sh`. Consider whether to update the python version specified for the `base_env` in `docker-build.yml`
+    *  To build all images in the stack, run `bash ./scripts/build-all.sh` from project root. Consider whether to update the python version(s) specified in the for loop.
+        > **Note:** `docker-build.yml` is deprecated since `build-all.sh` now calls each image's `build.sh` directly.  However, it should still function if the build args are set appropriately.
     *  To update a _single_ image, run the `build.sh` script in the relevant directory.
-        > Remember that images have inheritance and updating a project image will not update the packages inherited from the source image!
+       _Remember, images have inheritance and updating a project image will not update the packages inherited from the source image!_
+    *  To update the default version of python, run `/scripts/update_default_python.sh` from project root and provide the semver version
+       ```sh
+       bash ./scripts/update_default_python.sh "3.9.*"
+       ```
 1.  Deploying to Docker Hub
     *  Tag images with `docker tag <imagename> <registry>/<imagename>`
     *  Log in to with `docker login` and provide username and password/token when prompted
     *  Push images to registry with `docker push <registry>/<imagename>`
-    *  Alternatively, use the `tag_and_push.sh` script
+    *  Alternatively, use the `/scripts/tag_and_push.sh` script
 
 
 ## Image dependencies / inheritance
@@ -28,7 +33,11 @@ This repo contains the source files for 'Data Science Anywhere' Data Science env
 ```
 
 ## Run process (local)
-1.  Edit `.env` file to change image and local path to be mounted
+1.  Create/edit `.env` file to specify image and local path to be mounted
+```
+IMG_NAME=ds_env:python-3.8
+MOUNT_PATH=~
+```
 2.  Launch locally with `docker-compose up -d` from project root.
 3.  View URL and token with `docker logs <IMAGENAME>`
 4.  If a foreground process is running, halt with `ctrl-c`; run `docker-compose down` to tear down the docker container.
@@ -41,7 +50,10 @@ This repo contains the source files for 'Data Science Anywhere' Data Science env
 
 
 ## Known Bugs
-*  *jupyter-sql* extensions are currently not update for JupyterLab 3.  Docker images will need to be rebuilt if/when the bugfixes/patches are released.
+**27 June 2021**
+* [base_env] _jupyter-sql_ extensions are currently not update for JupyterLab 3.  Docker images will need to be rebuilt if/when the bugfixes/patches are released.
+* [forecast_env] `greykite` requires `fbprophet` library and has tight dependencies; `fbprophet` will not build on python 3.9.*.  See https://github.com/linkedin/greykite/issues/11
+* [web_env] `scrapy` is not available on `conda` or `conda-forge` for python 3.9.*.  See https://github.com/scrapy/scrapy/issues/5195
 
 ## Roadmap
 * [ ] BLAS-specific images

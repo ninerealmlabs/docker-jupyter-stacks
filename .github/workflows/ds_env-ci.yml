@@ -12,6 +12,7 @@ env:
   source_img: base_env
 
 jobs:
+  ### NOTE: job name MUST be equivalent to image name and directory
   ds_env:
     runs-on: ubuntu-latest
     strategy:
@@ -69,8 +70,9 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          path: /tmp/.buildx-cache-${{ github.job }}
+          # key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-hashFiles('**/base_env/**', '**/${{ github.job }}/**')
           restore-keys: |
             ${{ runner.os }}-buildx-
 
@@ -93,7 +95,7 @@ jobs:
           push: false  # ci build only
           tags: ${{ github.job }}:python-${{ steps.tag.outputs.tag }}
           ### https://github.com/docker/build-push-action/blob/master/docs/advanced/cache.md
-          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache-${{ github.job }}
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Move cache
@@ -101,8 +103,8 @@ jobs:
         ### https://github.com/docker/build-push-action/issues/252
         ### https://github.com/moby/buildkit/issues/1896
         run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          rm -rf /tmp/.buildx-cache-${{ github.job }}
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache-${{ github.job }}
 
       - name: Inspect new image
         run: |

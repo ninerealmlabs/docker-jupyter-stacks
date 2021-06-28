@@ -85,3 +85,10 @@ jobs:
         run: |
           docker load --input /tmp/${{ github.job }}.tar
           docker inspect base_env:ci
+
+      - name: Upload base_env
+        uses: actions/upload-artifact@v2
+        with:
+          name: base_env
+          path: /tmp/base_env.tar
+          retention-days: 2

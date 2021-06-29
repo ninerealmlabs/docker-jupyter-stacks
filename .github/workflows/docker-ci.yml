@@ -60,10 +60,11 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: /tmp/.buildx-cache-${{ github.job }}
+          path: /tmp/.buildx-cache
           # key: ${{ runner.os }}-buildx-${{ github.sha }}
-          key: ${{ runner.os }}-buildx-hashFiles('**/${{ github.job }}/**')
+          key: ${{ runner.os }}-buildx-${{ matrix.python }}-hashFiles('**/${{ github.job }}/**')
           restore-keys: |
+            ${{ runner.os }}-buildx-${{ matrix.python }}-
             ${{ runner.os }}-buildx-
 
       ### https://github.com/docker/build-push-action
@@ -85,7 +86,7 @@ jobs:
           push: false  # ci build only
           tags: ${{ github.job }}:python-${{ steps.tag.outputs.tag }}
           ### https://github.com/docker/build-push-action/blob/master/docs/advanced/cache.md
-          cache-from: type=local,src=/tmp/.buildx-cache-${{ github.job }}
+          cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Move cache
@@ -93,8 +94,8 @@ jobs:
         ### https://github.com/docker/build-push-action/issues/252
         ### https://github.com/moby/buildkit/issues/1896
         run: |
-          rm -rf /tmp/.buildx-cache-${{ github.job }}
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache-${{ github.job }}
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Inspect new image
         run: |
@@ -118,7 +119,6 @@ jobs:
       matrix:
         python: [3.7.*, 3.8.*, 3.9.*]
 
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -169,10 +169,11 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
-          path: /tmp/.buildx-cache-${{ github.job }}
+          path: /tmp/.buildx-cache
           # key: ${{ runner.os }}-buildx-${{ github.sha }}
-          key: ${{ runner.os }}-buildx-hashFiles('**/base_env/**', '**/${{ github.job }}/**')
+          key: ${{ runner.os }}-buildx--${{ matrix.python }}-hashFiles('**/base_env/**', '**/${{ github.job }}/**')
           restore-keys: |
+            ${{ runner.os }}-buildx-${{ matrix.python }}-
             ${{ runner.os }}-buildx-
 
       ### https://github.com/docker/build-push-action
@@ -194,7 +195,7 @@ jobs:
           push: false  # ci build only
           tags: ${{ github.job }}:python-${{ steps.tag.outputs.tag }}
           ### https://github.com/docker/build-push-action/blob/master/docs/advanced/cache.md
-          cache-from: type=local,src=/tmp/.buildx-cache-${{ github.job }}
+          cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: Move cache
@@ -202,8 +203,8 @@ jobs:
         ### https://github.com/docker/build-push-action/issues/252
         ### https://github.com/moby/buildkit/issues/1896
         run: |
-          rm -rf /tmp/.buildx-cache-${{ github.job }}
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache-${{ github.job }}
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Inspect new image
         run: |

@@ -1,0 +1,132 @@
+name: pytorch_env CI
+
+on:
+  workflow_run:
+    # trigger after base_env CI completes
+    workflows: ["ds_env CI"]
+    branches: [main]
+    types:
+      - completed
+
+env:
+  PLATFORMS: linux/amd64  #,linux/arm64
+  REGISTRY: ghcr.io/ninerealmlabs
+  BASE_IMAGE: ds_env
+
+jobs:
+  ### NOTE: job name MUST be equivalent to image name and directory
+  pytorch_env:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [3.7.*, 3.8.*, 3.9.*]
+
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      ### used for multi-arch builds
+      # - name: Set up QEMU
+      #   uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Login to DockerHub
+      #   uses: docker/login-action@v1
+      #   with:
+      #     username: ${{ secrets.DOCKER_USER }}
+      #     password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+
+      - name: Create tag from python verison
+        id: tag
+        env:
+          PYTHON_VERSION: ${{ matrix.python }}
+        run: |
+          TAG_VERSION=${PYTHON_VERSION}
+          if [[ ${TAG_VERSION: -1} == "*" ]]; then
+              TAG_VERSION=${TAG_VERSION: 0:${#TAG_VERSION}-2}
+          fi
+          echo ${TAG_VERSION}
+          echo "::set-output name=tag::${TAG_VERSION}"
+
+      - name: Create tag from sha
+        id: sha
+        run: |
+          GIT_REF=$(git rev-parse --short HEAD)
+          echo ${GIT_REF}
+          echo "::set-output name=sha::${GIT_REF}"
+
+      # - name: Docker metadata
+      #   id: meta
+      #   uses: docker/metadata-action@v3
+      #   with:
+      #     # list of Docker images to use as base name for tags
+      #     images: |
+      #       ghcr.io/ninerealmlabs/${{ github.job }}
+      #     tags: |
+      #       type=sha
+      #       type=sha,prefix=python-${{ steps.tag.outputs.tag }}-
+
+      ### https://github.com/docker/build-push-action
+      ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
+      - name: Build image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          # platforms: ${{ env.PLATFORMS }}
+          context: src/${{ github.job }}/
+          # file: ./Dockerfile
+          build-args: |
+            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+            PYTHON_VERSION=${{ matrix.python }}
+            BUILD_DATE=${{ steps.date.outputs.date }}
+          no-cache: true
+          ### Each job is isolated in its own runner, so can't share newly-built image directly between jobs
+          ### Instead, push to **github** image repo
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+      #     ${{ steps.meta.outputs.tags }}
+
+      # ### https://github.com/marketplace/actions/docker-buildx-bake
+      # ### https://github.com/crazy-max/docker-buildx-bake-demo/
+      # - name: Build image
+      #   id: docker_bake
+      #   uses: docker/bake-action@v1.5
+      #   with:
+      #     builder: ${{ steps.buildx.outputs.name }}
+      #     files: src/${{ github.job }}/docker-compose.yml
+      #     no-cache: true
+      #     set: |
+      #       *.platform=${{ env.PLATFORMS }}
+      #       *.args.BASE_IMAGE=${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+      #       *.args.PYTHON_VERSION=${{ matrix.python }}
+      #       *.args.BUILD_DATE=${{ steps.date.outputs.date }}
+      #       *.tags=${{ env.REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
+      #       *.tags=${{ env.REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+      #     push: true
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+      - name: Inspect new image
+        run: |
+          docker pull ghcr.io/ninerealmlabs/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+          docker inspect ghcr.io/ninerealmlabs/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}

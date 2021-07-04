@@ -1,2 +1,4 @@
 *publish.yml
-*env*.yml
+# *env*.yml
+docker*.yml
+notes.md

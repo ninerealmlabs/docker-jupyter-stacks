@@ -3,13 +3,13 @@
 version: "3.7"
 
 services:
-  # base image for PMI projects
   ds_env:
     build:
       context: .
       args:
-        BASE_IMAGE: ninerealmlabs/base_env
-    image: ds_env:latest              # provide a name and tag for the image
+        BASE_IMAGE: ninerealmlabs/base_env:python-3.8
+        PYTHON_VERSION: 3.8.*
+    image: ds_env:python-3.8    # provide a name and tag for the image
     ports:
       - "8888:8888"
     # user: root
@@ -25,5 +25,5 @@ services:
   # networks:  # Optional, same as `docker network create`
 
 ### build command
-# docker build . --no-cache --build-arg BASE_IMAGE="base_env" --build-arg BUILD_DATE=$(date +'%Y-%m-%d') -t ds_env:latest
-# docker build https://github.com/docker/rootfs.git#container:docker --build-arg PYTHON_VERSION=3.8.8 --build-arg BUILD_DATE=$(date +'%Y-%m-%d')  -t ds_env:latest
+# docker build . --no-cache --build-arg BASE_IMAGE="base_env:python-3.8" --build-arg BUILD_DATE=$(date +'%Y-%m-%d') -t ds_env:python-3.8
+# docker build https://github.com/docker/rootfs.git#container:docker --build-arg PYTHON_VERSION=3.8.8 --build-arg BUILD_DATE=$(date +'%Y-%m-%d')  -t ds_env:python-3.8

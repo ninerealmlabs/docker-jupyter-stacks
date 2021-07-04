@@ -3,15 +3,14 @@
 version: "3.7"
 
 services:
-  # base image for PMI projects
-  ds_env:
+  base_env:
     build:
       context: .
       args:
         BASE_IMAGE: jupyter/minimal-notebook
-        PYTHON_VERSION: 3.8.8
+        PYTHON_VERSION: 3.8.*
         # BLAS: mkl  # uncomment to build with MKL
-    image: base_env:latest              # provide a name and tag for the image
+    image: base_env:python-3.8
     ports:
       - "8888:8888"
     # user: root

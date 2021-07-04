@@ -6,5 +6,7 @@ Thumbs.db
 settings.json
 .vscode
 
+*.cache
+
 # ignore local .env from versioning
 **.env

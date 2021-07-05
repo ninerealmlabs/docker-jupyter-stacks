@@ -103,9 +103,12 @@ if [[ ${TAG_VERSION: -1} == "*" ]]; then
     TAG_VERSION=${TAG_VERSION: 0:${#TAG_VERSION}-2}
 fi
 
+# get git branch identifier for tags
+GIT_REF=$(git rev-parse --abbrev-ref HEAD)
 # get git commit identifier for tags
-GIT_REF=$(git rev-parse --short HEAD)
-# GIT_REF=$(git rev-parse HEAD)
+GIT_SHA=$(git rev-parse --short HEAD)
+# GIT_SHA=$(git rev-parse HEAD)
+
 
 # # for debug
 # echo "PLATFORM: ${PLATFORM}"
@@ -115,7 +118,8 @@ GIT_REF=$(git rev-parse --short HEAD)
 # echo "IMAGE_NAME: ${IMAGE_NAME}"
 # echo "PYTHON_VERSION: ${PYTHON_VERSION}"
 # echo "TAG_VERSION: ${TAG_VERSION}"
-# echo "GIT_REF ID: ${GIT_REF}"
+# echo "GIT_REF: ${GIT_REF}"
+# echo "GIT_SHA: ${GIT_SHA}"
 # echo "PUSH: ${PUSH}"
 # echo "_PUSH: ${_PUSH}"
 
@@ -133,7 +137,7 @@ docker buildx bake \
 --set *.args.PYTHON_VERSION=${PYTHON_VERSION} \
 --set *.args.BUILD_DATE=$(date +'%Y-%m-%d') \
 --set *.tags="${REGISTRY_}${IMAGE_NAME}:python-${TAG_VERSION}" \
---set *.tags="${REGISTRY_}${IMAGE_NAME}:python-${TAG_VERSION}-${GIT_REF}" \
+--set *.tags="${REGISTRY_}${IMAGE_NAME}:python-${TAG_VERSION}-${GIT_REF}-${GIT_SHA}" \
 ${_PUSH}
 
 # --no-cache \

@@ -4,13 +4,16 @@ on:
   workflow_run:
     # trigger after base_env CI completes
     workflows: ["base_env CI"]
-    branches: [main]
+    branches:
+      - main
+      - 'develop/**'
     types:
       - completed
 
 env:
   PLATFORMS: linux/amd64  #,linux/arm64
-  REGISTRY: ghcr.io/ninerealmlabs
+  GH_REGISTRY: ghcr.io/ninerealmlabs
+  D_REGISTRY: docker.io/ninerealmlabs
   BASE_IMAGE: base_env
 
 jobs:
@@ -64,12 +67,19 @@ jobs:
           echo ${TAG_VERSION}
           echo "::set-output name=tag::${TAG_VERSION}"
 
+      - name: Create tag from branch
+        id: ref
+        run: |
+          GIT_REF=$(git rev-parse --abbrev-ref HEAD | sed s'|/|.|')
+          echo ${GIT_REF}
+          echo "::set-output name=ref::${GIT_REF}"
+
       - name: Create tag from sha
         id: sha
         run: |
-          GIT_REF=$(git rev-parse --short HEAD)
-          echo ${GIT_REF}
-          echo "::set-output name=sha::${GIT_REF}"
+          GIT_SHA=$(git rev-parse --short HEAD)
+          echo ${GIT_SHA}
+          echo "::set-output name=sha::${GIT_SHA}"
 
       # - name: Docker metadata
       #   id: meta
@@ -77,7 +87,7 @@ jobs:
       #   with:
       #     # list of Docker images to use as base name for tags
       #     images: |
-      #       ghcr.io/ninerealmlabs/${{ github.job }}
+      #       ${{ env.GH_REGISTRY }}/${{ github.job }}
       #     tags: |
       #       type=sha
       #       type=sha,prefix=python-${{ steps.tag.outputs.tag }}-
@@ -93,7 +103,7 @@ jobs:
           context: src/${{ github.job }}/
           # file: ./Dockerfile
           build-args: |
-            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+            BASE_IMAGE=${{ env.GH_REGISTRY }}/${{ env.BASE_IMAGE }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
             PYTHON_VERSION=${{ matrix.python }}
             BUILD_DATE=${{ steps.date.outputs.date }}
           no-cache: true
@@ -101,8 +111,8 @@ jobs:
           ### Instead, push to **github** image repo
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
-            ${{ env.REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+            ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
+            ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
       #     ${{ steps.meta.outputs.tags }}
 
       # ### https://github.com/marketplace/actions/docker-buildx-bake
@@ -116,11 +126,11 @@ jobs:
       #     no-cache: true
       #     set: |
       #       *.platform=${{ env.PLATFORMS }}
-      #       *.args.BASE_IMAGE=${{ env.REGISTRY }}/${{ env.BASE_IMAGE }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+      #       *.args.BASE_IMAGE=${{ env.GH_REGISTRY }}/${{ env.BASE_IMAGE }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
       #       *.args.PYTHON_VERSION=${{ matrix.python }}
       #       *.args.BUILD_DATE=${{ steps.date.outputs.date }}
-      #       *.tags=${{ env.REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
-      #       *.tags=${{ env.REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+      #       *.tags=${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
+      #       *.tags=${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
       #     push: true
 
       - name: Image digest
@@ -128,5 +138,16 @@ jobs:
 
       - name: Inspect new image
         run: |
-          docker pull ghcr.io/ninerealmlabs/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
-          docker inspect ghcr.io/ninerealmlabs/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+          docker pull ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
+          docker inspect ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
+
+      # copy image from ghcr to dockerhub
+      - name: Push image to alternate registries
+        # push to registry on main branch only
+        if: github.ref == 'refs/heads/main'
+        uses: akhilerm/tag-push-action@v1.1.0
+        with:
+          src: ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
+          dst: |
+            ${{ env.D_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
+            ${{ env.D_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}

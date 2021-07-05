@@ -7,7 +7,6 @@ on:
     branches:
       - main
       - 'develop/**'
-      - '!develop/**-no_ci'
     types:
       - completed
 
@@ -144,7 +143,8 @@ jobs:
 
       # copy image from ghcr to dockerhub
       - name: Push image to alternate registries
-        if: github.ref == 'refs/heads/master'
+        # push to registry on main branch only
+        if: github.ref == 'refs/heads/main'
         uses: akhilerm/tag-push-action@v1.1.0
         with:
           src: ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}

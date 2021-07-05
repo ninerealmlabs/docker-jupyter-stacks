@@ -72,7 +72,7 @@ jobs:
       - name: Create tag from branch
         id: ref
         run: |
-          GIT_REF=$(git rev-parse --abbrev-ref HEAD)
+          GIT_REF=$(git rev-parse --abbrev-ref HEAD | sed s'|/|.|')
           echo ${GIT_REF}
           echo "::set-output name=ref::${GIT_REF}"
 

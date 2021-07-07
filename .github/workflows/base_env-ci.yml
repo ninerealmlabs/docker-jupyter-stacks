@@ -27,6 +27,12 @@ jobs:
         PYTHON: [3.7.*, 3.8.*, 3.9.*]
 
     steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
       - uses: actions/checkout@v2
         with:
           # ref: ${{ github.event.workflow_run.sha }}

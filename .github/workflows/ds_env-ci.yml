@@ -27,22 +27,28 @@ jobs:
 
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Pause for artifact availability
+        run: sleep 1m
 
       ### download artifact
-      - name: Download artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          # Required, workflow file name or ID
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          # Optional, will use specified workflow run
-          run_id: ${{ github.event.workflow_run.run_id }}
-          # https://github.com/actions/download-artifact#download-all-artifacts
-          # name: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}
-          # path: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}
+      # - name: Download artifact
+      #   uses: dawidd6/action-download-artifact@v2
+      #   with:
+      #     # Required, workflow file name or ID
+      #     workflow: ${{ github.event.workflow_run.workflow_id }}
+      #     # Optional, will use specified workflow run
+      #     run_id: ${{ github.event.workflow_run.run_id }}
+      #     # https://github.com/actions/download-artifact#download-all-artifacts
+      #     # name: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}
+      #     # path: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
 
       - name: Display structure of downloaded files
         run: ls -R
-        working-directory: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}
+        # working-directory:
+        # working-directory: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}
 
       - name: Parse artifact
         id: info

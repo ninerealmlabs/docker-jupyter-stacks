@@ -17,14 +17,14 @@ env:
   GH_REGISTRY: ghcr.io/ninerealmlabs
   D_REGISTRY: ninerealmlabs
   BASE_IMAGE: jupyter/minimal-notebook:latest
+  IMAGE_NAME: base_env  # IMAGE_NAME must be equivalent to subdirectory
 
 jobs:
-  ### NOTE: job name MUST be equivalent to image name and subdirectory
-  base_env:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.7.*, 3.8.*, 3.9.*]
+        PYTHON: [3.7.*, 3.8.*, 3.9.*]
 
     steps:
       - uses: actions/checkout@v2
@@ -52,12 +52,12 @@ jobs:
         run: |
           DATE=$(date +'%Y%m%d')
           echo "DATE: ${DATE}"
-          echo "::set-output name=date::${DATE}"
+          echo "::set-output name=DATE::${DATE}"
 
       - name: Create tags
         id: tag
         env:
-          PYTHON_VERSION: ${{ matrix.python }}
+          PYTHON_VERSION: ${{ matrix.PYTHON }}
         run: |
           TAG_VERSION=${PYTHON_VERSION}
           if [[ ${TAG_VERSION: -1} == "*" ]]; then
@@ -74,36 +74,11 @@ jobs:
           echo "FULLTAG: ${FULLTAG}"
           echo "PRODTAG: ${PRODTAG}"
           #---
-          echo "::set-output name=pythontag::${TAG_VERSION}"
-          echo "::set-output name=branch::${BRANCH}"
-          echo "::set-output name=sha::${SHA}"
-          echo "::set-output name=fulltag::${FULLTAG}"
-          echo "::set-output name=prodtag::${PRODTAG}"
-
-      # - name: Create tag from branch
-      #   id: ref
-      #   run: |
-      #     GIT_REF=$(git rev-parse --abbrev-ref HEAD | sed s'|/|.|')
-      #     echo "GIT_REF: ${GIT_REF}"
-      #     echo "::set-output name=ref::${GIT_REF}"
-
-      # - name: Create tag from sha
-      #   id: sha
-      #   run: |
-      #     GIT_SHA=$(git rev-parse --short HEAD)
-      #     echo "GIT_SHA: ${GIT_SHA}"
-      #     echo "::set-output name=sha::${GIT_SHA}"
-
-      # - name: Docker metadata
-      #   id: meta
-      #   uses: docker/metadata-action@v3
-      #   with:
-      #     # list of Docker images to use as base name for tags
-      #     images: |
-      #       ${{ env.GH_REGISTRY }}/${{ github.job }}
-      #     tags: |
-      #       type=sha
-      #       type=sha,prefix=python-${{ steps.tag.outputs.tag }}-
+          echo "::set-output name=PYTHONTAG::${TAG_VERSION}"
+          echo "::set-output name=BRANCH::${BRANCH}"
+          echo "::set-output name=SHA::${SHA}"
+          echo "::set-output name=FULLTAG::${FULLTAG}"
+          echo "::set-output name=PRODTAG::${PRODTAG}"
 
       ### https://github.com/docker/build-push-action
       ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
@@ -113,20 +88,19 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           # platforms: ${{ env.PLATFORMS }}
-          context: src/${{ github.job }}/
+          context: src/${{ env.IMAGE_NAME }}/
           # file: ./Dockerfile
           build-args: |
             BASE_IMAGE=${{ env.BASE_IMAGE }}
-            PYTHON_VERSION=${{ matrix.python }}
-            BUILD_DATE=${{ steps.date.outputs.date }}
+            PYTHON_VERSION=${{ matrix.PYTHON }}
+            BUILD_DATE=${{ steps.date.outputs.DATE }}
           no-cache: true
           ### Each job is isolated in its own runner, so can't share newly-built image directly between jobs
           ### Instead, push to **github** image repo
           push: true
           tags: |
-            ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.pythontag }}
-            ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.fulltag }}
-      #     ${{ steps.meta.outputs.tags }}
+            ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
+            ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
 
       # ### https://github.com/marketplace/actions/docker-buildx-bake
       # ### https://github.com/crazy-max/docker-buildx-bake-demo/
@@ -135,15 +109,15 @@ jobs:
       #   uses: docker/bake-action@v1.5
       #   with:
       #     builder: ${{ steps.buildx.outputs.name }}
-      #     files: src/${{ github.job }}/docker-compose.yml
+      #     files: src/${{ env.IMAGE_NAME }}/docker-compose.yml
       #     no-cache: true
       #     set: |
       #       *.platform=${{ env.PLATFORMS }}
       #       *.args.BASE_IMAGE=${{ env.BASE_IMAGE }}
-      #       *.args.PYTHON_VERSION=${{ matrix.python }}
-      #       *.args.BUILD_DATE=${{ steps.date.outputs.date }}
-      #       *.tags=${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
-      #       *.tags=${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
+      #       *.args.PYTHON_VERSION=${{ matrix.PYTHON }}
+      #       *.args.BUILD_DATE=${{ steps.date.outputs.DATE }}
+      #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.PYTHONTAG }}
+      #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.FULLTAG }}
       #     push: true
 
       - name: Image digest
@@ -151,8 +125,8 @@ jobs:
 
       - name: Inspect new image
         run: |
-          docker pull ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.fulltag }}
-          docker inspect ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.fulltag }}
+          docker pull ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
+          docker inspect ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
 
 ###############################################################################
 # ### Save run info as artifact & upload ###
@@ -175,14 +149,28 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.job }}-${{ github.run_id }}
+          name: ${{ env.IMAGE_NAME }}-${{ github.run_id }}
           path: INFO
           retention-days: 1
+
+    outputs:
+      IMAGE_NAME: ${{ env.IMAGE_NAME }}
+      PYTHONTAG: ${{ steps.tag.outputs.PYTHONTAG }}
+      BRANCH: ${{ steps.tag.outputs.BRANCH }}
+      SHA: ${{ steps.tag.outputs.SHA }}
+      FULLTAG: ${{ steps.tag.outputs.FULLTAG }}
+      PRODTAG: ${{ steps.tag.outputs.PRODTAG }}
 
 ###############################################################################
 # Push to DockerHub if main branch / "release"
 ###############################################################################
+  dockerhub:
+    runs-on: ubuntu-latest
+    needs: build
 
+    # push to registry on main branch only
+    if: needs.build.outputs.BRANCH == 'refs/heads/main'
+    steps:
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -191,11 +179,9 @@ jobs:
 
       # copy image from ghcr to dockerhub
       - name: Push image to alternate registries
-        # push to registry on main branch only
-        if: github.ref == 'refs/heads/main'
         uses: akhilerm/tag-push-action@v1.1.0
         with:
-          src: ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.fulltag }}
+          src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
           dst: |
-            ${{ env.D_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
-            ${{ env.D_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+            ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
+            ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

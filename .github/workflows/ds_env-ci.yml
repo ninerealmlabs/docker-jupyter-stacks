@@ -18,7 +18,6 @@ env:
   IMAGE_NAME: ds_env  # IMAGE_NAME must be equivalent to subdirectory
 
 jobs:
-  ### NOTE: job name MUST be equivalent to image name and directory
   build:
     runs-on: ubuntu-latest
     strategy:
@@ -29,10 +28,6 @@ jobs:
     steps:
       - name: Pause for artifact availability
         run: sleep 1m
-
-      ### download artifact
-      # - name: Download artifacts
-      #   uses: actions/download-artifact@v2
 
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
@@ -47,7 +42,6 @@ jobs:
 
       - name: Display structure of downloaded files
         run: ls -R
-        # working-directory: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}
 
       - name: Parse artifact
         id: info

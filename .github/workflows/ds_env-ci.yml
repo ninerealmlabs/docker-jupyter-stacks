@@ -37,16 +37,16 @@ jobs:
           # Optional, will use specified workflow run
           # run_id: ${{ github.event.workflow_run.run_id }}
           # https://github.com/actions/download-artifact#download-all-artifacts
-          name: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}.zip
-          path: WFRUN_INFO
+          # name: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}.zip
+          # path: WFRUN_INFO
 
       - name: Display structure of downloaded files
         run: ls -R
 
       - name: Parse artifact
         id: info
-        # env:
-        #   WFRUN_INFO=${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}/INFO
+        env:
+          WFRUN_INFO=${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}/INFO
         run: |
           WORKFLOW=$(sed -n 's/^WORKFLOW://p' WFRUN_INFO)
           RUN_ID=$(sed -n 's/^RUN_ID://p' WFRUN_INFO)

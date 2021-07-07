@@ -1,9 +1,9 @@
-name: ds_env CI
+name: ds_env-CI
 
 on:
   workflow_run:
     # trigger after base_env CI completes
-    workflows: ["base_env CI"]
+    workflows: ["base_env-CI"]
     branches:
       - main
       - 'develop/**'
@@ -26,8 +26,42 @@ jobs:
 
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+
+      ### download artifact
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          # Required, workflow file name or ID
+          workflow: base_env-ci.yml
+          # Optional, will use specified workflow run
+          run_id: ${{ github.event.workflow_run.run_id }}
+          # https://github.com/actions/download-artifact#download-all-artifacts
+          name: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}
+          path: WFRUN_INFO
+
+      - name: Parse artifact
+        id: info
+        run: |
+          WORKFLOW=$(sed -n 's/^WORKFLOW://p' WFRUN_INFO)
+          RUN_ID=$(sed -n 's/^RUN_ID://p' WFRUN_INFO)
+          RUN_NUM=$(sed -n 's/^RUN_NUM://p' WFRUN_INFO)
+          REF=$(sed -n 's/^REF://p' WFRUN_INFO)
+          SHA=$(sed -n 's/^SHA://p' WFRUN_INFO)
+          echo "WORKFLOW: ${WORKFLOW}"
+          echo "RUN_ID: ${RUN_ID}"
+          echo "WORKFLOW: ${WORKFLOW}"
+          echo "RUN_NUM: ${RUN_NUM}"
+          echo "REF: ${REF}"
+          echo "SHA: ${SHA}"
+          echo "::set-output name=workflow::${WORKFLOW}"
+          echo "::set-output name=run_id::${RUN_ID}"
+          echo "::set-output name=run_num::${RUN_NUM}"
+          echo "::set-output name=ref::${REF}"
+          echo "::set-output name=sha::${SHA}"
+
       - uses: actions/checkout@v2
         with:
+          ref: ${{ steps.info.outputs.sha }}
           fetch-depth: 0
 
       ### used for multi-arch builds
@@ -47,33 +81,46 @@ jobs:
 
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+        run: |
+          DATE=$(date +'%Y%m%d')
+          echo "DATE: ${DATE}"
+          echo "::set-output name=date::${DATE}"
 
-      - name: Create tag from python verison
+      - name: Create tags
         id: tag
         env:
           PYTHON_VERSION: ${{ matrix.python }}
+          BRANCH: ${{ steps.info.outputs.ref }}
+          SHA: ${{ steps.info.outputs.sha }}
         run: |
           TAG_VERSION=${PYTHON_VERSION}
           if [[ ${TAG_VERSION: -1} == "*" ]]; then
               TAG_VERSION=${TAG_VERSION: 0:${#TAG_VERSION}-2}
           fi
-          echo ${TAG_VERSION}
-          echo "::set-output name=tag::${TAG_VERSION}"
+          FULLTAG="python-${TAG_VERSION}-${BRANCH}-${SHA}
+          PRODTAG="python-${TAG_VERSION}-${SHA}
+          #---
+          echo "TAG_VERSION: ${TAG_VERSION}"
+          echo "FULLTAG: ${FULLTAG}"
+          echo "PRODTAG: ${PRODTAG}"
+          #---
+          echo "::set-output name=pythontag::${TAG_VERSION}"
+          echo "::set-output name=fulltag::${FULLTAG}"
+          echo "::set-output name=prodtag::${PRODTAG}"
 
-      - name: Create tag from branch
-        id: ref
-        run: |
-          GIT_REF=$(git rev-parse --abbrev-ref HEAD | sed s'|/|.|')
-          echo ${GIT_REF}
-          echo "::set-output name=ref::${GIT_REF}"
+      # - name: Create tag from branch
+      #   id: branch
+      #   run: |
+      #     BRANCH=$(${{ steps.info.outputs.ref }} | sed s'|/|.|')  # BRANCH=$(git rev-parse --abbrev-ref HEAD | sed s'|/|.|')
+      #     echo "BRANCH: ${BRANCH}"
+      #     echo "::set-output name=branch::${BRANCH}"
 
-      - name: Create tag from sha
-        id: sha
-        run: |
-          GIT_SHA=$(git rev-parse --short HEAD)
-          echo ${GIT_SHA}
-          echo "::set-output name=sha::${GIT_SHA}"
+      # - name: Create tag from sha
+      #   id: sha
+      #   run: |
+      #     GIT_SHA=$(git rev-parse --short HEAD)
+      #     echo "GIT_SHA: ${GIT_SHA}"
+      #     echo "::set-output name=sha::${GIT_SHA}"
 
       # - name: Docker metadata
       #   id: meta
@@ -97,7 +144,7 @@ jobs:
           context: src/${{ github.job }}/
           # file: ./Dockerfile
           build-args: |
-            BASE_IMAGE=${{ env.GH_REGISTRY }}/${{ env.BASE_IMAGE }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
+            BASE_IMAGE=${{ env.GH_REGISTRY }}/${{ env.BASE_IMAGE }}:${{ steps.tag.outputs.fulltag }}
             PYTHON_VERSION=${{ matrix.python }}
             BUILD_DATE=${{ steps.date.outputs.date }}
           no-cache: true
@@ -105,8 +152,8 @@ jobs:
           ### Instead, push to **github** image repo
           push: true
           tags: |
-            ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
-            ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
+            ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.pythontag }}
+            ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.fulltag }}
       #     ${{ steps.meta.outputs.tags }}
 
       # ### https://github.com/marketplace/actions/docker-buildx-bake
@@ -132,8 +179,37 @@ jobs:
 
       - name: Inspect new image
         run: |
-          docker pull ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
-          docker inspect ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
+          docker pull ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.fulltag }}
+          docker inspect ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.fulltag }}
+
+###############################################################################
+# Save run info as artifact & upload
+###############################################################################
+      - name: Preserve run info
+        env:
+          WORKFLOW: ${{ steps.info.outputs.workflow }}
+          RUN_ID: ${{ steps.info.outputs.run_id }}
+          RUN_NUM: ${{ steps.info.outputs.run_num }}
+          REF: ${{ steps.info.outputs.ref }}
+          SHA: ${{ steps.info.outputs.sha }}
+        run: |
+          touch INFO
+          echo "WORKFLOW:${GITHUB_WORKFLOW}" >> INFO
+          echo "RUN_ID:${GITHUB_RUN_ID}" >> INFO
+          echo "RUN_NUM:${GITHUB_RUN_NUMBER}" >> INFO
+          echo "REF:${GITHUB_REF}" >> INFO
+          echo "SHA:${GITHUB_REF}" >> INFO
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.job }}-${{ github.run_id }}
+          path: INFO
+          retention-days: 1
+
+
+###############################################################################
+# Push to DockerHub if main branch / "release"
+###############################################################################
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -144,10 +220,10 @@ jobs:
       # copy image from ghcr to dockerhub
       - name: Push image to alternate registries
         # push to registry on main branch only
-        if: github.ref == 'refs/heads/main'
+        if: github.event.workflow_run.head_branch == 'refs/heads/main'
         uses: akhilerm/tag-push-action@v1.1.0
         with:
-          src: ${{ env.GH_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
+          src: ${{ env.GH_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.fulltag }}
           dst: |
-            ${{ env.D_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}
-            ${{ env.D_REGISTRY }}/${{ github.job }}:python-${{ steps.tag.outputs.tag }}-${{ steps.sha.outputs.sha }}
+            ${{ env.D_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.pythontag }}
+            ${{ env.D_REGISTRY }}/${{ github.job }}:${{ steps.tag.outputs.prodtag }}

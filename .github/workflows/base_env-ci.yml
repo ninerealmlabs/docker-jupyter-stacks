@@ -102,7 +102,7 @@ jobs:
       #     tags: |
       #       ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
       #       ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
-
+      #
       # # ### https://github.com/marketplace/actions/docker-buildx-bake
       # # ### https://github.com/crazy-max/docker-buildx-bake-demo/
       # # - name: Build image
@@ -120,14 +120,14 @@ jobs:
       # #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.PYTHONTAG }}
       # #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.FULLTAG }}
       # #     push: true
-
+      #
       # - name: Image digest
       #   run: echo ${{ steps.docker_build.outputs.digest }}
-
-      - name: Inspect new image
-        run: |
-          docker pull ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
-          docker inspect ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
+      #
+      # - name: Inspect new image
+      #   run: |
+      #     docker pull ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
+      #     docker inspect ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
 
 ###############################################################################
 # ### Save run info as artifact & upload ###

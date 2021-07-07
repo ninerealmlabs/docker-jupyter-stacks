@@ -43,6 +43,12 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
 
+      - name: Test run_id
+        env:
+        RUN_ID: ${{ github.event.workflow_run.run_id }}
+        run: |
+          echo "RUN_ID: ${RUN_ID}"
+
       - name: Parse artifact
         id: info
         env:

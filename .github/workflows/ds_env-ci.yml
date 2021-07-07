@@ -48,11 +48,11 @@ jobs:
         env:
           WFRUN_INFO: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}/INFO
         run: |
-          WORKFLOW=$(sed -n 's/^WORKFLOW://p' WFRUN_INFO)
-          RUN_ID=$(sed -n 's/^RUN_ID://p' WFRUN_INFO)
-          RUN_NUM=$(sed -n 's/^RUN_NUM://p' WFRUN_INFO)
-          REF=$(sed -n 's/^REF://p' WFRUN_INFO)
-          SHA=$(sed -n 's/^SHA://p' WFRUN_INFO)
+          WORKFLOW=$(sed -n 's/^WORKFLOW://p' ${WFRUN_INFO})
+          RUN_ID=$(sed -n 's/^RUN_ID://p' ${WFRUN_INFO})
+          RUN_NUM=$(sed -n 's/^RUN_NUM://p' ${WFRUN_INFO})
+          REF=$(sed -n 's/^REF://p' ${WFRUN_INFO})
+          SHA=$(sed -n 's/^SHA://p' ${WFRUN_INFO})
           echo "WORKFLOW: ${WORKFLOW}"
           echo "RUN_ID: ${RUN_ID}"
           echo "WORKFLOW: ${WORKFLOW}"

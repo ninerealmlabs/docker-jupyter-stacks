@@ -84,7 +84,7 @@ jobs:
         run: |
           DATE=$(date +'%Y%m%d')
           echo "DATE: ${DATE}"
-          echo "::set-output name=date::${DATE"
+          echo "::set-output name=date::${DATE}"
 
       - name: Create tags
         id: tag

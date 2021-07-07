@@ -63,6 +63,7 @@ jobs:
           if [[ ${TAG_VERSION: -1} == "*" ]]; then
               TAG_VERSION=${TAG_VERSION: 0:${#TAG_VERSION}-2}
           fi
+          echo ${GITHUB_REF}
           BRANCH=$(${GITHUB_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
           SHA=${GITHUB_SHA:0:7}
           FULLTAG="python-${TAG_VERSION}-${BRANCH}-${SHA}

@@ -65,8 +65,8 @@ jobs:
           fi
           BRANCH=$(echo ${GITHUB_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
           SHA=${GITHUB_SHA:0:7}
-          FULLTAG="python-${TAG_VERSION}-${BRANCH}-${SHA}
-          PRODTAG="python-${TAG_VERSION}-${SHA}
+          FULLTAG="python-${TAG_VERSION}-${BRANCH}-${SHA}"
+          PRODTAG="python-${TAG_VERSION}-${SHA}"
           #---
           echo "TAG_VERSION: ${TAG_VERSION}"
           echo "BRANCH: ${BRANCH}"

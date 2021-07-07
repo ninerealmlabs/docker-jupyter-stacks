@@ -46,7 +46,7 @@ jobs:
       - name: Parse artifact
         id: info
         env:
-          WFRUN_INFO=${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}/INFO
+          WFRUN_INFO: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}/INFO
         run: |
           WORKFLOW=$(sed -n 's/^WORKFLOW://p' WFRUN_INFO)
           RUN_ID=$(sed -n 's/^RUN_ID://p' WFRUN_INFO)

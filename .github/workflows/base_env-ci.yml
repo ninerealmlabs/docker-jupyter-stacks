@@ -63,17 +63,20 @@ jobs:
           if [[ ${TAG_VERSION: -1} == "*" ]]; then
               TAG_VERSION=${TAG_VERSION: 0:${#TAG_VERSION}-2}
           fi
-          echo ${GITHUB_REF}
-          BRANCH=$(${GITHUB_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
+          BRANCH=$(echo ${GITHUB_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
           SHA=${GITHUB_SHA:0:7}
           FULLTAG="python-${TAG_VERSION}-${BRANCH}-${SHA}
           PRODTAG="python-${TAG_VERSION}-${SHA}
           #---
           echo "TAG_VERSION: ${TAG_VERSION}"
+          echo "BRANCH: ${BRANCH}"
+          echo "SHA: ${SHA}"
           echo "FULLTAG: ${FULLTAG}"
           echo "PRODTAG: ${PRODTAG}"
           #---
           echo "::set-output name=pythontag::${TAG_VERSION}"
+          echo "::set-output name=branch::${BRANCH}"
+          echo "::set-output name=sha::${SHA}"
           echo "::set-output name=fulltag::${FULLTAG}"
           echo "::set-output name=prodtag::${PRODTAG}"
 
@@ -168,7 +171,7 @@ jobs:
           echo "RUN_ID:${GITHUB_RUN_ID}" >> INFO
           echo "RUN_NUM:${GITHUB_RUN_NUMBER}" >> INFO
           echo "REF:${GITHUB_REF}" >> INFO
-          echo "SHA:${GITHUB_REF}" >> INFO
+          echo "SHA:${GITHUB_SHA}" >> INFO
 
       - uses: actions/upload-artifact@v2
         with:

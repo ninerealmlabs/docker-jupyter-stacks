@@ -90,13 +90,15 @@ jobs:
         id: tag
         env:
           PYTHON_VERSION: ${{ matrix.python }}
-          BRANCH: ${{ steps.info.outputs.ref }}
-          SHA: ${{ steps.info.outputs.sha }}
+          INFO_REF: ${{ steps.info.outputs.ref }}
+          INFO_SHA: ${{ steps.info.outputs.sha }}
         run: |
           TAG_VERSION=${PYTHON_VERSION}
           if [[ ${TAG_VERSION: -1} == "*" ]]; then
               TAG_VERSION=${TAG_VERSION: 0:${#TAG_VERSION}-2}
           fi
+          BRANCH=$(echo ${INFO_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
+          SHA=${INFO_SHA:0:7}
           FULLTAG="python-${TAG_VERSION}-${BRANCH}-${SHA}
           PRODTAG="python-${TAG_VERSION}-${SHA}
           #---

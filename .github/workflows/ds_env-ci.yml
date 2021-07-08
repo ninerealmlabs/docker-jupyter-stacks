@@ -1,4 +1,5 @@
 name: ds_env-CI
+# name must be "{ENV}_env-CI" for proper triggering of downstream workflows
 
 on:
   workflow_dispatch:
@@ -18,6 +19,7 @@ env:
   D_REGISTRY: ninerealmlabs
   BASE_IMAGE: base_env
   IMAGE_NAME: ds_env  # IMAGE_NAME must be equivalent to subdirectory
+  ### ALSO UPDATE NEXT_IMAGE IN JOBS.DISPATCH JOB
 
 jobs:
   build:
@@ -29,59 +31,14 @@ jobs:
     # will only run if prior workflow has successfully called this one
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      # - name: Pause for artifact availability
-      #   run: sleep 1m
-
-      # - name: Download artifact
-      #   uses: dawidd6/action-download-artifact@v2
-      #   with:
-      #     # Required, workflow file name or ID
-      #     workflow: ${{ github.event.workflow_run.workflow_id }}
-      #     # Optional, will use specified workflow run
-      #     # run_id: ${{ github.event.workflow_run.run_id }}
-      #     # https://github.com/actions/download-artifact#download-all-artifacts
-      #     # name: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}.zip
-      #     # path: WFRUN_INFO
-
-      # - name: Display structure of downloaded files
-      #   run: ls -R
-
-      # - name: Test run_id
-      #   env:
-      #     RUN_ID: ${{ github.event.workflow_run.run_id }}
-      #   run: |
-      #     echo "RUN_ID: ${RUN_ID}"
-
-      # - name: Parse artifact
-      #   id: info
-      #   env:
-      #     WFRUN_INFO: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}/INFO
-      #   run: |
-      #     WORKFLOW=$(sed -n 's/^WORKFLOW://p' ${WFRUN_INFO})
-      #     RUN_ID=$(sed -n 's/^RUN_ID://p' ${WFRUN_INFO})
-      #     RUN_NUM=$(sed -n 's/^RUN_NUM://p' ${WFRUN_INFO})
-      #     REF=$(sed -n 's/^REF://p' ${WFRUN_INFO})
-      #     SHA=$(sed -n 's/^SHA://p' ${WFRUN_INFO})
-      #     echo "WORKFLOW: ${WORKFLOW}"
-      #     echo "RUN_ID: ${RUN_ID}"
-      #     echo "WORKFLOW: ${WORKFLOW}"
-      #     echo "RUN_NUM: ${RUN_NUM}"
-      #     echo "REF: ${REF}"
-      #     echo "SHA: ${SHA}"
-      #     echo "::set-output name=WORKFLOW::${WORKFLOW}"
-      #     echo "::set-output name=RUN_ID::${RUN_ID}"
-      #     echo "::set-output name=RUN_NUM::${RUN_NUM}"
-      #     echo "::set-output name=REF::${REF}"
-      #     echo "::set-output name=SHA::${SHA}"
 
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.SHA }}
           fetch-depth: 0
 
-      ### used for multi-arch builds
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
         id: buildx
@@ -177,30 +134,6 @@ jobs:
           docker pull ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
           docker inspect ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
 
-###############################################################################
-# Save run info as artifact & upload
-###############################################################################
-      # - name: Preserve run info
-      #   env:
-      #     WORKFLOW: ${{ steps.info.outputs.workflow }}
-      #     RUN_ID: ${{ steps.info.outputs.run_id }}
-      #     RUN_NUM: ${{ steps.info.outputs.run_num }}
-      #     REF: ${{ steps.info.outputs.ref }}
-      #     SHA: ${{ steps.info.outputs.sha }}
-      #   run: |
-      #     touch INFO
-      #     echo "WORKFLOW:${GITHUB_WORKFLOW}" >> INFO
-      #     echo "RUN_ID:${GITHUB_RUN_ID}" >> INFO
-      #     echo "RUN_NUM:${GITHUB_RUN_NUMBER}" >> INFO
-      #     echo "REF:${REF}" >> INFO
-      #     echo "SHA:${SHA}" >> INFO
-
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: ${{ env.IMAGE_NAME }}-${{ github.run_id }}
-      #     path: INFO
-      #     retention-days: 1
-
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}
       PYTHONTAG: ${{ steps.tag.outputs.PYTHONTAG }}
@@ -208,6 +141,28 @@ jobs:
       SHA: ${{ steps.tag.outputs.SHA }}
       FULLTAG: ${{ steps.tag.outputs.FULLTAG }}
       PRODTAG: ${{ steps.tag.outputs.PRODTAG }}
+
+
+  ### Start next workflow
+  dispatch:
+    runs-on: 'ubuntu-latest'
+    strategy:
+      matrix:
+        NEXT_IMAGE: ['nlp_env', 'web_env', 'pytorch_env']
+
+    steps:
+      - name: Call next build
+        uses: benc-uk/workflow-dispatch@v1
+        # env:
+        #   NEXT_IMAGE: ${{ matrix.NEXT_IMAGE }}
+        #   # REF: ${{ github.ref }}
+        #   # SHA: ${{ github.sha }}
+        with:
+          workflow: ${{ matrix.NEXT_IMAGE}}-CI
+          # ref: ${{ github.ref }}
+          # sha: ${{ github.sha }}
+          token: ${{ secrets.WORKFLOW_DISPATCH }}
+          inputs: '{"REF": "${{ github.ref }}", "SHA": "${{ github.sha }}"}'
 
 # ###############################################################################
 # # Push to DockerHub if main branch / "release"

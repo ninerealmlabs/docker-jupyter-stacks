@@ -18,7 +18,7 @@ env:
   D_REGISTRY: ninerealmlabs
   BASE_IMAGE: jupyter/minimal-notebook:latest
   IMAGE_NAME: base_env  # IMAGE_NAME must be equivalent to subdirectory
-  NEXT_ENV: ds_env
+  ### ALSO UPDATE NEXT_IMAGE IN JOBS.DISPATCH JOB
 
 jobs:
   build:
@@ -33,7 +33,6 @@ jobs:
           # ref: ${{ github.event.workflow_run.sha }}
           fetch-depth: 0
 
-      ### used for multi-arch builds
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -81,104 +80,53 @@ jobs:
           echo "::set-output name=FULLTAG::${FULLTAG}"
           echo "::set-output name=PRODTAG::${PRODTAG}"
 
-### DISABLE BUILD FOR TESTING
-      # ### https://github.com/docker/build-push-action
-      # ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
+      ### https://github.com/docker/build-push-action
+      ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
+      - name: Build image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          # platforms: ${{ env.PLATFORMS }}
+          context: src/${{ env.IMAGE_NAME }}/
+          # file: ./Dockerfile
+          build-args: |
+            BASE_IMAGE=${{ env.BASE_IMAGE }}
+            PYTHON_VERSION=${{ matrix.PYTHON }}
+            BUILD_DATE=${{ steps.date.outputs.DATE }}
+          no-cache: true
+          ### Each job is isolated in its own runner, so can't share newly-built image directly between jobs
+          ### Instead, push to **github** image repo
+          push: true
+          tags: |
+            ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
+            ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
+
+      # ### https://github.com/marketplace/actions/docker-buildx-bake
+      # ### https://github.com/crazy-max/docker-buildx-bake-demo/
       # - name: Build image
-      #   id: docker_build
-      #   uses: docker/build-push-action@v2
+      #   id: docker_bake
+      #   uses: docker/bake-action@v1.5
       #   with:
       #     builder: ${{ steps.buildx.outputs.name }}
-      #     # platforms: ${{ env.PLATFORMS }}
-      #     context: src/${{ env.IMAGE_NAME }}/
-      #     # file: ./Dockerfile
-      #     build-args: |
-      #       BASE_IMAGE=${{ env.BASE_IMAGE }}
-      #       PYTHON_VERSION=${{ matrix.PYTHON }}
-      #       BUILD_DATE=${{ steps.date.outputs.DATE }}
+      #     files: src/${{ env.IMAGE_NAME }}/docker-compose.yml
       #     no-cache: true
-      #     ### Each job is isolated in its own runner, so can't share newly-built image directly between jobs
-      #     ### Instead, push to **github** image repo
+      #     set: |
+      #       *.platform=${{ env.PLATFORMS }}
+      #       *.args.BASE_IMAGE=${{ env.BASE_IMAGE }}
+      #       *.args.PYTHON_VERSION=${{ matrix.PYTHON }}
+      #       *.args.BUILD_DATE=${{ steps.date.outputs.DATE }}
+      #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.PYTHONTAG }}
+      #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.FULLTAG }}
       #     push: true
-      #     tags: |
-      #       ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
-      #       ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
-      #
-      # # ### https://github.com/marketplace/actions/docker-buildx-bake
-      # # ### https://github.com/crazy-max/docker-buildx-bake-demo/
-      # # - name: Build image
-      # #   id: docker_bake
-      # #   uses: docker/bake-action@v1.5
-      # #   with:
-      # #     builder: ${{ steps.buildx.outputs.name }}
-      # #     files: src/${{ env.IMAGE_NAME }}/docker-compose.yml
-      # #     no-cache: true
-      # #     set: |
-      # #       *.platform=${{ env.PLATFORMS }}
-      # #       *.args.BASE_IMAGE=${{ env.BASE_IMAGE }}
-      # #       *.args.PYTHON_VERSION=${{ matrix.PYTHON }}
-      # #       *.args.BUILD_DATE=${{ steps.date.outputs.DATE }}
-      # #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.PYTHONTAG }}
-      # #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.FULLTAG }}
-      # #     push: true
-      #
-      # - name: Image digest
-      #   run: echo ${{ steps.docker_build.outputs.digest }}
-      #
-      # - name: Inspect new image
-      #   run: |
-      #     docker pull ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
-      #     docker inspect ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
 
-###############################################################################
-# ### Save run info as artifact & upload ###
-#
-# This is needed because while 'ds_env' can access 'base_env' workflow,
-# 'forecast_env' is several workflows separate, but should still use
-# the same reference information (branch/sha)
-#
-# See: https://stackoverflow.com/questions/67973057/github-actions-workflow-run-outputs
-# See: https://github.com/dawidd6/action-download-artifact
-###############################################################################
-      # - name: Preserve run info
-      #   run: |
-      #     touch INFO
-      #     echo "WORKFLOW:${GITHUB_WORKFLOW}" >> INFO
-      #     echo "RUN_ID:${GITHUB_RUN_ID}" >> INFO
-      #     echo "RUN_NUM:${GITHUB_RUN_NUMBER}" >> INFO
-      #     echo "REF:${GITHUB_REF}" >> INFO
-      #     echo "SHA:${GITHUB_SHA}" >> INFO
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
 
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: ${{ env.IMAGE_NAME }}-${{ github.run_id }}
-      #     path: INFO
-      #     retention-days: 1
-
-      # - name: Call next build
-      #   env:
-      #     NEXT_ENV: ${{ env.NEXT_ENV }}
-      #     REF: ${{ github.ref }}
-      #     SHA: ${{ github.sha }}
-      #   run: |
-      #     curl \
-      #       -X POST \
-      #       -H "Accept: application/vnd.github.v3+.json" \
-      #       https://api.github.com/repos/ninerealmlabs/docker-jupyter-stacks/actions/workflows/${NEXT_ENV}-ci.yml/dispatches \
-      #       -d '{"ref":${REF} "sha":${SHA}}'
-
-      - name: Call next build
-        uses: benc-uk/workflow-dispatch@v1
-        env:
-          NEXT_ENV: ${{ env.NEXT_ENV }}
-          # REF: ${{ github.ref }}
-          # SHA: ${{ github.sha }}
-        with:
-          workflow: ${{ env.NEXT_ENV}}-CI
-          # ref: ${{ github.ref }}
-          # sha: ${{ github.sha }}
-          token: ${{ secrets.WORKFLOW_DISPATCH }}
-          inputs: '{"REF": "${{ github.ref }}", "SHA": "${{ github.sha }}"}'
+      - name: Inspect new image
+        run: |
+          docker pull ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
+          docker inspect ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
 
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}
@@ -187,6 +135,41 @@ jobs:
       SHA: ${{ steps.tag.outputs.SHA }}
       FULLTAG: ${{ steps.tag.outputs.FULLTAG }}
       PRODTAG: ${{ steps.tag.outputs.PRODTAG }}
+
+
+  ### Start next workflow
+  dispatch:
+    runs-on: 'ubuntu-latest'
+    strategy:
+      matrix:
+        NEXT_IMAGE: ['ds_env']
+
+    steps:
+
+      - name: Call next build
+        uses: benc-uk/workflow-dispatch@v1
+        # env:
+        #   NEXT_IMAGE: ${{ matrix.NEXT_IMAGE }}
+        #   # REF: ${{ github.ref }}
+        #   # SHA: ${{ github.sha }}
+        with:
+          workflow: ${{ matrix.NEXT_IMAGE}}-CI
+          # ref: ${{ github.ref }}
+          # sha: ${{ github.sha }}
+          token: ${{ secrets.WORKFLOW_DISPATCH }}
+          inputs: '{"REF": "${{ github.ref }}", "SHA": "${{ github.sha }}"}'
+
+      # - name: Call next build
+      #   env:
+      #     NEXT_IMAGE: ${{ matrix.NEXT_IMAGE }}
+      #     REF: ${{ github.ref }}
+      #     SHA: ${{ github.sha }}
+      #   run: |
+      #     curl \
+      #       -X POST \
+      #       -H "Accept: application/vnd.github.v3+.json" \
+      #       https://api.github.com/repos/ninerealmlabs/docker-jupyter-stacks/actions/workflows/${NEXT_IMAGE}-ci.yml/dispatches \
+      #       -d '{"REF": ${REF} "SHA": ${SHA}}'
 
 # ###############################################################################
 # # Push to DockerHub if main branch / "release"

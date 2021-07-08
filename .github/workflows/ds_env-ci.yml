@@ -1,14 +1,16 @@
 name: ds_env-CI
 
 on:
-  workflow_run:
-    # trigger after base_env CI completes
-    workflows: ["base_env-CI"]
-    branches:
-      - main
-      - 'develop/**'
-    types:
-      - completed
+  workflow_dispatch:
+    inputs:
+      REF:
+        description: 'GITHUB_REF from calling workflow'
+        required: true
+        default: ''
+      SHA:
+        description: 'GITHUB_SHA from calling workflow'
+        required: true
+        default: ''
 
 env:
   PLATFORMS: linux/amd64  #,linux/arm64
@@ -24,56 +26,57 @@ jobs:
       matrix:
         PYTHON: [3.7.*, 3.8.*, 3.9.*]
 
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # will only run if prior workflow has successfully called this one
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Pause for artifact availability
-        run: sleep 1m
+      # - name: Pause for artifact availability
+      #   run: sleep 1m
 
-      - name: Download artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          # Required, workflow file name or ID
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          # Optional, will use specified workflow run
-          # run_id: ${{ github.event.workflow_run.run_id }}
-          # https://github.com/actions/download-artifact#download-all-artifacts
-          # name: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}.zip
-          # path: WFRUN_INFO
+      # - name: Download artifact
+      #   uses: dawidd6/action-download-artifact@v2
+      #   with:
+      #     # Required, workflow file name or ID
+      #     workflow: ${{ github.event.workflow_run.workflow_id }}
+      #     # Optional, will use specified workflow run
+      #     # run_id: ${{ github.event.workflow_run.run_id }}
+      #     # https://github.com/actions/download-artifact#download-all-artifacts
+      #     # name: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}.zip
+      #     # path: WFRUN_INFO
 
-      - name: Display structure of downloaded files
-        run: ls -R
+      # - name: Display structure of downloaded files
+      #   run: ls -R
 
-      - name: Test run_id
-        env:
-          RUN_ID: ${{ github.event.workflow_run.run_id }}
-        run: |
-          echo "RUN_ID: ${RUN_ID}"
+      # - name: Test run_id
+      #   env:
+      #     RUN_ID: ${{ github.event.workflow_run.run_id }}
+      #   run: |
+      #     echo "RUN_ID: ${RUN_ID}"
 
-      - name: Parse artifact
-        id: info
-        env:
-          WFRUN_INFO: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}/INFO
-        run: |
-          WORKFLOW=$(sed -n 's/^WORKFLOW://p' ${WFRUN_INFO})
-          RUN_ID=$(sed -n 's/^RUN_ID://p' ${WFRUN_INFO})
-          RUN_NUM=$(sed -n 's/^RUN_NUM://p' ${WFRUN_INFO})
-          REF=$(sed -n 's/^REF://p' ${WFRUN_INFO})
-          SHA=$(sed -n 's/^SHA://p' ${WFRUN_INFO})
-          echo "WORKFLOW: ${WORKFLOW}"
-          echo "RUN_ID: ${RUN_ID}"
-          echo "WORKFLOW: ${WORKFLOW}"
-          echo "RUN_NUM: ${RUN_NUM}"
-          echo "REF: ${REF}"
-          echo "SHA: ${SHA}"
-          echo "::set-output name=WORKFLOW::${WORKFLOW}"
-          echo "::set-output name=RUN_ID::${RUN_ID}"
-          echo "::set-output name=RUN_NUM::${RUN_NUM}"
-          echo "::set-output name=REF::${REF}"
-          echo "::set-output name=SHA::${SHA}"
+      # - name: Parse artifact
+      #   id: info
+      #   env:
+      #     WFRUN_INFO: ${{ env.BASE_IMAGE }}-${{ github.event.workflow_run.run_id }}/INFO
+      #   run: |
+      #     WORKFLOW=$(sed -n 's/^WORKFLOW://p' ${WFRUN_INFO})
+      #     RUN_ID=$(sed -n 's/^RUN_ID://p' ${WFRUN_INFO})
+      #     RUN_NUM=$(sed -n 's/^RUN_NUM://p' ${WFRUN_INFO})
+      #     REF=$(sed -n 's/^REF://p' ${WFRUN_INFO})
+      #     SHA=$(sed -n 's/^SHA://p' ${WFRUN_INFO})
+      #     echo "WORKFLOW: ${WORKFLOW}"
+      #     echo "RUN_ID: ${RUN_ID}"
+      #     echo "WORKFLOW: ${WORKFLOW}"
+      #     echo "RUN_NUM: ${RUN_NUM}"
+      #     echo "REF: ${REF}"
+      #     echo "SHA: ${SHA}"
+      #     echo "::set-output name=WORKFLOW::${WORKFLOW}"
+      #     echo "::set-output name=RUN_ID::${RUN_ID}"
+      #     echo "::set-output name=RUN_NUM::${RUN_NUM}"
+      #     echo "::set-output name=REF::${REF}"
+      #     echo "::set-output name=SHA::${SHA}"
 
       - uses: actions/checkout@v2
         with:
-          ref: ${{ steps.info.outputs.sha }}
+          ref: ${{ github.event.inputs.sha }}
           fetch-depth: 0
 
       ### used for multi-arch builds
@@ -102,8 +105,8 @@ jobs:
         id: tag
         env:
           PYTHON_VERSION: ${{ matrix.PYTHON }}
-          INFO_REF: ${{ steps.info.outputs.REF }}
-          INFO_SHA: ${{ steps.info.outputs.SHA }}
+          INFO_REF: ${{ github.event.inputs.REF }}
+          INFO_SHA: ${{ github.event.inputs.SHA }}
         run: |
           TAG_VERSION=${PYTHON_VERSION}
           if [[ ${TAG_VERSION: -1} == "*" ]]; then
@@ -177,26 +180,26 @@ jobs:
 ###############################################################################
 # Save run info as artifact & upload
 ###############################################################################
-      - name: Preserve run info
-        env:
-          WORKFLOW: ${{ steps.info.outputs.workflow }}
-          RUN_ID: ${{ steps.info.outputs.run_id }}
-          RUN_NUM: ${{ steps.info.outputs.run_num }}
-          REF: ${{ steps.info.outputs.ref }}
-          SHA: ${{ steps.info.outputs.sha }}
-        run: |
-          touch INFO
-          echo "WORKFLOW:${GITHUB_WORKFLOW}" >> INFO
-          echo "RUN_ID:${GITHUB_RUN_ID}" >> INFO
-          echo "RUN_NUM:${GITHUB_RUN_NUMBER}" >> INFO
-          echo "REF:${REF}" >> INFO
-          echo "SHA:${SHA}" >> INFO
+      # - name: Preserve run info
+      #   env:
+      #     WORKFLOW: ${{ steps.info.outputs.workflow }}
+      #     RUN_ID: ${{ steps.info.outputs.run_id }}
+      #     RUN_NUM: ${{ steps.info.outputs.run_num }}
+      #     REF: ${{ steps.info.outputs.ref }}
+      #     SHA: ${{ steps.info.outputs.sha }}
+      #   run: |
+      #     touch INFO
+      #     echo "WORKFLOW:${GITHUB_WORKFLOW}" >> INFO
+      #     echo "RUN_ID:${GITHUB_RUN_ID}" >> INFO
+      #     echo "RUN_NUM:${GITHUB_RUN_NUMBER}" >> INFO
+      #     echo "REF:${REF}" >> INFO
+      #     echo "SHA:${SHA}" >> INFO
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.IMAGE_NAME }}-${{ github.run_id }}
-          path: INFO
-          retention-days: 1
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ${{ env.IMAGE_NAME }}-${{ github.run_id }}
+      #     path: INFO
+      #     retention-days: 1
 
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}

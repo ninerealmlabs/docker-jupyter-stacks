@@ -18,6 +18,7 @@ env:
   D_REGISTRY: ninerealmlabs
   BASE_IMAGE: jupyter/minimal-notebook:latest
   IMAGE_NAME: base_env  # IMAGE_NAME must be equivalent to subdirectory
+  NEXT_ENV: ds_env
 
 jobs:
   build:
@@ -139,20 +140,32 @@ jobs:
 # See: https://stackoverflow.com/questions/67973057/github-actions-workflow-run-outputs
 # See: https://github.com/dawidd6/action-download-artifact
 ###############################################################################
-      - name: Preserve run info
-        run: |
-          touch INFO
-          echo "WORKFLOW:${GITHUB_WORKFLOW}" >> INFO
-          echo "RUN_ID:${GITHUB_RUN_ID}" >> INFO
-          echo "RUN_NUM:${GITHUB_RUN_NUMBER}" >> INFO
-          echo "REF:${GITHUB_REF}" >> INFO
-          echo "SHA:${GITHUB_SHA}" >> INFO
+      # - name: Preserve run info
+      #   run: |
+      #     touch INFO
+      #     echo "WORKFLOW:${GITHUB_WORKFLOW}" >> INFO
+      #     echo "RUN_ID:${GITHUB_RUN_ID}" >> INFO
+      #     echo "RUN_NUM:${GITHUB_RUN_NUMBER}" >> INFO
+      #     echo "REF:${GITHUB_REF}" >> INFO
+      #     echo "SHA:${GITHUB_SHA}" >> INFO
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{ env.IMAGE_NAME }}-${{ github.run_id }}
-          path: INFO
-          retention-days: 1
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ${{ env.IMAGE_NAME }}-${{ github.run_id }}
+      #     path: INFO
+      #     retention-days: 1
+
+      - name: Call next build
+        env:
+          NEXT_ENV: ${{ env.NEXT_ENV }}
+          REF: ${{ github.ref }}
+          SHA: ${{ github.sha }}
+        run: |
+          curl \
+            -X POST \
+            -H "Accept: application/vnd.github.v3+.json" \
+            https://api.github.com/repos/ninerealmlabs/docker-jupyter-stacks/actions/workflows/${NEXT_ENV}-ci.yml/dispatches \
+            -d '{"ref":${REF} "sha":${SHA}}'
 
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}

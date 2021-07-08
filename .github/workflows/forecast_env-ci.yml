@@ -26,7 +26,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        PYTHON: [3.7.*, 3.8.*, 3.9.*]
+        # version/dependency conflicts between fb/prophet, greykite, and python 3.9
+        python: [3.7.*, 3.8.*]  #, 3.9.*]
 
     steps:
       - uses: actions/checkout@v2
@@ -156,27 +157,27 @@ jobs:
   #         token: ${{ secrets.WORKFLOW_DISPATCH }}
   #         inputs: '{"REF": "${{ github.ref }}", "SHA": "${{ github.sha }}"}'
 
-# ###############################################################################
-# # Push to DockerHub if main branch / "release"
-# ###############################################################################
-#   dockerhub:
-#     runs-on: ubuntu-latest
-#     needs: build
+###############################################################################
+# Push to DockerHub if main branch / "release"
+###############################################################################
+  dockerhub:
+    runs-on: ubuntu-latest
+    needs: build
 
-#     # push to registry on main branch only
-#     if: needs.build.outputs.BRANCH == 'main'
-#     steps:
-#       - name: Login to DockerHub
-#         uses: docker/login-action@v1
-#         with:
-#           username: ${{ secrets.DOCKER_USER }}
-#           password: ${{ secrets.DOCKER_TOKEN }}
+    # push to registry on main branch only
+    if: needs.build.outputs.BRANCH == 'main'
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
-#       # copy image from ghcr to dockerhub
-#       - name: Push image to alternate registries
-#         uses: akhilerm/tag-push-action@v1.1.0
-#         with:
-#           src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
-#           dst: |
-#             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
-#             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}
+      # copy image from ghcr to dockerhub
+      - name: Push image to alternate registries
+        uses: akhilerm/tag-push-action@v1.1.0
+        with:
+          src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
+          dst: |
+            ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
+            ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

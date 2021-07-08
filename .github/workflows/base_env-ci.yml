@@ -177,7 +177,7 @@ jobs:
           workflow: ${{ env.NEXT_ENV}}-CI
           # ref: ${{ github.ref }}
           # sha: ${{ github.sha }}
-          token: ${{ secrets.PERSONAL_TOKEN }}
+          token: ${{ secrets.WORKFLOW_DISPATCH }}
           inputs: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
 
     outputs:

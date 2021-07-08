@@ -145,7 +145,6 @@ jobs:
       matrix:
         NEXT_IMAGE: ['ds_env']
 
-    if: ${{ github.job.build.conclusion == 'success' }}
     steps:
       - name: Call next build
         uses: benc-uk/workflow-dispatch@v1

@@ -155,17 +155,30 @@ jobs:
       #     path: INFO
       #     retention-days: 1
 
+      # - name: Call next build
+      #   env:
+      #     NEXT_ENV: ${{ env.NEXT_ENV }}
+      #     REF: ${{ github.ref }}
+      #     SHA: ${{ github.sha }}
+      #   run: |
+      #     curl \
+      #       -X POST \
+      #       -H "Accept: application/vnd.github.v3+.json" \
+      #       https://api.github.com/repos/ninerealmlabs/docker-jupyter-stacks/actions/workflows/${NEXT_ENV}-ci.yml/dispatches \
+      #       -d '{"ref":${REF} "sha":${SHA}}'
+
       - name: Call next build
+        uses: benc-uk/workflow-dispatch@v1
         env:
           NEXT_ENV: ${{ env.NEXT_ENV }}
-          REF: ${{ github.ref }}
-          SHA: ${{ github.sha }}
-        run: |
-          curl \
-            -X POST \
-            -H "Accept: application/vnd.github.v3+.json" \
-            https://api.github.com/repos/ninerealmlabs/docker-jupyter-stacks/actions/workflows/${NEXT_ENV}-ci.yml/dispatches \
-            -d '{"ref":${REF} "sha":${SHA}}'
+          # REF: ${{ github.ref }}
+          # SHA: ${{ github.sha }}
+        with:
+          workflow: ${{ env.NEXT_ENV}}-CI
+          # ref: ${{ github.ref }}
+          # sha: ${{ github.sha }}
+          token: ${{ secrets.PERSONAL_TOKEN }}
+          inputs: '{"ref": "${{ github.ref }}" "sha": "${{ github.sha }}"}'
 
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}

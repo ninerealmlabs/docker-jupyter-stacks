@@ -34,8 +34,8 @@ jobs:
           fetch-depth: 0
 
       ### used for multi-arch builds
-      # - name: Set up QEMU
-      #   uses: docker/setup-qemu-action@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
         id: buildx
@@ -178,7 +178,7 @@ jobs:
           # ref: ${{ github.ref }}
           # sha: ${{ github.sha }}
           token: ${{ secrets.PERSONAL_TOKEN }}
-          inputs: '{"ref": "${{ github.ref }}" "sha": "${{ github.sha }}"}'
+          inputs: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
 
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}

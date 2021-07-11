@@ -106,24 +106,6 @@ jobs:
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
 
-      # ### https://github.com/marketplace/actions/docker-buildx-bake
-      # ### https://github.com/crazy-max/docker-buildx-bake-demo/
-      # - name: Build image
-      #   id: docker_bake
-      #   uses: docker/bake-action@v1.5
-      #   with:
-      #     builder: ${{ steps.buildx.outputs.name }}
-      #     files: src/${{ env.IMAGE_NAME }}/docker-compose.yml
-      #     no-cache: true
-      #     set: |
-      #       *.platform=${{ env.PLATFORMS }}
-      #       *.args.BASE_IMAGE=${{ env.GH_REGISTRY }}/${{ env.BASE_IMAGE }}:python-${{ steps.tag.outputs.tag }}-${{ steps.ref.outputs.ref }}-${{ steps.sha.outputs.sha }}
-      #       *.args.PYTHON_VERSION=${{ matrix.PYTHON }}
-      #       *.args.BUILD_DATE=${{ steps.date.outputs.DATE }}
-      #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.PYTHONTAG }}
-      #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.FULLTAG }}
-      #     push: true
-
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
@@ -156,6 +138,7 @@ jobs:
   #         workflow: ${{ matrix.NEXT_IMAGE}}-CI
   #         token: ${{ secrets.WORKFLOW_DISPATCH }}
   #         inputs: '{"REF": "${{ github.ref }}", "SHA": "${{ github.sha }}"}'
+
 
   ### Push to DockerHub if main branch / "release"
   dockerhub:

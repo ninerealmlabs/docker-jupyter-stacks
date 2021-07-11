@@ -32,7 +32,7 @@ while [ $# -gt 0 ]; do
       CLEAN=true
       ;;
     *)
-      printf "*** Error: Invalid argument. ***\n"
+      printf "*** Error: Invalid argument. Did you use an '=' when passing args? ***\n"
       exit 1
   esac
   shift
@@ -137,7 +137,7 @@ docker buildx bake \
 --set *.args.PYTHON_VERSION=${PYTHON_VERSION} \
 --set *.args.BUILD_DATE=$(date +'%Y-%m-%d') \
 --set *.tags="${REGISTRY_}${IMAGE_NAME}:python-${TAG_VERSION}" \
---set *.tags="${REGISTRY_}${IMAGE_NAME}:python-${TAG_VERSION}-${GIT_REF}-${GIT_SHA}" \
+--set *.tags="${REGISTRY_}${IMAGE_NAME}:python-${TAG_VERSION}-${GIT_SHA}" \
 ${_PUSH}
 
 # --no-cache \
@@ -150,7 +150,7 @@ if ${CLEAN}; then
     rm -f .imagelist2 && \
     printf "%s\n" $(docker image ls -a --format {{.ID}}) > .imagelist2
     # remove only the new images we just build
-    docker image rm $(comm -13 .imagelist .imagelist2)
+    docker image rm -f $(comm -13 .imagelist .imagelist2)
     # remove our tempfiles
     rm -f .imagelist .imagelist2
 

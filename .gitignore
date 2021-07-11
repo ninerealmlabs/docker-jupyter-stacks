@@ -7,6 +7,7 @@ settings.json
 .vscode
 
 *.cache
+.imagelist
 
 # ignore local .env from versioning
 **.env

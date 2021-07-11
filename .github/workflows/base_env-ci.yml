@@ -80,6 +80,14 @@ jobs:
           echo "::set-output name=FULLTAG::${FULLTAG}"
           echo "::set-output name=PRODTAG::${PRODTAG}"
 
+      ######### TEST #########
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      ######### TEST #########
+
       ### https://github.com/docker/build-push-action
       ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
       - name: Build image
@@ -106,24 +114,8 @@ jobs:
           tags: |
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
-
-      # ### https://github.com/marketplace/actions/docker-buildx-bake
-      # ### https://github.com/crazy-max/docker-buildx-bake-demo/
-      # - name: Build image
-      #   id: docker_bake
-      #   uses: docker/bake-action@v1.5
-      #   with:
-      #     builder: ${{ steps.buildx.outputs.name }}
-      #     files: src/${{ env.IMAGE_NAME }}/docker-compose.yml
-      #     no-cache: true
-      #     set: |
-      #       *.platform=${{ env.PLATFORMS }}
-      #       *.args.BASE_IMAGE=${{ env.BASE_IMAGE }}
-      #       *.args.PYTHON_VERSION=${{ matrix.PYTHON }}
-      #       *.args.BUILD_DATE=${{ steps.date.outputs.DATE }}
-      #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.PYTHONTAG }}
-      #       *.tags=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.info.outputs.FULLTAG }}
-      #     push: true
+            ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
+            ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PRODTAG }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -157,6 +149,7 @@ jobs:
           workflow: ${{ matrix.NEXT_IMAGE}}-CI
           token: ${{ secrets.WORKFLOW_DISPATCH }}
           inputs: '{"REF": "${{ github.ref }}", "SHA": "${{ github.sha }}"}'
+
 
   ### Push to DockerHub if main branch / "release"
   dockerhub:

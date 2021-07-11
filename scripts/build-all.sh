@@ -20,7 +20,7 @@ while [ $# -gt 0 ]; do
       CLEAN=true
       ;;
     *)
-      printf "*** Error: Invalid argument. ***\n"
+      printf "*** Error: Invalid argument. Did you use an '=' when passing args? ***\n"
       exit 1
   esac
   shift

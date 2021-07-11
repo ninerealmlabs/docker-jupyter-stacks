@@ -114,8 +114,8 @@ jobs:
           tags: |
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
-            ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
-            ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PRODTAG }}
+            ${{ env.D_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
+            ${{ env.D_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PRODTAG }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

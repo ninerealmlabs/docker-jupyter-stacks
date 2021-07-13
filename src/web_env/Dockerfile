@@ -5,6 +5,11 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 # ARG CHROMEDRIVER
 
+# Labels
+ARG BUILD_DATE
+LABEL build_date="${BUILD_DATE}"
+LABEL description="Environment specialized for web scraping & modeling"
+
 USER root
 
 ## install chrome & chrome webdriver for selenium

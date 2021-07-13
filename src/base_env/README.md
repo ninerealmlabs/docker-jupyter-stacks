@@ -26,5 +26,4 @@ Version increases are python-version based, and will be sourced from `jupyter/mi
       ├ `nlp_env`
       ├ `pytorch_env`
       │   └ `forecast_env`
-      ├ `recommender_env`
       └ `web_env`

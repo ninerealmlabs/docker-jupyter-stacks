@@ -106,9 +106,9 @@ jobs:
           # ##### https://github.com/docker/buildx/pull/535
           # ##### https://github.com/docker/build-push-action/issues/252
           # cache-from: type=gha
-          # cache-to: type=gha
+          cache-to: type=gha
           ##### delete when merged
-          no-cache: true
+          # no-cache: true
           #####
           push: true
           tags: |

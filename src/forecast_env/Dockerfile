@@ -6,7 +6,6 @@ FROM ${BASE_IMAGE}
 
 # Labels
 ARG BUILD_DATE
-LABEL maintainer="ninerealmlabs"
 LABEL build_date="${BUILD_DATE}"
 LABEL description="Environment specialized for forecasting"
 

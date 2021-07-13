@@ -11,5 +11,4 @@ See also source `base_env` image files
       ├ `nlp_env`
       ├ `pytorch_env`
       │   └ `forecast_env`
-      ├ `recommender_env`
       └ `web_env`

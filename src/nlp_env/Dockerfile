@@ -4,6 +4,11 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
+# Labels
+ARG BUILD_DATE
+LABEL build_date="${BUILD_DATE}"
+LABEL description="Environment specialized for NLP modeling"
+
 USER ${NB_UID}
 
 # Install from environment.yml

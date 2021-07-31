@@ -102,8 +102,8 @@ jobs:
           ##### waiting on https://github.com/moby/buildkit/pull/1974 to merge
           ##### https://github.com/docker/buildx/pull/535
           ##### https://github.com/docker/build-push-action/issues/252
-          cache-from: type=gha
-          cache-to: type=gha
+          cache-from: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.BASE_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           ##### delete when merged
           # no-cache: true
           #####          ### Each job is isolated in its own runner, so can't share newly-built image directly between jobs

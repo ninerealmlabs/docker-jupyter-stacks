@@ -106,7 +106,7 @@ jobs:
           # ##### https://github.com/docker/buildx/pull/535
           # ##### https://github.com/docker/build-push-action/issues/252
           # cache-from: type=gha
-          cache-to: type=gha
+          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           ##### delete when merged
           # no-cache: true
           #####
@@ -114,8 +114,8 @@ jobs:
           tags: |
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
-            ${{ env.D_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
-            ${{ env.D_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PRODTAG }}
+#             ${{ env.D_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
+#             ${{ env.D_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PRODTAG }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

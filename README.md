@@ -73,7 +73,7 @@ To build all images in the stack, run `bash ./scripts/build-all.sh` from project
 
 `build-all.sh` takes the following keyword arguments in `flag=value` format:
 | `short flag`  | `long flag`   | `default value`   |
-| ---           | ---           | ---               |
+| :---:         | :---:         | :---:             |
 | -p            | --platform    | "linux/amd64"     |
 | -r            | --registry    | ninerealmlabs     |
 | -p            | --push        | `true` if present |

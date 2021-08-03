@@ -140,10 +140,17 @@ Build scripts include options to push.  If you build local images and later deci
 * [base_env] _jupyter-sql_ extensions are currently not update for JupyterLab 3.  Docker images will need to be rebuilt if/when the bugfixes/patches are released.
 * [forecast_env] `greykite` requires `fbprophet` library and has tight dependencies; `fbprophet` will not build on python 3.9. See https://github.com/linkedin/greykite/issues/11
 * [web_env] `scrapy` is not available on `conda` or `conda-forge` for python 3.9.*.  See https://github.com/scrapy/scrapy/issues/5195
+* [Docker on Apple Silicon](https://docs.docker.com/docker-for-mac/apple-silicon/) Not all images are available for ARM64 architecture. You can add `--platform linux/amd64` to run an Intel image under emulation.
 
 ## Roadmap
 
 * [ ] Add ARM64 architectures (pending jupyter/docker-stacks support)
+  * [ ] base_env
+  * [ ] ds_env
+  * [ ] nlp_env
+  * [ ] web_env
+  * [ ] pytorch_env
+  * [ ] forecast_env
 * [ ] BLAS-specific images
 
 <!-- * [ ] Add Tensorflow/Keras -->

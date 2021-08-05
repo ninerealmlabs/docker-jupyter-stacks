@@ -1,6 +1,12 @@
 # Introduction
 
-This repo contains the source files for 'Data Science Anywhere' Data Science environments.  The base 'ds_env' image is modeled after [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks) scipy-notebook.
+This repo contains the source files for 'Data Science Anywhere' Data Science environments.
+The 'base_env' image is modeled after [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks)
+scipy-notebook; 'ds_env" add some additional customizations.
+
+## Prerequisites
+
+If unfamiliar with docker see our [Intro to Docker tutorial](./docs/intro-to-docker.md)
 
 ## Installation
 
@@ -52,7 +58,7 @@ _Remember, images have inheritance and updating a single image will not (necessa
 
 * `platform` is for multi-architecture builds (amd64, arm64/aarch64, etc.), assuming jupyter/docker-stacks [implements this](https://github.com/jupyter/docker-stacks/pull/1368)
   * If loading locally, only a single architecture can be provided, otherwise both `--registry` and `--push` are required
-* `base_image` is the source image to build from.  This can be provide as full <registry>/<image>:<tag> format.
+* `base_image` is the source image to build from.  This can be provide as full `<registry>/<image>:<tag>` format.
 * `registry` is the dockerhub (or other container registry) to push to.
 * `image_name` is name of the output image.  The build script assumes the Dockerfile and required materials are in a subdirectory under /src with called <image_name>
 * `python_version` is the python version to pin
@@ -61,7 +67,7 @@ _Remember, images have inheritance and updating a single image will not (necessa
 
 Examples:
 
-```
+```sh
 # build 'ds_env' locally (note: this assumes that 'base_env' is also available locally)
 bash ./scripts/build.sh --base_image="base_env:python-3.8" --image_name="ds_env"
 
@@ -119,12 +125,12 @@ Build scripts include options to push.  If you build local images and later deci
 ## Image dependencies / inheritance
 
 ```txt
-`base_env`
-  └ `ds_env`
-      ├ `nlp_env`
-      ├ `pytorch_env`
-      │   └ `forecast_env`
-      └ `web_env`
+base_env
+  └ ds_env
+      ├ nlp_env
+      ├ pytorch_env
+      │   └ forecast_env
+      └ web_env
 ```
 
 ## Features
@@ -135,12 +141,12 @@ Build scripts include options to push.  If you build local images and later deci
 
 ## Known Issues
 
-**27 June 2021**
+* **27 June 2021**
 
-* [base_env] _jupyter-sql_ extensions are currently not update for JupyterLab 3.  Docker images will need to be rebuilt if/when the bugfixes/patches are released.
-* [forecast_env] `greykite` requires `fbprophet` library and has tight dependencies; `fbprophet` will not build on python 3.9. See https://github.com/linkedin/greykite/issues/11
-* [web_env] `scrapy` is not available on `conda` or `conda-forge` for python 3.9.*.  See https://github.com/scrapy/scrapy/issues/5195
-* [Docker on Apple Silicon](https://docs.docker.com/docker-for-mac/apple-silicon/) Not all images are available for ARM64 architecture. You can add `--platform linux/amd64` to run an Intel image under emulation.
+  * [base_env] _jupyter-sql_ extensions are currently not update for JupyterLab 3.  Docker images will need to be rebuilt if/when the bugfixes/patches are released.
+  * [forecast_env] `greykite` requires `fbprophet` library and has tight dependencies; [`fbprophet` will not build on python 3.9](https://github.com/linkedin/greykite/issues/11)
+  * [web_env] [`scrapy` is not available on `conda` or `conda-forge` for python 3.9](https://github.com/scrapy/scrapy/issues/5195)
+  * [Docker on Apple Silicon](https://docs.docker.com/docker-for-mac/apple-silicon/) Not all images are available for ARM64 architecture. You can add `--platform linux/amd64` to the `docker run` command to run an Intel image under emulation.
 
 ## Roadmap
 

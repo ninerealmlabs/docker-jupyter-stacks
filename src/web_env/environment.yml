@@ -1,15 +1,15 @@
 name: base
 channels:
   - conda-forge
-  - districtdatalabs  ## for yellowbrick
+  - districtdatalabs ## for yellowbrick
   - defaults
 dependencies:
-# ### package managers
-#   # - conda
-#   # - mamba
-#   - mamba_gator
-#   - pip
-### Additional dependencies on top of `ds_env` sstandards
+  # ### package managers
+  #   # - conda
+  #   # - mamba
+  #   - mamba_gator
+  #   - pip
+  ### Additional dependencies on top of `ds_env` sstandards
   - beautifulsoup4
   - graphviz
   - lxml
@@ -20,16 +20,13 @@ dependencies:
   - requests
   - scrapy
   - selenium
-# ### pip
-#   - pip:
-#     - markovclick
-#     - retentioneering
-### markovclick deps
-### retentioneering deps
+  # ### pip
+  #   - pip:
+  #     - markovclick
+  #     - retentioneering
+  ### markovclick deps
+  ### retentioneering deps
   - vega
   - pymongo
   - umap-learn
-
-
-
 # prefix: /opt/conda/

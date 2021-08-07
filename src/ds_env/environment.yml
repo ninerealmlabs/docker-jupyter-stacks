@@ -1,12 +1,12 @@
 name: base
 channels:
   - conda-forge
-  - districtdatalabs  ## for yellowbrick
+  - districtdatalabs ## for yellowbrick
   - defaults
 dependencies:
-### package managers
-  - pip  # to prevent warnings
-### data & ml
+  ### package managers
+  - pip # to prevent warnings
+  ### data & ml
   - category_encoders
   - conda-forge::faker==8.*
   - imbalanced-learn
@@ -16,11 +16,11 @@ dependencies:
   # - pandas-datareader
   # - pandas-profiling  # replaced with `dataprep`
   - xgboost
-### plotting
+  ### plotting
   - altair
   - bokeh
-  - yellowbrick  # sklearn viz
-### sql
+  - yellowbrick # sklearn viz
+  ### sql
   - h5py
   - hdf5
   - pyodbc
@@ -29,9 +29,9 @@ dependencies:
   - snowflake-sqlalchemy
   - sqlalchemy
   - sqlite
-### utils
+  ### utils
   - tqdm
-### dataprep deps
+  ### dataprep deps
   - async-timeout
   - multidict
   - yarl

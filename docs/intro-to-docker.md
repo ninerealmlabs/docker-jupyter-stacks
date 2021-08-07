@@ -21,9 +21,9 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 
 ### [Optional?] Create dockerhub account
 
-* An account on DockerHub may be required to pull images, and is required to push images to a DockerHub repository.
-* If account creation is required, create a Personal Access Token (and save it) for command-line use
-* If you get an authentication error during any of the steps below, run `docker login` and provide Personal Access Token
+- An account on DockerHub may be required to pull images, and is required to push images to a DockerHub repository.
+- If account creation is required, create a Personal Access Token (and save it) for command-line use
+- If you get an authentication error during any of the steps below, run `docker login` and provide Personal Access Token
 
 > Recall: _DockerHub:GitHub::Azure Container Registry:Azure Repos_
 
@@ -43,13 +43,14 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
    docker run -d -p 80:80 docker/getting-started
    ```
 
-   * `run` creates a _container_ from an _image_
-   * `-d` runs in _detached_ mode (i.e., does not )
-   * `-p 80:80` specifies _host:container_ port mapping
-   * `docker/getting-started` specifies _REPOSITORY / CONTAINER_
+   - `run` creates a _container_ from an _image_
+   - `-d` runs in _detached_ mode (i.e., does not )
+   - `-p 80:80` specifies _host:container_ port mapping
+   - `docker/getting-started` specifies _REPOSITORY / CONTAINER_
 
-5. Let's dig into those options.  What happens if...?
-   * Rerun command
+5. Let's dig into those options. What happens if...?
+
+   - Rerun command
 
    ```sh
    docker run -d -p 80:80 /docker/getting-started
@@ -58,7 +59,7 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 
    _try with `-p 81:80`_
 
-   * Run without `-d` flag
+   - Run without `-d` flag
 
    ```sh
    docker run -p 88:80 docker/getting-started
@@ -68,13 +69,13 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 
 6. After all that, let's see what `images` and `containers` we have on our system
 
-   * Check local images
+   - Check local images
 
      ```sh
      docker image ls
      ```
 
-   * Check local containers
+   - Check local containers
 
      ```sh
      docker container ls
@@ -82,10 +83,11 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
      # why are these different?
      ```
 
-   * The `ls` command works with other docker components, like `network`, `secret`, and `volume` -- but those are beyond the scope of this intro
+   - The `ls` command works with other docker components, like `network`, `secret`, and `volume` -- but those are beyond the scope of this intro
 
 7. Stop & Delete containers with `docker stop` and `docker rm`
-   * Let's remove our first container
+
+   - Let's remove our first container
 
      ```sh
      docker rm docker/getting-started
@@ -94,7 +96,7 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
      # Note CONTAINER ID and NAMES
      ```
 
-   * Let's delete with ID this time
+   - Let's delete with ID this time
 
      ```sh
      docker rm <FIRST FEW CHARACTERS OF ID>`
@@ -128,21 +130,21 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 3. Gain access to "inside" of running container
 
    ```sh
-   docker exec -it <ID OR NAME> /bin/bash
+   docker exec -it OR NAME < ID > /bin/bash
    ```
 
 ## Intro to [docker/jupyter stacks](https://hub.docker.com/u/jupyter/)
 
-1. Get  the image
+1. Get the image
 
    ```sh
    docker pull jupyter/minimal-notebook
    # using default tag: latest
    ```
 
-   * Tags are ways to time- / version- / build- stamp images so you can always `pull` the same image (or find a compatible one if it exists)
-   * See other tags [here](https://hub.docker.com/r/jupyter/minimal-notebook/tags?page=1&ordering=last_updated)
-   * Tag "latest" is convenient, but should not be used in production in case of breaking changes (instead, pin to a specific image:tag)
+   - Tags are ways to time- / version- / build- stamp images so you can always `pull` the same image (or find a compatible one if it exists)
+   - See other tags [here](https://hub.docker.com/r/jupyter/minimal-notebook/tags?page=1&ordering=last_updated)
+   - Tag "latest" is convenient, but should not be used in production in case of breaking changes (instead, pin to a specific image:tag)
 
 2. Check image list
 
@@ -162,18 +164,18 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
    docker run -d -p 8888:8888 --name jupyter jupyter/minimal-notebook
    ```
 
-   * Ok, now what?  How do we get to the notebook?
-   * We're running in `detached` mode (see the `-d` flag?), so we have to look at the container logs:
+   - Ok, now what? How do we get to the notebook?
+   - We're running in `detached` mode (see the `-d` flag?), so we have to look at the container logs:
 
      ```sh
      docker logs jupyter
      ```
 
-   * Alternatively, we could run in standard mode (without the `-d`), but then we have to keep the terminal session open:
+   - Alternatively, we could run in standard mode (without the `-d`), but then we have to keep the terminal session open:
 
      ```sh
      # stop current `jupyter` container
-     docker kill jupyter  # alternative to "docker container stop"
+     docker kill jupyter # alternative to "docker container stop"
      docker container rm jupyter
      docker run -p 8888:8888 --name jupyter jupyter/minimal-notebook
      # `ctrl-c` to exit -- this will stop the container!
@@ -182,7 +184,7 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 > ### Exercise
 >
 > 1. Stop and remove all running containers
-> 2. Create a clean slate with `docker container prune` and allow.  This removes all stopped containers
+> 2. Create a clean slate with `docker container prune` and allow. This removes all stopped containers
 > 3. Start a new `jupyter/minimal-notebook` instance
 > 4. Create a new .ipynb and save it
 > 5. Shut down the container
@@ -191,11 +193,13 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 ## Docker [Volumes](https://docs.docker.com/storage/volumes/)
 
 1. Where is our data?
-    * Remember that a _container_'s universe initially only comprises what was included in the docker _image_
-    * If we make changes to a container, that change is **ephemeral** -- it only applies to the specific container for the duration of its existence.
-    * _Translation_: if we delete the `jupyter/minimal-notebook` container where we created our .ipynb, that .ipynb ceases to exist.
+
+   - Remember that a _container_'s universe initially only comprises what was included in the docker _image_
+   - If we make changes to a container, that change is **ephemeral** -- it only applies to the specific container for the duration of its existence.
+   - _Translation_: if we delete the `jupyter/minimal-notebook` container where we created our .ipynb, that .ipynb ceases to exist.
 
    This is where Docker Volumes come in - they allow persisting data outside of a container's ephemeral lifecycle:
+
    > Volumes are often a better choice than persisting data in a container’s writable layer, because a volume does not increase the size of the containers using it, and the volume’s contents exist outside the lifecycle of a given container.
 
 2. Do we have any volumes currently?
@@ -210,9 +214,9 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
    docker run -p 8888:8888 -v /path/to/mount/dir:/home/jovyan/work --name jupyter jupyter/minimal-notebook
    ```
 
-   * `-v` mounts a named docker volume or bind mounts a directory using `host/path:container/path` mapping
-   > Docker will work with forward slashes ("/") on Windows Command Line (CMD) or Windows PowerShell (PS)
-   * `/home/jovyan/work` is the default mount location for `jupyter` images
+   - `-v` mounts a named docker volume or bind mounts a directory using `host/path:container/path` mapping
+     > Docker will work with forward slashes ("/") on Windows Command Line (CMD) or Windows PowerShell (PS)
+   - `/home/jovyan/work` is the default mount location for `jupyter` images
 
 > Note: There is a difference between a "docker volume" and a "bind mount".
 > Both allow data to exist outside of the ephemeral nature of containers;
@@ -220,9 +224,9 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 >
 > In our case with jupyter, we want a bind mount - we want to access our local files in the container.
 >
-> A use case for a volume would be a container hosting a database.  We wouldn't necessarily care to access the database files from our local computer, but we _would_ want those files persisted outside of the container
+> A use case for a volume would be a container hosting a database. We wouldn't necessarily care to access the database files from our local computer, but we _would_ want those files persisted outside of the container
 
------
+---
 
 ## Docker-Compose
 
@@ -286,9 +290,9 @@ EOF
 
 4. To create a container with docker-compose, run `docker-compose up`
 
-   * Open ./docker-compose.yml
+   - Open ./docker-compose.yml
 
-   * Just like `docker` commands in the CLI, `docker-compose` files can use variable substitution.
+   - Just like `docker` commands in the CLI, `docker-compose` files can use variable substitution.
      Let's create a .env file to retain our environmental variables
 
      ```sh
@@ -299,14 +303,14 @@ EOF
      echo CONTAINER_NAME="jupyter" >> .env
      ```
 
-   * Now start the container
+   - Now start the container
 
      ```sh
-     docker-compose up -d  # detached, same as `docker run`
+     docker-compose up -d # detached, same as `docker run`
      docker-compose up -f /path/to/docker-compose.yaml
      ```
 
-     * Why are some layers already present?  `scipy-notebook` is build on top of `minimal-notebook`.  Since we previously pulled `minimal-notebook`, docker is saving us some work and using the parts from `minimal-notebook` that it can when launching `scipy-notebook`
+     - Why are some layers already present? `scipy-notebook` is build on top of `minimal-notebook`. Since we previously pulled `minimal-notebook`, docker is saving us some work and using the parts from `minimal-notebook` that it can when launching `scipy-notebook`
 
 5. You can interact with running containers using the `docker` commands we learned before
 

@@ -5,20 +5,20 @@ on:
   workflow_dispatch:
     inputs:
       REF:
-        description: 'GITHUB_REF from calling workflow'
+        description: "GITHUB_REF from calling workflow"
         required: true
-        default: ''
+        default: ""
       SHA:
-        description: 'GITHUB_SHA from calling workflow'
+        description: "GITHUB_SHA from calling workflow"
         required: true
-        default: ''
+        default: ""
 
 env:
-  PLATFORMS: linux/amd64  #,linux/arm64
+  PLATFORMS: linux/amd64 #,linux/arm64
   GH_REGISTRY: ghcr.io/ninerealmlabs
   D_REGISTRY: docker.io/ninerealmlabs
   BASE_IMAGE: ds_env
-  IMAGE_NAME: nlp_env  # IMAGE_NAME must be equivalent to subdirectory
+  IMAGE_NAME: nlp_env # IMAGE_NAME must be equivalent to subdirectory
   ### ALSO UPDATE NEXT_IMAGE IN JOBS.DISPATCH JOB
 
 jobs:
@@ -29,7 +29,6 @@ jobs:
         PYTHON: [3.7.*, 3.8.*, 3.9.*]
 
     steps:
-
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.SHA }}
@@ -120,7 +119,6 @@ jobs:
       FULLTAG: ${{ steps.tag.outputs.FULLTAG }}
       PRODTAG: ${{ steps.tag.outputs.PRODTAG }}
 
-
   # ### Start next workflow
   # dispatch:
   #   runs-on: 'ubuntu-latest'
@@ -136,7 +134,6 @@ jobs:
   #         workflow: ${{ matrix.NEXT_IMAGE}}-CI
   #         token: ${{ secrets.WORKFLOW_DISPATCH }}
   #         inputs: '{"REF": "${{ github.ref }}", "SHA": "${{ github.sha }}"}'
-
 
   ### Push to DockerHub if main branch / "release"
   dockerhub:

@@ -8,7 +8,7 @@ services:
       args:
         BASE_IMAGE: ninerealmlabs/ds_env:python-3.8
         PYTHON_VERSION: 3.8.*
-    image: web_env:python-3.8    # provide a name and tag for the image
+    image: web_env:python-3.8 # provide a name and tag for the image
     ports:
       - "8888:8888"
     # user: root

@@ -11,8 +11,8 @@ If unfamiliar with docker see our [Intro to Docker tutorial](./docs/intro-to-doc
 ## Installation
 
 1. Installation process:
-    * [Download Docker Desktop](https://www.docker.com/products/docker-desktop)
-    * [Getting started with Docker](https://docs.docker.com/)
+   - [Download Docker Desktop](https://www.docker.com/products/docker-desktop)
+   - [Getting started with Docker](https://docs.docker.com/)
 2. Clone this repo
 
 ## Launch
@@ -46,24 +46,24 @@ To update a _single_ image, run the `build.sh` script.
 _Remember, images have inheritance and updating a single image will not (necessarily) update the packages inherited from the source image!_
 
 `build.sh` takes the following keyword arguments in `flag=value` format:
-| `short flag`  | `long flag`   | `default value`   |
-| ---           | ---           | ---               |
-| -p            | --platform    | "linux/amd64"     |
-| -b            | --base_image  | _depends on image_    |
-| -r            | --registry    | _blank / no default_  |
-| -i            | --image_name  | _blank / no default_  |
-| -v            | --python_version | "3.8.*"        |
-|               | --push        | `true` if present |
-|               | --clean       | `true` if present |
+| `short flag` | `long flag` | `default value` |
+| --- | --- | --- |
+| -p | --platform | "linux/amd64" |
+| -b | --base*image | \_depends on image* |
+| -r | --registry | _blank / no default_ |
+| -i | --image*name | \_blank / no default* |
+| -v | --python_version | "3.8.\*" |
+| | --push | `true` if present |
+| | --clean | `true` if present |
 
-* `platform` is for multi-architecture builds (amd64, arm64/aarch64, etc.), assuming jupyter/docker-stacks [implements this](https://github.com/jupyter/docker-stacks/pull/1368)
-  * If loading locally, only a single architecture can be provided, otherwise both `--registry` and `--push` are required
-* `base_image` is the source image to build from.  This can be provide as full `<registry>/<image>:<tag>` format.
-* `registry` is the dockerhub (or other container registry) to push to.
-* `image_name` is name of the output image.  The build script assumes the Dockerfile and required materials are in a subdirectory under /src with called <image_name>
-* `python_version` is the python version to pin
-* If present, `--push` will push to registry; otherwise, images will load locally
-* If present, `--clean` will remove the local images once built
+- `platform` is for multi-architecture builds (amd64, arm64/aarch64, etc.), assuming jupyter/docker-stacks [implements this](https://github.com/jupyter/docker-stacks/pull/1368)
+  - If loading locally, only a single architecture can be provided, otherwise both `--registry` and `--push` are required
+- `base_image` is the source image to build from. This can be provide as full `<registry>/<image>:<tag>` format.
+- `registry` is the dockerhub (or other container registry) to push to.
+- `image_name` is name of the output image. The build script assumes the Dockerfile and required materials are in a subdirectory under /src with called <image_name>
+- `python_version` is the python version to pin
+- If present, `--push` will push to registry; otherwise, images will load locally
+- If present, `--clean` will remove the local images once built
 
 Examples:
 
@@ -82,24 +82,24 @@ bash ./scripts/build.sh -p="linux/amd64,linux/arm64" -b="base_env:python-3.8" -r
 
 To build all images in the stack, run `bash ./scripts/build-all.sh` from project root.
 
-* Consider whether to update the python version(s) specified in the for loop.
-* _Update dependencies in `./scripts/dependencies`_ if required
+- Consider whether to update the python version(s) specified in the for loop.
+- _Update dependencies in `./scripts/dependencies`_ if required
 
-> **Note:** `docker-build.yml` is deprecated and we prefer `build-all.sh`.  However, it should still function if the build args are set appropriately.
+> **Note:** `docker-build.yml` is deprecated and we prefer `build-all.sh`. However, it should still function if the build args are set appropriately.
 
 `build-all.sh` takes the following keyword arguments in `flag=value` format:
-| `short flag`  | `long flag`   | `default value`   |
-| :---:         | :---:         | :---:             |
-| -p            | --platform    | "linux/amd64"     |
-| -r            | --registry    | ninerealmlabs     |
-| -p            | --push        | `true` if present |
-| -c            | --clean       | `true` if present |
+| `short flag` | `long flag` | `default value` |
+| :---: | :---: | :---: |
+| -p | --platform | "linux/amd64" |
+| -r | --registry | ninerealmlabs |
+| -p | --push | `true` if present |
+| -c | --clean | `true` if present |
 
-* `platform` is for multi-architecture builds (amd64, arm64/aarch64, etc.), assuming jupyter/docker-stacks [implements this](https://github.com/jupyter/docker-stacks/pull/1368)
-  * If loading locally, only a single architecture can be provided, otherwise both `--registry` and `--push` are required
-* `registry` is the dockerhub (or other container registry) to push to.  REGISTRY must be provided.
-* If present, `--push` will push to registry; otherwise, images will load locally
-* If present, `--clean` will remove the local images once built
+- `platform` is for multi-architecture builds (amd64, arm64/aarch64, etc.), assuming jupyter/docker-stacks [implements this](https://github.com/jupyter/docker-stacks/pull/1368)
+  - If loading locally, only a single architecture can be provided, otherwise both `--registry` and `--push` are required
+- `registry` is the dockerhub (or other container registry) to push to. REGISTRY must be provided.
+- If present, `--push` will push to registry; otherwise, images will load locally
+- If present, `--clean` will remove the local images once built
 
 Examples:
 
@@ -116,7 +116,7 @@ bash /scripts/build-all.sh -a="linux/amd64,linux/arm64" -r="ninerealmlabs" -p
 
 ## Push to Registry
 
-Build scripts include options to push.  If you build local images and later decide to push to your registry:
+Build scripts include options to push. If you build local images and later decide to push to your registry:
 
 1. Tag images with `docker tag <imagename> <registry>/<imagename>`
 2. Log in with `docker login` and provide username and password/token when prompted
@@ -135,29 +135,29 @@ base_env
 
 ## Features
 
-* Images are set to load JupyterLabs, but the standard notebook interface is also available through the menus
-* Included in the image is [jupytext](https://jupytext.readthedocs.io/en/latest/introduction.html), allowing concurrent .ipynb and .py develpment
-* Jupyterlab-git allows use of git repos from within JupyterLab
+- Images are set to load JupyterLabs, but the standard notebook interface is also available through the menus
+- Included in the image is [jupytext](https://jupytext.readthedocs.io/en/latest/introduction.html), allowing concurrent .ipynb and .py develpment
+- Jupyterlab-git allows use of git repos from within JupyterLab
 
 ## Known Issues
 
-* **27 June 2021**
+- **27 June 2021**
 
-  * [base_env] _jupyter-sql_ extensions are currently not update for JupyterLab 3.  Docker images will need to be rebuilt if/when the bugfixes/patches are released.
-  * [forecast_env] `greykite` requires `fbprophet` library and has tight dependencies; [`fbprophet` will not build on python 3.9](https://github.com/linkedin/greykite/issues/11)
-  * [web_env] [`scrapy` is not available on `conda` or `conda-forge` for python 3.9](https://github.com/scrapy/scrapy/issues/5195)
-  * [Docker on Apple Silicon](https://docs.docker.com/docker-for-mac/apple-silicon/) Not all images are available for ARM64 architecture. You can add `--platform linux/amd64` to the `docker run` command to run an Intel image under emulation.
+  - [base_env] _jupyter-sql_ extensions are currently not update for JupyterLab 3. Docker images will need to be rebuilt if/when the bugfixes/patches are released.
+  - [forecast_env] `greykite` requires `fbprophet` library and has tight dependencies; [`fbprophet` will not build on python 3.9](https://github.com/linkedin/greykite/issues/11)
+  - [web_env] [`scrapy` is not available on `conda` or `conda-forge` for python 3.9](https://github.com/scrapy/scrapy/issues/5195)
+  - [Docker on Apple Silicon](https://docs.docker.com/docker-for-mac/apple-silicon/) Not all images are available for ARM64 architecture. You can add `--platform linux/amd64` to the `docker run` command to run an Intel image under emulation.
 
 ## Roadmap
 
-* [ ] Add ARM64 architectures (pending jupyter/docker-stacks support)
-  * [ ] base_env
-  * [ ] ds_env
-  * [ ] nlp_env
-  * [ ] web_env
-  * [ ] pytorch_env
-  * [ ] forecast_env
-* [ ] BLAS-specific images
+- [ ] Add ARM64 architectures (pending jupyter/docker-stacks support)
+  - [ ] base_env
+  - [ ] ds_env
+  - [ ] nlp_env
+  - [ ] web_env
+  - [ ] pytorch_env
+  - [ ] forecast_env
+- [ ] BLAS-specific images
 
 <!-- * [ ] Add Tensorflow/Keras -->
 <!-- * [ ] Add CUDA and ROCm -->

@@ -3,7 +3,7 @@
 # Requires .env in the same directory as the docker-compose.yml
 # Modify the .env to change ${VAR} such as username or mount source
 
-version: '3.7'
+version: "3.7"
 
 services:
   jupyter_env:
@@ -20,7 +20,6 @@ services:
       - CHOWN_HOME=yes
     container_name: ${IMG_NAME}
     command: start.sh jupyter lab
-
 ### Equivalent to:
 # docker container run \
 #   --rm \

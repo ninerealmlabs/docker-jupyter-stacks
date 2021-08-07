@@ -3,17 +3,17 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-### package managers
+  ### package managers
   # - conda
   # - mamba
-  - mamba_gator  # Web UI for managing conda environments
+  - mamba_gator # Web UI for managing conda environments
   - pip
-### python version specified in compose BASE_CONTAINER arg
-### blas
+  ### python version specified in compose BASE_CONTAINER arg
+  ### blas
   # - conda-forge::blas=*=mkl
   # - conda-forge::blas=*=openblas
   # - nomkl
-### core deps
+  ### core deps
   - cython
   - distributed
   - joblib
@@ -22,7 +22,7 @@ dependencies:
   - numexpr
   - setuptools
   - xarray
-### data & ml
+  ### data & ml
   - cloudpickle
   - dill
   - numpy==1.20
@@ -35,7 +35,7 @@ dependencies:
   - statsmodels
   - sympy
   - xlrd
-### jupyter
+  ### jupyter
   # - ipykernel
   # - ipython
   # - jupyter
@@ -46,15 +46,15 @@ dependencies:
   # # - jupyterlab-git
   # # - jupytext
   - nbdime
-### plotting
+  ### plotting
   - ipympl
   - ipywidgets
   - matplotlib-base
-  - plotnine  # ggplot style
+  - plotnine # ggplot style
   - plotly
   - seaborn
   - widgetsnbextension
-### utils
+  ### utils
   - attrs
   - black
   - click

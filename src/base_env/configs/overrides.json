@@ -1,27 +1,27 @@
 {
-    "@jupyterlab/notebook-extension:tracker": {
-        "codeCellConfig": {
-            "autoClosingBrackets": true,
-            "matchBrackets": true,
-            "wordWrapColumn": 119,
-            "lineNumbers": true,
-            "codeFolding": true
-        },
-        "markdownCellConfig": {
-            "autoClosingBrackets": true,
-            "lineWrap": "on",
-            "matchBrackets": true,
-            "insertSpaces": true,
-            "wordWrapColumn": 119,
-            "lineNumbers": true,
-            "codeFolding": true
-        },
-        "recordTiming": false
+  "@jupyterlab/notebook-extension:tracker": {
+    "codeCellConfig": {
+      "autoClosingBrackets": true,
+      "matchBrackets": true,
+      "wordWrapColumn": 119,
+      "lineNumbers": true,
+      "codeFolding": true
     },
-    "@jupyterlab/apputils-extension:themes": {
-        "theme": "@ninerealmlabs/jupyterlab_material_darker"
+    "markdownCellConfig": {
+      "autoClosingBrackets": true,
+      "lineWrap": "on",
+      "matchBrackets": true,
+      "insertSpaces": true,
+      "wordWrapColumn": 119,
+      "lineNumbers": true,
+      "codeFolding": true
     },
-    "@jupyterlab/extensionmanager-extension:plugin": {
-        "enabled": true
-    }
+    "recordTiming": false
+  },
+  "@jupyterlab/apputils-extension:themes": {
+    "theme": "@ninerealmlabs/jupyterlab_material_darker"
+  },
+  "@jupyterlab/extensionmanager-extension:plugin": {
+    "enabled": true
+  }
 }

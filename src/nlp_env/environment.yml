@@ -2,12 +2,12 @@ name: base
 channels:
   - huggingface
   - conda-forge
-  - districtdatalabs  ## for yellowbrick
+  - districtdatalabs ## for yellowbrick
   - defaults
 dependencies:
-### package managers
-  - pip  # to prevent warnings
-### Additional dependencies on top of `ds_env` sstandards
+  ### package managers
+  - pip # to prevent warnings
+  ### Additional dependencies on top of `ds_env` sstandards
   - gensim==4.0.*
   # - huggingface::tokenizers
   # - huggingface::transformers
@@ -30,7 +30,5 @@ dependencies:
 #   - mysqlclient
 #   - pdfminer
 #   - python-docx
-
-
 
 # prefix: /opt/conda/

@@ -24,7 +24,6 @@ services:
   # volumes:  # Optional, same as `docker volume create`
 
   # networks:  # Optional, same as `docker network create`
-
 ### build command
 # docker build . --no-cache --build-arg BASE_IMAGE="jupyter/minimal-notebook" --build-arg PYTHON_VERSION="3.8.8" --build-arg BUILD_DATE=$(date +'%Y-%m-%d') -t base_env:latest
 # docker build https://github.com/docker/rootfs.git#container:docker --no-cache --build-arg PYTHON_VERSION=3.8.8 --build-arg BUILD_DATE=$(date +'%Y-%m-%d')  -t base_env:latest

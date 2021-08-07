@@ -53,7 +53,6 @@ services:
     depends_on:
       - ds_env
 
-
   forecast_env:
     build:
       context: ./src/forecast_env/

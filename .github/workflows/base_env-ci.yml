@@ -161,7 +161,6 @@ jobs:
           src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
           dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
-            # ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}
 
       - name: Push image to alternate registries
         uses: akhilerm/tag-push-action@v1.1.0
@@ -169,3 +168,12 @@ jobs:
           src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
           dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}
+
+      # - name: Push image to alternate registries
+      #   # uses: akhilerm/tag-push-action@v1.1.0
+      #   uses: akhilerm/tag-push-action@experiment
+      #   with:
+      #     src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
+      #     dst: |
+      #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
+      #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

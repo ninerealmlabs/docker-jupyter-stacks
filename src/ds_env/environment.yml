@@ -10,7 +10,7 @@ dependencies:
   - category_encoders
   - conda-forge::faker==8.*
   - imbalanced-learn
-  - jenkspy
+  - conda-forge::jenkspy
   - lightgbm
   - missingno
   # - pandas-datareader

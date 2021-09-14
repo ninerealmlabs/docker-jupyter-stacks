@@ -100,6 +100,7 @@ jobs:
           build-args: |
             BASE_IMAGE=${{ env.BASE_IMAGE }}
             PYTHON_VERSION=${{ matrix.PYTHON }}
+            GIT_COMMIT=${{ steps.tag.outputs.SHA }}
             BUILD_DATE=${{ steps.date.outputs.DATE }}
           # cache-from: type=gha
           cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max

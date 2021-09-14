@@ -9,10 +9,14 @@ FROM "${BASE_IMAGE}"
 # Labels
 ARG BUILD_DATE
 ARG PYTHON_VERSION
+ARG GIT_COMMIT
+ENV BUILD_DATE=${BUILD_DATE}
 ENV PYTHON_VERSION=${PYTHON_VERSION}
+ENV GIT_COMMIT=${GIT_COMMIT}
 LABEL maintainer="ninerealmlabs"
 LABEL build_date="${BUILD_DATE}"
 LABEL python_version="python-${PYTHON_VERSION}"
+LABEL git_commit="${GIT_COMMIT}"
 LABEL description="Default environment for python + jupyterlab + datasci stack"
 
 ENV JUPYTER_ENABLE_LAB=yes

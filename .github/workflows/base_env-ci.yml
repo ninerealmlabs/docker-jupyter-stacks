@@ -14,7 +14,7 @@ on:
       - "LICENSE"
 
 env:
-  PLATFORMS: linux/amd64,linux/arm64
+  PLATFORMS: linux/amd64 # ,linux/arm64
   GH_REGISTRY: ghcr.io/ninerealmlabs
   D_REGISTRY: docker.io/ninerealmlabs
   BASE_IMAGE: jupyter/minimal-notebook:latest
@@ -157,24 +157,24 @@ jobs:
 
       # copy image from ghcr to dockerhub
       - name: Push image to alternate registries
-        uses: akhilerm/tag-push-action@v1.1.0
+        # uses: akhilerm/tag-push-action@v1.1.0
+        uses: akhilerm/tag-push-action@412ab72db47c0b7c69053b3bccfa4d401404efd1
         with:
           src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
           dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
-
-      - name: Push image to alternate registries
-        uses: akhilerm/tag-push-action@v1.1.0
-        with:
-          src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
-          dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}
 
       # - name: Push image to alternate registries
-      #   # uses: akhilerm/tag-push-action@v1.1.0
-      #   uses: akhilerm/tag-push-action@experiment
+      #   uses: akhilerm/tag-push-action@v1.1.0
       #   with:
       #     src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
       #     dst: |
       #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
+
+      # - name: Push image to alternate registries
+      #   uses: akhilerm/tag-push-action@v1.1.0
+      #   with:
+      #     src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
+      #     dst: |
       #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

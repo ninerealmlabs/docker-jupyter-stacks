@@ -156,6 +156,15 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       # copy image from ghcr to dockerhub
+      # - name: Push image to alternate registries
+      #   # uses: akhilerm/tag-push-action@v1.1.0
+      #   uses: akhilerm/tag-push-action@412ab72db47c0b7c69053b3bccfa4d401404efd1
+      #   with:
+      #     src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
+      #     dst: |
+      #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
+      #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}
+
       - name: Push image to alternate registries
         # uses: akhilerm/tag-push-action@v1.1.0
         uses: akhilerm/tag-push-action@412ab72db47c0b7c69053b3bccfa4d401404efd1
@@ -163,18 +172,11 @@ jobs:
           src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
           dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
+
+      - name: Push image to alternate registries
+        # uses: akhilerm/tag-push-action@v1.1.0
+        uses: akhilerm/tag-push-action@412ab72db47c0b7c69053b3bccfa4d401404efd1
+        with:
+          src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
+          dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}
-
-      # - name: Push image to alternate registries
-      #   uses: akhilerm/tag-push-action@v1.1.0
-      #   with:
-      #     src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
-      #     dst: |
-      #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
-
-      # - name: Push image to alternate registries
-      #   uses: akhilerm/tag-push-action@v1.1.0
-      #   with:
-      #     src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
-      #     dst: |
-      #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

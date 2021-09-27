@@ -64,22 +64,24 @@ jobs:
           INFO_SHA: ${{ github.event.inputs.SHA }}
         run: |
           TAG_VERSION=$(echo ${PYTHON_VERSION} | sed s'|[.*]||g')
-          BRANCH=$(echo ${INFO_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
-          SHA=${INFO_SHA:0:7}
-          FULLTAG="python-${TAG_VERSION}-${BRANCH}-${SHA}"
-          PRODTAG="python-${TAG_VERSION}-${SHA}"
+          BRANCH=$(echo ${GITHUB_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
+          SHA=${GITHUB_SHA:0:7}
+          PYTHONTAG="python${TAG_VERSION}"
+          PRODTAG="python${TAG_VERSION}-${SHA}"
+          FULLTAG="python${TAG_VERSION}-${BRANCH}-${SHA}"
           #---
           echo "TAG_VERSION: ${TAG_VERSION}"
           echo "BRANCH: ${BRANCH}"
           echo "SHA: ${SHA}"
-          echo "FULLTAG: ${FULLTAG}"
+          echo "PYTHONTAG: ${PYTHONTAG}"
           echo "PRODTAG: ${PRODTAG}"
+          echo "FULLTAG: ${FULLTAG}"
           #---
-          echo "::set-output name=PYTHONTAG::${TAG_VERSION}"
           echo "::set-output name=BRANCH::${BRANCH}"
           echo "::set-output name=SHA::${SHA}"
-          echo "::set-output name=FULLTAG::${FULLTAG}"
+          echo "::set-output name=PYTHONTAG::${PYTHONTAG}"
           echo "::set-output name=PRODTAG::${PRODTAG}"
+          echo "::set-output name=FULLTAG::${FULLTAG}"
 
       ### https://github.com/docker/build-push-action
       ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
@@ -152,24 +154,10 @@ jobs:
 
       # copy image from ghcr to dockerhub
       - name: Push image to alternate registries
-        uses: akhilerm/tag-push-action@v1.1.0
+        # uses: akhilerm/tag-push-action@v1.1.0
+        uses: akhilerm/tag-push-action@main
         with:
           src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
           dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
-
-      - name: Push image to alternate registries
-        uses: akhilerm/tag-push-action@v1.1.0
-        with:
-          src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
-          dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}
-
-      # - name: Push image to alternate registries
-      #   # uses: akhilerm/tag-push-action@v1.1.0
-      #   uses: akhilerm/tag-push-action@experiment
-      #   with:
-      #     src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
-      #     dst: |
-      #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
-      #       ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

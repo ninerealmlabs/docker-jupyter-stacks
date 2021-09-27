@@ -63,20 +63,22 @@ jobs:
           TAG_VERSION=$(echo ${PYTHON_VERSION} | sed s'|[.*]||g')
           BRANCH=$(echo ${GITHUB_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
           SHA=${GITHUB_SHA:0:7}
-          FULLTAG="python-${TAG_VERSION}-${BRANCH}-${SHA}"
-          PRODTAG="python-${TAG_VERSION}-${SHA}"
+          PYTHONTAG="python${TAG_VERSION}"
+          PRODTAG="python${TAG_VERSION}-${SHA}"
+          FULLTAG="python${TAG_VERSION}-${BRANCH}-${SHA}"
           #---
           echo "TAG_VERSION: ${TAG_VERSION}"
           echo "BRANCH: ${BRANCH}"
           echo "SHA: ${SHA}"
-          echo "FULLTAG: ${FULLTAG}"
+          echo "PYTHONTAG: ${PYTHONTAG}"
           echo "PRODTAG: ${PRODTAG}"
+          echo "FULLTAG: ${FULLTAG}"
           #---
-          echo "::set-output name=PYTHONTAG::${TAG_VERSION}"
           echo "::set-output name=BRANCH::${BRANCH}"
           echo "::set-output name=SHA::${SHA}"
-          echo "::set-output name=FULLTAG::${FULLTAG}"
+          echo "::set-output name=PYTHONTAG::${PYTHONTAG}"
           echo "::set-output name=PRODTAG::${PRODTAG}"
+          echo "::set-output name=FULLTAG::${FULLTAG}"
 
       ######### TEST #########
       ### WAITING FOR akhilerm/tag-push-action TO UPDATE

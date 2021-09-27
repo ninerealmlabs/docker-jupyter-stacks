@@ -20,14 +20,14 @@ services:
       - CHOWN_HOME=yes
     container_name: ${IMG_NAME}
     command: start.sh jupyter lab
+
 ### Equivalent to:
 # docker container run \
 #   --rm \
 #   -p 8888:8888 \
-#   --user root \
-#   --mount type=bind,source=/Users/agraber/Documents/~Projects,target=/home/${NB_USER}/work \
-#   --env NB_USER=ds \
+#   # --user root \
+#   --mount type=bind,source=~/Documents/~Projects,target=/home/${NB_USER}/work \
 #   --env JUPYTER_ENABLE_LAB=yes \
 #   --env CHOWN_HOME=yes \
-#   --name ds_env jupyter/scipy-notebook \
+#   --name jupyter_env ninerealmlabs/ds_env:python38 \
 #   start.sh jupyter lab

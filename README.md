@@ -20,7 +20,7 @@ If unfamiliar with docker see our [Intro to Docker tutorial](./docs/intro-to-doc
 1. Create/edit a `.env` file in project root to specify image and local path to be mounted
 
    ```sh
-   IMG_NAME="ninerealmlabs/ds_env:python-3.8"
+   IMG_NAME="ninerealmlabs/ds_env:python38"
    MOUNT_PATH="~"
    ```
 
@@ -69,13 +69,13 @@ Examples:
 
 ```sh
 # build 'ds_env' locally (note: this assumes that 'base_env' is also available locally)
-bash ./scripts/build.sh --base_image="base_env:python-3.8" --image_name="ds_env"
+bash ./scripts/build.sh --base_image="base_env:python38" --image_name="ds_env"
 
 # build 'ds_env' to use Python 3.9.4, push to `ninerealmlabs` registry
-bash ./scripts/build.sh --base_image="base_env:python-3.8" --registry="ninerealmlabs" --image_name="ds_env" --push
+bash ./scripts/build.sh --base_image="base_env:python38" --registry="ninerealmlabs" --image_name="ds_env" --push
 
 # build multi-arch image (_must_ push)
-bash ./scripts/build.sh -p="linux/amd64,linux/arm64" -b="base_env:python-3.8" -r="ninerealmlabs" -i="ds_env" --push
+bash ./scripts/build.sh -p="linux/amd64,linux/arm64" -b="base_env:python38" -r="ninerealmlabs" -i="ds_env" --push
 ```
 
 ### Build Stack

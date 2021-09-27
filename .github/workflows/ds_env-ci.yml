@@ -14,7 +14,7 @@ on:
         default: ""
 
 env:
-  PLATFORMS: linux/amd64 # ,linux/arm64
+  PLATFORMS: linux/amd64,linux/arm64
   GH_REGISTRY: ghcr.io/ninerealmlabs
   D_REGISTRY: docker.io/ninerealmlabs
   BASE_IMAGE: base_env

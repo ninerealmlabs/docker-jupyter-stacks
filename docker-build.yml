@@ -10,16 +10,16 @@ services:
       args:
         BASE_IMAGE: jupyter/minimal-notebook
         PYTHON_VERSION: 3.8.*
-    image: base_env:python-3.8
+    image: base_env:python38
 
   # general datasci image
   ds_env:
     build:
       context: ./src/ds_env/
       args:
-        BASE_IMAGE: ninerealmlabs/base_env:python-3.8
+        BASE_IMAGE: ninerealmlabs/base_env:python38
         PYTHON_VERSION: 3.8.*
-    image: ds_env:python-3.8
+    image: ds_env:python38
     depends_on:
       - base_env
 
@@ -27,9 +27,9 @@ services:
     build:
       context: ./src/nlp_env/
       args:
-        BASE_IMAGE: ninerealmlabs/ds_env:python-3.8
+        BASE_IMAGE: ninerealmlabs/ds_env:python38
         PYTHON_VERSION: 3.8.*
-    image: nlp_env:python-3.8
+    image: nlp_env:python38
     depends_on:
       - ds_env
 
@@ -37,9 +37,9 @@ services:
     build:
       context: ./src/pytorch_env/
       args:
-        BASE_IMAGE: ninerealmlabs/ds_env:python-3.8
+        BASE_IMAGE: ninerealmlabs/ds_env:python38
         PYTHON_VERSION: 3.8.*
-    image: pytorch_env:python-3.8
+    image: pytorch_env:python38
     depends_on:
       - ds_env
 
@@ -47,9 +47,9 @@ services:
     build:
       context: ./src/web_env/
       args:
-        BASE_IMAGE: ninerealmlabs/ds_env:python-3.8
+        BASE_IMAGE: ninerealmlabs/ds_env:python38
         PYTHON_VERSION: 3.8.*
-    image: web_env:python-3.8
+    image: web_env:python38
     depends_on:
       - ds_env
 
@@ -57,8 +57,8 @@ services:
     build:
       context: ./src/forecast_env/
       args:
-        BASE_IMAGE: ninerealmlabs/pytorch_env:python-3.8
+        BASE_IMAGE: ninerealmlabs/pytorch_env:python38
         PYTHON_VERSION: 3.8.*
-    image: forecast_env:python-3.8
+    image: forecast_env:python38
     depends_on:
       - pytorch_env

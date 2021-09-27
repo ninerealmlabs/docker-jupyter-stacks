@@ -6,11 +6,13 @@ on:
       - main
       - "develop/**"
     paths-ignore:
-      #       - ".github/**"
+      # - ".github/**"
       - "docs/**"
       - "scripts/**"
       - "*.md"
       - "**/.gitignore"
+      - "docker-build.yml"
+      - "docker-compose.yml"
       - "LICENSE"
 
 env:

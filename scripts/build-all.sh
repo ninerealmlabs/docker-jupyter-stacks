@@ -20,15 +20,15 @@ while [ $# -gt 0 ]; do
       CLEAN=true
       ;;
     *)
-      printf "*** Error: Invalid argument. Did you use an '=' when passing args? ***\n"
+      printf "*** Error: Invalid argument. Must use an '=' when passing args? ***\n"
       exit 1
       ;;
   esac
   shift
 done
 
-PLATFORM=${PLATFORM:-"linux/amd64"}
-# PLATFORM=${PLATFORM:-"linux/amd64,linux/arm64"}
+# PLATFORM=${PLATFORM:-"linux/amd64"}
+PLATFORM=${PLATFORM:-"linux/amd64,linux/arm64"}
 PUSH=${PUSH:-false}
 CLEAN=${CLEAN:-false}
 
@@ -42,13 +42,13 @@ if [[ ${#REGISTRY} = 0 ]]; then
   if [[ $(echo ${PLATFORM} | tr -cd , | wc -c | xargs) > 0 ]]; then
     printf "*** Error: No registry provided, so will try to load locally. ***\n"
     printf "*** Error: Cannot load multi-arch/multi-platform builds locally. ***\n"
-    exit 1
   fi
   # cannot push w/o registry
   if ${PUSH}; then
     printf "*** Error: Cannot push without registry. ***\n"
-    exit 1
   fi
+  printf "*** Run with 'build-all.sh -r=<REGISTRY>' ***\n"
+  exit 1
 # Add trailing slash to REGISTRY if not empty
 else # [[ ${#REGISTRY} > 0 ]]; then
   REGISTRY_="${REGISTRY}/"

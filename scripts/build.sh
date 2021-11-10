@@ -32,7 +32,7 @@ while [ $# -gt 0 ]; do
       CLEAN=true
       ;;
     *)
-      printf "*** Error: Invalid argument. Did you use an '=' when passing args? ***\n"
+      printf "*** Error: Invalid argument. Must use an '=' when passing args? ***\n"
       exit 1
       ;;
   esac
@@ -60,19 +60,19 @@ if [[ ${#IMAGE_NAME} = 0 ]]; then
   exit 1
 fi
 
-# if REGISTRY not provided/empty
+# if registry not provided/empty
 if [[ ${#REGISTRY} = 0 ]]; then
   # can only provide single platform (i.e., local) to build
   if [[ $(echo ${PLATFORM} | tr -cd , | wc -c | xargs) > 0 ]]; then
     printf "*** Error: No registry provided, so will try to load locally. ***\n"
     printf "*** Error: Cannot load multi-arch/multi-platform builds locally. ***\n"
-    exit 1
   fi
   # cannot push w/o registry
   if ${PUSH}; then
     printf "*** Error: Cannot push without registry. ***\n"
-    exit 1
   fi
+  printf "*** Run with 'build-all.sh -r=<REGISTRY>' ***\n"
+  exit 1
 # Add trailing slash to REGISTRY if not empty
 else # [[ ${#REGISTRY} > 0 ]]; then
   REGISTRY_="${REGISTRY}/"
@@ -128,6 +128,8 @@ GIT_SHA=$(git rev-parse --short HEAD)
 #   docker buildx create --name mybuilder --driver docker --use
 # fi
 
+docker buildx create --name mybuilder --use
+
 cd $(dirname $0)/../src/${IMAGE_NAME} \
   && docker buildx bake \
     -f docker-compose.yml \
@@ -141,8 +143,8 @@ cd $(dirname $0)/../src/${IMAGE_NAME} \
 
 # --no-cache \
 
-# # remove builder instance
-# docker buildx rm mybuilder
+# remove builder instance
+docker buildx rm mybuilder
 
 if ${CLEAN}; then
   # temporarily save list of images with new images

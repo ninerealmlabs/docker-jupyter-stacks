@@ -54,7 +54,7 @@ COPY --chown=${NB_UID}:${NB_GID} requirements.txt "/home/${NB_USER}/tmp/"
 RUN sed -i "/python/d" ${CONDA_DIR}/conda-meta/pinned
 RUN mamba install -n base python=${PYTHON_VERSION} -y -f \
  && mamba update -n base --all -y
-RUN echo "python ${PYTHON_VERSION}.*" >> "${CONDA_DIR}/conda-meta/pinned"
+RUN echo "python ${PYTHON_VERSION}" >> "${CONDA_DIR}/conda-meta/pinned"
 
 ## pin blas
 # RUN  echo "blas=*=openblas" >> "${CONDA_DIR}/conda-meta/pinned"

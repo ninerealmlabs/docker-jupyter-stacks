@@ -11,7 +11,7 @@ See also source `base_env` and `ds_env` image files.
 
 ## Image dependencies / inheritance
 
-`base_env`
-└ `ds_env`
-└ `pytorch_env`
-└ `forecast_env`
+`base_env`  
+└ `ds_env`  
+└ `pytorch_env`  
+└ `forecast_env`  

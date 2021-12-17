@@ -54,12 +54,12 @@ COPY --chown=${NB_UID}:${NB_GID} requirements.txt "/home/${NB_USER}/tmp/"
 RUN sed -i "/python/d" ${CONDA_DIR}/conda-meta/pinned
 RUN mamba install -n base python=${PYTHON_VERSION} -y -f \
  && mamba update -n base --all -y
-RUN echo "python ${PYTHON_VERSION}" >> "${CONDA_DIR}/conda-meta/pinned"
+RUN echo "python ${PYTHON_VERSION}.*" >> "${CONDA_DIR}/conda-meta/pinned"
 
 ## pin blas
 # RUN  echo "blas=*=openblas" >> "${CONDA_DIR}/conda-meta/pinned"
 ## pin numpy version (major.minor)
-RUN echo $(awk '/numpy==*/{print $2}' /home/${NB_USER}/tmp/environment.yml).* >> "${CONDA_DIR}/conda-meta/pinned"
+RUN echo "numpy $(echo "$(awk '/numpy==*/{print $2}' /home/${NB_USER}/tmp/environment.yml)" | sed 's/numpy==//'.*" >> "${CONDA_DIR}/conda-meta/pinned"
 
 RUN mamba env update -n base -f "/home/${NB_USER}/tmp/environment.yml" \
  && mamba clean --all -f -y \

@@ -1,3 +1,4 @@
+---
 name: web_env-CI
 # name must be "{ENV}_env-CI" for proper triggering of downstream workflows
 
@@ -5,20 +6,20 @@ on:
   workflow_dispatch:
     inputs:
       REF:
-        description: "GITHUB_REF from calling workflow"
+        description: GITHUB_REF from calling workflow
         required: true
-        default: ""
+        default: ''
       SHA:
-        description: "GITHUB_SHA from calling workflow"
+        description: GITHUB_SHA from calling workflow
         required: true
-        default: ""
+        default: ''
 
 env:
-  PLATFORMS: linux/amd64 #,linux/arm64
+  PLATFORMS: linux/amd64   #,linux/arm64
   GH_REGISTRY: ghcr.io/ninerealmlabs
   D_REGISTRY: docker.io/ninerealmlabs
   BASE_IMAGE: ds_env
-  IMAGE_NAME: web_env # IMAGE_NAME must be equivalent to subdirectory
+  IMAGE_NAME: web_env   # IMAGE_NAME must be equivalent to subdirectory
   ### ALSO UPDATE NEXT_IMAGE IN JOBS.DISPATCH JOB
 
 jobs:
@@ -27,7 +28,7 @@ jobs:
     strategy:
       matrix:
         # version/dependency conflicts between scrapy, and python 3.9
-        python: [3.7.*, 3.8.*] #, 3.9.*]
+        python: [3.7.*, 3.8.*]         #, 3.9.*]
 
     steps:
       - uses: actions/checkout@v2
@@ -98,8 +99,7 @@ jobs:
             PYTHON_VERSION=${{ matrix.PYTHON }}
             BUILD_DATE=${{ steps.date.outputs.DATE }}
           cache-from: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.BASE_IMAGE }}:buildcache
-          cache-to:
-            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           ### Each job is isolated in its own runner, so can't share newly-built image directly between jobs
           ### Instead, push to **github** image repo
           push: true
@@ -158,9 +158,7 @@ jobs:
         # uses: akhilerm/tag-push-action@v1.1.0
         uses: akhilerm/tag-push-action@main
         with:
-          src:
-            ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{
-            needs.build.outputs.FULLTAG }}
+          src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
           dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

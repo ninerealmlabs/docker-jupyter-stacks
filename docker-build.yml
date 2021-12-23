@@ -1,7 +1,8 @@
+---
 # docker-compose.from-jupyter.yml
 # ref: https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/multi-container-applications-docker-compose
 # ref: https://vgarcia.dev/blog/2019-06-17-building-docker-images-using-docker-compose-and-gitlab/
-version: "3.7"
+version: '3.7'
 
 services:
   base_env:

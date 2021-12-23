@@ -1,8 +1,9 @@
+---
 name: base
 channels:
   - conda-forge
   - pytorch
-  - districtdatalabs ## for yellowbrick
+  - districtdatalabs   ## for yellowbrick
   - defaults
 dependencies:
   # ### package managers
@@ -14,7 +15,7 @@ dependencies:
   - arch-py
   # - cesium
   - darts
-  - fbprophet # deprecated, use 'prophet'; required by greykite
+  - fbprophet   # deprecated, use 'prophet'; required by greykite
   # - pmdarima  # auto included by darts(?) and sktime
   # - prophet  # greykite still expects "fbprophet"
   - pystan

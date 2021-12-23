@@ -1,5 +1,5 @@
-# docker-compose..yml
-version: "3.7"
+---
+version: '3.7'
 
 services:
   web_env:
@@ -8,9 +8,9 @@ services:
       args:
         BASE_IMAGE: ninerealmlabs/ds_env:python-3.8
         PYTHON_VERSION: 3.8.*
-    image: web_env:python-3.8 # provide a name and tag for the image
+    image: web_env:python-3.8     # provide a name and tag for the image
     ports:
-      - "8888:8888"
+      - 8888:8888
     # user: root
     environment:
       # - NB_USER=${NB_USER}
@@ -23,6 +23,6 @@ services:
 
   # networks:  # Optional, same as `docker network create`
 
-  ### build command
+### build command
 # docker build . --no-cache --build-arg BASE_IMAGE="ds_env:python-3.8" --build-arg BUILD_DATE=$(date +'%Y-%m-%d') -t web_env:python-3.8
 # docker build https://github.com/docker/rootfs.git#container:docker --build-arg PYTHON_VERSION=3.8.8 --build-arg BUILD_DATE=$(date +'%Y-%m-%d')  -t web_env:python-3.8

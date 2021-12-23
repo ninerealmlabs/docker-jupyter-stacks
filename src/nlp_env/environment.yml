@@ -1,12 +1,13 @@
+---
 name: base
 channels:
   - conda-forge
   - huggingface
-  - districtdatalabs ## for yellowbrick
+  - districtdatalabs   ## for yellowbrick
   - defaults
 dependencies:
   ### package managers
-  - pip # to prevent warnings
+  - pip   # to prevent warnings
   ### Additional dependencies on top of `ds_env` sstandards
   - gensim==4.1.*
   # - huggingface::tokenizers
@@ -16,8 +17,8 @@ dependencies:
   - pyldavis==3.3.*
   - spacy==3.2.*
   - spacy-lookups-data
-  - tokenizers # via huggingface
-  - transformers # via huggingface
+  - tokenizers   # via huggingface
+  - transformers   # via huggingface
 # ### pip
 #   - pip:
 #     - pattern==3.6.0

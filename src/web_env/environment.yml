@@ -1,7 +1,8 @@
+---
 name: base
 channels:
   - conda-forge
-  - districtdatalabs ## for yellowbrick
+  - districtdatalabs   ## for yellowbrick
   - defaults
 dependencies:
   # ### package managers

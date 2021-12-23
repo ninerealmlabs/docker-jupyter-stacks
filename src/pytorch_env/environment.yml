@@ -1,9 +1,10 @@
+---
 name: base
 channels:
   - conda-forge
   # - pytorch-lts
   - pytorch
-  - districtdatalabs ## for yellowbrick
+  - districtdatalabs   ## for yellowbrick
   - defaults
 dependencies:
   # ### package managers

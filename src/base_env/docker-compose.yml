@@ -1,6 +1,5 @@
-# docker-compose.yml
-# RUN: docker-compose --env-file
-version: "3.7"
+---
+version: '3.7'
 
 services:
   base_env:
@@ -12,7 +11,7 @@ services:
         # BLAS: mkl  # uncomment to build with MKL
     image: base_env:python-3.8
     ports:
-      - "8888:8888"
+      - 8888:8888
     # user: root
     environment:
       # - NB_USER=${NB_USER}
@@ -24,6 +23,7 @@ services:
   # volumes:  # Optional, same as `docker volume create`
 
   # networks:  # Optional, same as `docker network create`
+
 ### build command
 # docker build . --no-cache --build-arg BASE_IMAGE="jupyter/minimal-notebook" --build-arg PYTHON_VERSION="3.8.8" --build-arg BUILD_DATE=$(date +'%Y-%m-%d') -t base_env:latest
 # docker build https://github.com/docker/rootfs.git#container:docker --no-cache --build-arg PYTHON_VERSION=3.8.8 --build-arg BUILD_DATE=$(date +'%Y-%m-%d')  -t base_env:latest

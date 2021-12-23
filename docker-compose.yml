@@ -1,15 +1,16 @@
+---
 # docker-compose.yml
 # RUN WITH: ```docker-compose p```
 # Requires .env in the same directory as the docker-compose.yml
 # Modify the .env to change ${VAR} such as username or mount source
 
-version: "3.7"
+version: '3.7'
 
 services:
   jupyter_env:
     image: ${IMG_NAME}
     ports:
-      - "8888:8888"
+      - 8888:8888
     # user: root
     volumes:
       - type: bind

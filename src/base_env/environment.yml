@@ -1,3 +1,4 @@
+---
 name: base
 channels:
   - conda-forge
@@ -6,7 +7,7 @@ dependencies:
   ### package managers
   # - conda
   # - mamba
-  - mamba_gator # Web UI for managing conda environments
+  - mamba_gator   # Web UI for managing conda environments
   - pip
   ### python version specified in compose BASE_CONTAINER arg
   ### blas
@@ -50,7 +51,7 @@ dependencies:
   - ipympl
   - ipywidgets
   - matplotlib-base
-  - plotnine # ggplot style
+  - plotnine   # ggplot style
   - plotly
   - seaborn
   - widgetsnbextension

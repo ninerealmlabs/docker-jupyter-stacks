@@ -5,7 +5,8 @@ JupyterLab environment with packages for forecasting and time-series data analys
 For package details, see [`environment.yml`](./environment.yml) and [`requirements.txt`](./requirements.txt)
 See also source `base_env` and `ds_env` image files.
 
-Note that `forecast_env` is based on `pytorch_env`, where we unpin `openblas` and allow `mkl`. This may provide strange behaviors on systems running non-intel processors.
+Note that `forecast_env` is based on `pytorch_env`, where we unpin `openblas` and allow `mkl`.
+This may provide strange behaviors on systems running non-intel processors.
 
 **Notes:**
 
@@ -13,7 +14,9 @@ Note that `forecast_env` is based on `pytorch_env`, where we unpin `openblas` an
 
 ## Image dependencies / inheritance
 
+```txt
 `base_env`
-└ `ds_env`
-└ `pytorch_env`
-└ `forecast_env`
+  └ `ds_env`
+    └ `pytorch_env`
+       └ `forecast_env`
+```

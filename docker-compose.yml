@@ -20,7 +20,6 @@ services:
       - CHOWN_HOME=yes
     container_name: ${IMG_NAME}
     command: start.sh jupyter lab
-
 ### Equivalent to:
 # docker container run \
 #   --rm \

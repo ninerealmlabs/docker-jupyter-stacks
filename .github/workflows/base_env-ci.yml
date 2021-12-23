@@ -107,7 +107,8 @@ jobs:
             GIT_COMMIT=${{ steps.tag.outputs.SHA }}
             BUILD_DATE=${{ steps.date.outputs.DATE }}
           # cache-from: type=gha
-          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-to:
+            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           push: true
           tags: |
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
@@ -164,7 +165,9 @@ jobs:
         # uses: akhilerm/tag-push-action@v1.1.0
         uses: akhilerm/tag-push-action@main
         with:
-          src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
+          src:
+            ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{
+            needs.build.outputs.FULLTAG }}
           dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

@@ -11,7 +11,8 @@ Linux: [Install .deb or .rpm package](https://docs.docker.com/engine/install/)
 
 Multi-platform builds are not common; you may have to emulate AMD64 archictecture
 
-1. You must install Rosetta 2 as some binaries are still Darwin/AMD64. To install Rosetta 2 manually from the command line, run the following command:
+1. You must install Rosetta 2 as some binaries are still Darwin/AMD64.
+  To install Rosetta 2 manually from the command line, run the following command:
 
    ```sh
    softwareupdate --install-rosetta
@@ -23,7 +24,7 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 
 - An account on DockerHub may be required to pull images, and is required to push images to a DockerHub repository.
 - If account creation is required, create a Personal Access Token (and save it) for command-line use
-- If you get an authentication error during any of the steps below, run `docker login` and provide Personal Access Token
+- If you get an authentication error during any of the steps below, run `docker login` and provide PAT
 
 > Recall: _DockerHub:GitHub::Azure Container Registry:Azure Repos_
 
@@ -83,7 +84,8 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
      # why are these different?
      ```
 
-   - The `ls` command works with other docker components, like `network`, `secret`, and `volume` -- but those are beyond the scope of this intro
+   - The `ls` command works with other docker components, like `network`, `secret`, and `volume` --
+     but those are beyond the scope of this intro
 
 7. Stop & Delete containers with `docker stop` and `docker rm`
 
@@ -142,9 +144,11 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
    # using default tag: latest
    ```
 
-   - Tags are ways to time- / version- / build- stamp images so you can always `pull` the same image (or find a compatible one if it exists)
+   - Tags are ways to time- / version- / build- stamp images so you can always `pull` the same image
+     (or find a compatible one if it exists)
    - See other tags [here](https://hub.docker.com/r/jupyter/minimal-notebook/tags?page=1&ordering=last_updated)
-   - Tag "latest" is convenient, but should not be used in production in case of breaking changes (instead, pin to a specific image:tag)
+   - Tag "latest" is convenient, but should not be used in production in case of breaking changes
+     (instead, pin to a specific image:tag)
 
 2. Check image list
 
@@ -171,7 +175,8 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
      docker logs jupyter
      ```
 
-   - Alternatively, we could run in standard mode (without the `-d`), but then we have to keep the terminal session open:
+   - Alternatively, we could run in standard mode (without the `-d`),
+     but then we have to keep the terminal session open:
 
      ```sh
      # stop current `jupyter` container
@@ -195,12 +200,16 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 1. Where is our data?
 
    - Remember that a _container_'s universe initially only comprises what was included in the docker _image_
-   - If we make changes to a container, that change is **ephemeral** -- it only applies to the specific container for the duration of its existence.
-   - _Translation_: if we delete the `jupyter/minimal-notebook` container where we created our .ipynb, that .ipynb ceases to exist.
+   - If we make changes to a container, that change is **ephemeral** -- it only applies to the specific container
+     for the duration of its existence.
+   - _Translation_: if we delete the `jupyter/minimal-notebook` container where we created our .ipynb,
+     that .ipynb ceases to exist.
 
    This is where Docker Volumes come in - they allow persisting data outside of a container's ephemeral lifecycle:
 
-   > Volumes are often a better choice than persisting data in a container’s writable layer, because a volume does not increase the size of the containers using it, and the volume’s contents exist outside the lifecycle of a given container.
+   > Volumes are often a better choice than persisting data in a container's writable layer,
+   > because a volume does not increase the size of the containers using it,
+   > and the volume's contents exist outside the lifecycle of a given container.
 
 2. Do we have any volumes currently?
 
@@ -220,11 +229,15 @@ Multi-platform builds are not common; you may have to emulate AMD64 archictectur
 
 > Note: There is a difference between a "docker volume" and a "bind mount".
 > Both allow data to exist outside of the ephemeral nature of containers;
-> however bind mounts pass a local directory tree into the container runtime allowing fileshare between host and container, whereas volumes simply store data created in a container on your local hard drive without easy transparency
+> however bind mounts pass a local directory tree into the container runtime allowing
+> fileshare between host and container, whereas volumes simply store data created
+> in a container on your local hard drive without easy transparency
 >
 > In our case with jupyter, we want a bind mount - we want to access our local files in the container.
 >
-> A use case for a volume would be a container hosting a database. We wouldn't necessarily care to access the database files from our local computer, but we _would_ want those files persisted outside of the container
+> A use case for a volume would be a container hosting a database. We wouldn't necessarily care
+> to access the database files from our local computer,
+> but we _would_ want those files persisted outside of the container
 
 ---
 
@@ -310,7 +323,9 @@ EOF
      docker-compose up -f /path/to/docker-compose.yaml
      ```
 
-     - Why are some layers already present? `scipy-notebook` is build on top of `minimal-notebook`. Since we previously pulled `minimal-notebook`, docker is saving us some work and using the parts from `minimal-notebook` that it can when launching `scipy-notebook`
+     - Why are some layers already present? `scipy-notebook` is build on top of `minimal-notebook`.
+       Since we previously pulled `minimal-notebook`, docker is saving us some work and using the parts
+       from `minimal-notebook` that it can when launching `scipy-notebook`
 
 5. You can interact with running containers using the `docker` commands we learned before
 
@@ -335,7 +350,8 @@ EOF
 
 ## Pull from Azure Container Registry
 
-Docker naturally assumes that you will be pulling from dockerhub, however there are many other container registries ([quay.io](quay.io), [ghcr.io](ghcr.io), etc).
+Docker naturally assumes that you will be pulling from dockerhub,
+however there are many other container registries ([quay.io](quay.io), [ghcr.io](ghcr.io), etc).
 
 PMI has private container registries through its Azure subscription.
 

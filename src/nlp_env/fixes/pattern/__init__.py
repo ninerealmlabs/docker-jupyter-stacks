@@ -49,7 +49,7 @@ from pattern.helpers import encode_string, decode_string
 decode_utf8 = decode_string
 encode_utf8 = encode_string
 
-PUNCTUATION = ".,;:!?()\[]{}`'\"@#$^&*+-|=~_”—“"
+PUNCTUATION = ".,;:!?()\[]{}`'\"@#$^&*+-|=~_"—""
 
 def ngrams(string, n=3, punctuation=PUNCTUATION, continuous=False):
     """ Returns a list of n-grams (tuples of n successive words) from the given string.
@@ -1397,10 +1397,10 @@ def find_tokens(string, punctuation=PUNCTUATION, abbreviations=ABBREVIATIONS, re
         string = re.sub(a, b, string)
     # Handle Unicode quotes.
     if isinstance(string, str):
-        string = string.replace("“", " “ ")
-        string = string.replace("”", " ” ")
-        string = string.replace("‘", " ‘ ")
-        string = string.replace("’", " ’ ")
+        string = string.replace(""", " " ")
+        string = string.replace(""", " " ")
+        string = string.replace("'", " ' ")
+        string = string.replace("'", " ' ")
     # Collapse whitespace.
     string = re.sub("\r\n", "\n", string)
     string = re.sub(linebreak, " %s " % EOS, string)
@@ -1439,7 +1439,7 @@ def find_tokens(string, punctuation=PUNCTUATION, abbreviations=ABBREVIATIONS, re
             tokens.extend(reversed(tail))
     # Handle citations (periods + quotes).
     if isinstance(string, str):
-        quotes = ("'", "\"", "”", "’")
+        quotes = ("'", "\"", """, "'")
     else:
         quotes = ("'", "\"")
     # Handle sentence breaks (periods, quotes, parenthesis).

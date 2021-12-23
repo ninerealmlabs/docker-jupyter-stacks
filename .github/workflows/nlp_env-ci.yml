@@ -97,7 +97,8 @@ jobs:
             PYTHON_VERSION=${{ matrix.PYTHON }}
             BUILD_DATE=${{ steps.date.outputs.DATE }}
           cache-from: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.BASE_IMAGE }}:buildcache
-          cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+          cache-to:
+            type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           ### Each job is isolated in its own runner, so can't share newly-built image directly between jobs
           ### Instead, push to **github** image repo
           push: true
@@ -156,7 +157,9 @@ jobs:
         # uses: akhilerm/tag-push-action@v1.1.0
         uses: akhilerm/tag-push-action@main
         with:
-          src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
+          src:
+            ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{
+            needs.build.outputs.FULLTAG }}
           dst: |
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}

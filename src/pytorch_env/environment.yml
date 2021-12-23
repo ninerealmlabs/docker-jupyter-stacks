@@ -1,9 +1,8 @@
 name: base
 channels:
   - conda-forge
-  - intel
-  - pytorch-lts
-  # - pytorch
+  # - pytorch-lts
+  - pytorch
   - districtdatalabs ## for yellowbrick
   - defaults
 dependencies:
@@ -16,8 +15,10 @@ dependencies:
   # reinstall numpy with mkl; pinned version should persist
   - numpy
   ### pytorch
-  - pytorch-lts::pytorch
-  - pytorch-lts::cpuonly
-  # - pytorch::pytorch
-  # - pytorch::cpuonly
+  # - pytorch-lts::pytorch
+  # - pytorch-lts::cpuonly
+  - pytorch::pytorch
+  - pytorch::torchaudio
+  - pytorch::torchvision
+  - pytorch::cpuonly
 # prefix: /opt/conda/

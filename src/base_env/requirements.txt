@@ -1,3 +1,12 @@
-jupytext
-jupyterlab-git
-aquirdturtle_collapsible_headings
+artifacts-keyring
+build
+keyring
+setuptools
+sphinx-rtd-theme
+twine
+
+### jupyter extensions
+# jupytext
+# jupyterlab-git
+# aquirdturtle_collapsible_headings
+# jupyterlab-material-night-eighties

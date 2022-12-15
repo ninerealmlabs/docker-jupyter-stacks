@@ -6,9 +6,9 @@ services:
     build:
       context: .
       args:
-        BASE_IMAGE: ninerealmlabs/base_env:python-3.8
-        PYTHON_VERSION: 3.8.*
-    image: ds_env:python-3.8     # provide a name and tag for the image
+        BASE_IMAGE: ninerealmlabs/base_env
+        PYTHON_VERSION: 3.9.*
+    image: ds_env:python-3.9     # provide a name and tag for the image
     ports:
       - 8888:8888
     # user: root

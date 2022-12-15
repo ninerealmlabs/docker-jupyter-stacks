@@ -3,136 +3,126 @@
 
 ARG BASE_IMAGE
 FROM "${BASE_IMAGE}"
-# ARG PYTHON_VERSION
-# FROM "${BASE_IMAGE}:python-${PYTHON_VERSION}"
 
 # Labels
 ARG BUILD_DATE
-ARG PYTHON_VERSION
+ARG JUPYTER_VERSION
 ARG GIT_COMMIT
 ENV BUILD_DATE=${BUILD_DATE}
-ENV PYTHON_VERSION=${PYTHON_VERSION}
+ENV JUPYTER_VERSION=${JUPYTER_VERSION}
 ENV GIT_COMMIT=${GIT_COMMIT}
 LABEL maintainer="ninerealmlabs"
 LABEL build_date="${BUILD_DATE}"
-LABEL python_version="python-${PYTHON_VERSION}"
+# LABEL python_version="python-${PYTHON_VERSION}"
+LABEL jupyter_version="lab-${JUPYTER_VERSION}"
 LABEL git_commit="${GIT_COMMIT}"
-LABEL description="Default environment for python + jupyterlab + datasci stack"
+LABEL description="Default JupyterLab 'OS' for Jupyter docker stack"
 
+ENV HOME="/home/${NB_USER}"
+ENV XDG_CACHE_HOME="${HOME}/.cache/"
+ENV XDG_CONFIG_HOME="${HOME}/.config/"
 ENV JUPYTER_ENABLE_LAB=yes
 
 USER root
 
-# set apt-get arg for build
 ARG DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update -y --fix-missing \
  && apt-get install -yq --no-install-recommends \
-    # ffmpeg for matplotlib anim & dvipng+cm-super for latex labels
-    ffmpeg \
-    dvipng \
+    # for cython: https://cython.readthedocs.io/en/latest/src/quickstart/install.html
+    build-essential \
+    # for latex labels
     cm-super \
+    dvipng \
+    # for matplotlib anim
+    ffmpeg \
+    # Install jq for fixing git-ipynb interactions
+    jq \
     # Install requirements for SQL connections
     curl \
     gnupg \
     unixodbc \
     unixodbc-dev \
-    # Install jq for fixing git-ipynb interactions
-    jq \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 
 USER ${NB_UID}
 
-# Install from environment.yml
-COPY --chown=${NB_UID}:${NB_GID} environment.yml "/home/${NB_USER}/tmp/"
-COPY --chown=${NB_UID}:${NB_GID} requirements.txt "/home/${NB_USER}/tmp/"
+RUN mkdir -p "${XDG_CACHE_HOME}" \
+ && mkdir -p "${XDG_CONFIG_HOME}"
 
-## unpin python, change version, pin python
-# RUN sed -i s"/python.*/python ${PYTHON_VERSION}/" ${CONDA_DIR}/conda-meta/pinned \
-RUN sed -i "/python/d" ${CONDA_DIR}/conda-meta/pinned
-RUN mamba install -n base python=${PYTHON_VERSION} -y -f \
- && mamba update -n base --all -y
-RUN echo "python ${PYTHON_VERSION}" >> "${CONDA_DIR}/conda-meta/pinned"
+## update base environment conda and mamba
+RUN mamba update -n base conda mamba --update-deps --yes --quiet
 
-## pin blas
-# RUN  echo "blas=*=openblas" >> "${CONDA_DIR}/conda-meta/pinned"
-## pin numpy version (major.minor)
-RUN echo "numpy $(echo "$(awk '/numpy==*/{print $2}' /home/${NB_USER}/tmp/environment.yml)" | sed 's/numpy==//').*" >> "${CONDA_DIR}/conda-meta/pinned"
+## Install packages required for JupyterLab
+COPY --chown=${NB_UID}:${NB_GID} environment.yaml "${HOME}/tmp/"
+COPY --chown=${NB_UID}:${NB_GID} requirements.txt "${HOME}/tmp/"
 
-RUN mamba env update -n base -f "/home/${NB_USER}/tmp/environment.yml" \
- && mamba clean --all -f -y \
- && pip install --no-deps -r "/home/${NB_USER}/tmp/requirements.txt" \
- && pip cache purge \
- && fix-permissions "${CONDA_DIR}" \
- && fix-permissions "/home/${NB_USER}"
+RUN mamba env update -n base --file "${HOME}/tmp/environment.yaml" --quiet \
+ && mamba update -n base --update-all --yes --quiet \
+ && mamba clean --all --yes
+RUN pip install --no-deps --quiet -r "${HOME}/tmp/requirements.txt" \
+ && pip cache purge
+RUN fix-permissions "${CONDA_DIR}" \
+ && fix-permissions "${HOME}"
 
-
-### From jupyter/scipy-notebook  ###
-# Import matplotlib the first time to build the font cache.
-ENV XDG_CACHE_HOME="/home/${NB_USER}/.cache/"
+### From jupyter/scipy-notebook
 # Install facets which does not have a pip or conda package at the moment
-# WORKDIR /tmp
-RUN git clone https://github.com/PAIR-code/facets.git /tmp/facets \
- && jupyter nbextension install /tmp/facets/facets-dist/ --sys-prefix \
- && rm -rf /tmp/facets \
+WORKDIR "${HOME}/tmp"
+RUN git clone https://github.com/PAIR-code/facets.git \
+ && jupyter nbextension install facets/facets-dist/ --sys-prefix \
+ && rm -rf "${HOME}/tmp/" \
  && fix-permissions "${CONDA_DIR}" \
- && fix-permissions "/home/${NB_USER}"
+ && fix-permissions "${HOME}"
 
-RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" \
- && fix-permissions "/home/${NB_USER}"
-
-# Activate ipywidgets extension in the environment that runs the notebook server
-RUN jupyter nbextension enable widgetsnbextension --py --sys-prefix \
-#  ## currently broken for jupyterlab=3
-#  && jupyter labextension install jupyterlab-flake8 --no-build \
-#  && jupyter serverextension enable jupyterlab_sql --py --sys-prefix \
- ## plotly support
- && jupyter labextension install jupyterlab-plotly --no-build \
-#  && jupyter labextension install @jupyter-widgets/jupyterlab-manager plotlywidget --no-build \
- ## themes
- && jupyter labextension install @ninerealmlabs/jupyterlab_material_darker --no-build \
- && jupyter lab build \
- && jupyter server extension enable jupytext \
+### Install / activate extensions
+RUN pip install --no-deps --quiet \
+    aquirdturtle_collapsible_headings \
+    jupyterlab-material-night-eighties
+RUN jupyter nbextension enable widgetsnbextension --py --sys-prefix
+RUN jupyter server extension enable jupytext \
  && jupyter server extension enable --py jupyterlab_git \
+ && jupyter lab build --dev-build=False \
  && jupyter lab clean \
  && jlpm cache clean \
  && npm cache clean --force \
- && rm -rf /home/${NB_USER}/.yarn \
- && rm -rf /home/${NB_USER}/.npm \
- && rm -rf /home/${NB_USER}/.node-gyp \
- && rm -rf /home/${NB_USER}/.local
+ && rm -rf "${HOME}/.yarn" \
+ && rm -rf "${HOME}/.npm" \
+ && rm -rf "${HOME}/.node-gyp" \
+ && rm -rf "${HOME}/.local"
 #  \
-#  && rm -rf /home/${NB_USER}/.cache
+#  && rm -rf ${HOME}/.cache
 
-# Add ipynb/py pairing to global config for JupyText
-RUN echo -e "\n## Jupytext config" >> /home/${NB_USER}/.jupyter/jupyter_notebook_config.py \
- && echo "c.NotebookApp.contents_manager_class = 'jupytext.TextFileContentsManager'" >> /home/${NB_USER}/.jupyter/jupyter_notebook_config.py \
- && echo "c.ContentsManager.default_jupytext_formats = 'ipynb,py'" >> /home/${NB_USER}/.jupyter/jupyter_notebook_config.py \
- && echo "c.ContentsManager.preferred_jupytext_formats_save = 'py:percent'" >> /home/${NB_USER}/.jupyter/jupyter_notebook_config.py \
- && echo "c.ContentsManager.default_notebook_metadata_filter = '-all'" >> /home/${NB_USER}/.jupyter/jupyter_notebook_config.py \
- && echo "c.ContentsManager.default_cell_metadata_filter = '-all'" >> /home/${NB_USER}/.jupyter/jupyter_notebook_config.py
+# # Add ipynb/py pairing to global config for JupyText
+# RUN echo -e "\n## Jupytext config" >> ${HOME}/.jupyter/jupyter_notebook_config.py \
+#  && echo "c.NotebookApp.contents_manager_class = 'jupytext.TextFileContentsManager'" >> ${HOME}/.jupyter/jupyter_notebook_config.py \
+#  && echo "c.ContentsManager.default_jupytext_formats = 'ipynb,py'" >> ${HOME}/.jupyter/jupyter_notebook_config.py \
+#  && echo "c.ContentsManager.preferred_jupytext_formats_save = 'py:percent'" >> ${HOME}/.jupyter/jupyter_notebook_config.py \
+#  && echo "c.ContentsManager.default_notebook_metadata_filter = '-all'" >> ${HOME}/.jupyter/jupyter_notebook_config.py \
+#  && echo "c.ContentsManager.default_cell_metadata_filter = '-all'" >> ${HOME}/.jupyter/jupyter_notebook_config.py
 
 # copy dotfiles and config files
-COPY ./configs /home/${NB_USER}/
+COPY --chown=${NB_UID}:${NB_GID} ./configs/* "${HOME}/"
 
 RUN fix-permissions /etc/jupyter \
  && fix-permissions "${CONDA_DIR}" \
- && fix-permissions "/home/${NB_USER}"
+ && fix-permissions "${HOME}"
 
 
 USER root
 
 # Modify standard jupyter lab preferences
-RUN mv /home/${NB_USER}/overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json \
- && mv /home/${NB_USER}/.gitattributes_global /etc/gitattributes_global \
+ENV LAB_SETTINGS="/opt/conda/share/jupyter/lab/settings/"
+RUN mkdir -p "${LAB_SETTINGS}" \
+ && mv ${HOME}/overrides.json "${LAB_SETTINGS}/overrides.json"
+
+RUN mv ${HOME}/.gitattributes_global /etc/gitattributes_global \
  && chown root: /etc/gitattributes_global \
  && chmod 644 /etc/gitattributes_global
 
 RUN fix-permissions /etc/jupyter/ \
  && fix-permissions "${CONDA_DIR}" \
- && fix-permissions "/home/${NB_USER}"
+ && fix-permissions "${HOME}"
 
 # Don't launch as root
 USER ${NB_UID}

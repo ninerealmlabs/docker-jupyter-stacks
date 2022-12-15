@@ -34,15 +34,18 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 USER ${NB_UID}
 
-# Install from environment.yml
-COPY --chown=${NB_UID}:${NB_GID} environment.yml "/home/${NB_USER}/tmp/"
-COPY --chown=${NB_UID}:${NB_GID} requirements.txt "/home/${NB_USER}/tmp/"
-RUN mamba env update -n base -f "/home/${NB_USER}/tmp/environment.yml" \
+# Install all environments environment.yaml
+COPY --chown=${NB_UID}:${NB_GID} environments/* "/home/${NB_USER}/tmp/"
+RUN mamba env update -n base -f "/home/${NB_USER}/tmp/environment.yaml" \
   && mamba clean --all -f -y \
   && pip install --no-deps -r "/home/${NB_USER}/tmp/requirements.txt" \
   && pip cache purge \
   && fix-permissions "${CONDA_DIR}" \
   && fix-permissions "/home/${NB_USER}"
+
+# Import matplotlib the first time to build the font cache.
+RUN mamba activate ds; MPLBACKEND=Agg python -c "import matplotlib.pyplot" \
+ && fix-permissions "${HOME}"
 
 RUN fix-permissions /etc/jupyter \
   && fix-permissions "${CONDA_DIR}" \

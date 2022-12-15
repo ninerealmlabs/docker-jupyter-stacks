@@ -1,7 +1,7 @@
 ---
-# docker-compose.yml
+# docker-compose.yaml
 # RUN WITH: ```docker-compose p```
-# Requires .env in the same directory as the docker-compose.yml
+# Requires .env in the same directory as the docker-compose.yaml
 # Modify the .env to change ${VAR} such as username or mount source
 
 version: '3.7'

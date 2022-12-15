@@ -11,12 +11,12 @@ LABEL description="Base specialized with Pytorch"
 
 USER ${NB_UID}
 
-# Install from environment.yml
-COPY --chown=${NB_UID}:${NB_GID} environment.yml "/home/${NB_USER}/tmp/"
+# Install from environment.yaml
+COPY --chown=${NB_UID}:${NB_GID} environment.yaml "/home/${NB_USER}/tmp/"
 COPY --chown=${NB_UID}:${NB_GID} requirements.txt "/home/${NB_USER}/tmp/"
 # Unpin openblas
 RUN sed -i '/openblas/d' "${CONDA_DIR}/conda-meta/pinned"
-RUN mamba env update -n base -f "/home/${NB_USER}/tmp/environment.yml" --prune \
+RUN mamba env update -n base -f "/home/${NB_USER}/tmp/environment.yaml" --prune \
   && mamba update -n base --all \
   && mamba clean --all -f -y \
   #  && pip install --no-deps -r "/home/${NB_USER}/tmp/requirements.txt" \

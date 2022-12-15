@@ -1,12 +1,16 @@
-# Data Science
+# Base
 
-JupyterLab environment designed for general data analysis and ML, with the basic
-`numpy`, `pandas`, `scipy`, `scikit-learn` stack.
+JupyterLab environment designed as a base image.
+Built from [jupyter/docker-stacks/minimal-notebook](https://github.com/jupyter/docker-stacks/tree/master/minimal-notebook),
+with additional customization to the "jupyterhub OS" to allow multiple environments,
+pre-install jupyterlab extensions, and standardize configuration for upstream images.
 
 For package details, see [`environment.yml`](./environment.yml) and [`requirements.txt`](./requirements.txt)
-See also [jupyter/docker-stacks/minimal-notebook](https://github.com/jupyter/docker-stacks/tree/master/minimal-notebook)
-for overall source image.
-Version increases are python-version based, and will be sourced from `jupyter/minimal-notebook:python-{version}` tags.
+
+## Versioning
+
+As this is a base image, we tag by _jupyterlab version_.
+Upstream images will pin to python versions, or python-package versions.
 
 **Notes:**
 
@@ -19,17 +23,19 @@ Version increases are python-version based, and will be sourced from `jupyter/mi
 **To Do:**
 
 - pin blas (openblas vs mkl). see:
-  - <https://docs.anaconda.com/mkl-optimizations/index.html>
-  - <https://conda.io/projects/conda/en/latest/user-guide/concepts/packages.html>
-  - <https://github.com/conda-forge/numpy-feedstock/issues/108>
+  - https://docs.anaconda.com/mkl-optimizations/index.html
+  - https://conda.io/projects/conda/en/latest/user-guide/concepts/packages.html
+  - https://github.com/conda-forge/numpy-feedstock/issues/108
 
 ## Image dependencies / inheritance
 
 ```txt
-`base_env`
-  └ `ds_env`
-    ├ `nlp_env`
-    ├ `pytorch_env`
-    │ └ `forecast_env`
-    └ `web_env`
+base_env
+  └ ds_env
+      ├ clvmodels_env
+      ├ nlpmodels_env
+      ├ pytorch_env
+      │   └ forecastmodels_env
+      ├ recommendermodels_env
+      └ webmodels_env
 ```

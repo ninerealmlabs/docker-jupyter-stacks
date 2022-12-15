@@ -1,27 +1,105 @@
 {
+  "@jupyterlab/console-extension:tracker": {
+    "interactionMode": "notebook",
+    "promptCellConfig": {
+        "autoClosingBrackets": true,
+        "lineNumbers": true,
+        "lineWrap": "off",
+        "matchBrackets": true,
+        "readOnly": false,
+        "insertSpaces": true,
+        "tabSize": 4,
+        "wordWrapColumn": 119,
+        "rulers": [79, 119],
+        "codeFolding": true,
+        "lineWiseCopyCut": true
+    }
+  },
+  "@jupyterlab/extensionmanager-extension:plugin": {
+    "enabled": true,
+    "disclaimed": true
+  },
+  "@ryantam626/jupyterlab_code_formatter:settings": {
+    "black": {
+        "line_length": 100,
+        "string_normalization": true
+    },
+    "formatOnSave": true,
+    "isort": {
+        "multi_line_output": 3,
+        "include_trailing_comma": true,
+        "force_grid_wrap": 0,
+        "use_parentheses": true,
+        "line_length": 100
+    },
+    "preferences": {
+      "default_formatter": {
+          "python": [
+              "isort",
+              "black"
+          ],
+          "r": "formatR"
+      }
+    }
+  },
   "@jupyterlab/notebook-extension:tracker": {
     "codeCellConfig": {
       "autoClosingBrackets": true,
-      "matchBrackets": true,
-      "wordWrapColumn": 119,
       "lineNumbers": true,
-      "codeFolding": true
+      "lineWrap": "off",
+      "matchBrackets": true,
+      "insertSpaces": true,
+      "tabSize": 4,
+      "wordWrapColumn": 119,
+      "rulers": [79, 119],
+      "codeFolding": true,
+      "lineWiseCopyCut": true,
+      "showTrailingSpace": false
     },
+    "defaultCell": "code",
     "markdownCellConfig": {
       "autoClosingBrackets": true,
+      "lineNumbers": true,
       "lineWrap": "on",
       "matchBrackets": true,
       "insertSpaces": true,
+      "tabSize": 4,
       "wordWrapColumn": 119,
-      "lineNumbers": true,
-      "codeFolding": true
+      "rulers": [79, 119],
+      "codeFolding": true,
+      "lineWiseCopyCut": true,
+      "showTrailingSpace": false
     },
-    "recordTiming": false
+    "rawCellConfig": {
+      "autoClosingBrackets": false,
+      "lineNumbers": true,
+      "lineWrap": "on",
+      "matchBrackets": false,
+      "readOnly": false,
+      "insertSpaces": true,
+      "tabSize": 4,
+      "wordWrapColumn": 119,
+      "rulers": [79, 119],
+      "codeFolding": false,
+      "lineWiseCopyCut": true,
+      "showTrailingSpace": false
+    }
+  },
+  "@jupyterlab/fileeditor-extension:plugin": {
+    "editorConfig": {
+      "autoClosingBrackets": true,
+      "codeFolding": true,
+      "lineNumbers": true,
+      "lineWrap": "on",
+      "matchBrackets": true,
+      "readOnly": false,
+      "rulers": [79, 119],
+      "showTrailingSpace": false,
+      "tabSize": 4,
+      "wordWrapColumn": 80
+    }
   },
   "@jupyterlab/apputils-extension:themes": {
-    "theme": "@ninerealmlabs/jupyterlab_material_darker"
-  },
-  "@jupyterlab/extensionmanager-extension:plugin": {
-    "enabled": true
+    "theme": "@ninerealmlabs/jupyterlab_material_night_eighties"
   }
 }

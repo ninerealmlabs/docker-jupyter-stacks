@@ -29,7 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        PYTHON: [3.7.*, 3.8.*, 3.9.*]
+        JUPYTER: [3.2.9, 3.3.0]
+        # PYTHON: [3.7.*, 3.8.*, 3.9.*]
 
     steps:
       - uses: actions/checkout@v2
@@ -61,25 +62,26 @@ jobs:
       - name: Create tags
         id: tag
         env:
-          PYTHON_VERSION: ${{ matrix.PYTHON }}
+          TAGNAME: "jupyter"
+          VERSION: ${{ matrix.JUPYTER }}
         run: |
-          TAG_VERSION=$(echo ${PYTHON_VERSION} | sed s'|[.*]||g')
+          # get repo references
           BRANCH=$(echo ${GITHUB_REF} | sed s'|refs/heads/||' | sed s'|/|.|')
           SHA=${GITHUB_SHA:0:7}
-          PYTHONTAG="python${TAG_VERSION}"
-          PRODTAG="python${TAG_VERSION}-${SHA}"
-          FULLTAG="python${TAG_VERSION}-${BRANCH}-${SHA}"
+          # clean up ".*" in passed VERSION
+          TAG="${TAGNAME}$(echo ${VERSION} | sed s'|[.*]||g')"
+          PRODTAG="${TAG}-${SHA}"
+          FULLTAG="${TAG}-${BRANCH}-${SHA}"
           #---
-          echo "TAG_VERSION: ${TAG_VERSION}"
           echo "BRANCH: ${BRANCH}"
           echo "SHA: ${SHA}"
-          echo "PYTHONTAG: ${PYTHONTAG}"
+          echo "TAG: ${TAG}"
           echo "PRODTAG: ${PRODTAG}"
           echo "FULLTAG: ${FULLTAG}"
           #---
           echo "::set-output name=BRANCH::${BRANCH}"
           echo "::set-output name=SHA::${SHA}"
-          echo "::set-output name=PYTHONTAG::${PYTHONTAG}"
+          echo "::set-output name=TAG::${TAG}"
           echo "::set-output name=PRODTAG::${PRODTAG}"
           echo "::set-output name=FULLTAG::${FULLTAG}"
 
@@ -104,14 +106,14 @@ jobs:
           # file: ./Dockerfile
           build-args: |
             BASE_IMAGE=${{ env.BASE_IMAGE }}
-            PYTHON_VERSION=${{ matrix.PYTHON }}
+            JUPYTER_VERSION=${{ matrix.JUPYTER }}
             GIT_COMMIT=${{ steps.tag.outputs.SHA }}
             BUILD_DATE=${{ steps.date.outputs.DATE }}
           # cache-from: type=gha
           cache-to: type=registry,ref=${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
           push: true
           tags: |
-            ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.PYTHONTAG }}
+            ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.TAG }}
             ${{ env.GH_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.FULLTAG }}
 
       - name: Image digest
@@ -124,9 +126,9 @@ jobs:
 
     outputs:
       IMAGE_NAME: ${{ env.IMAGE_NAME }}
-      PYTHONTAG: ${{ steps.tag.outputs.PYTHONTAG }}
       BRANCH: ${{ steps.tag.outputs.BRANCH }}
       SHA: ${{ steps.tag.outputs.SHA }}
+      TAG: ${{ steps.tag.outputs.TAG }}
       FULLTAG: ${{ steps.tag.outputs.FULLTAG }}
       PRODTAG: ${{ steps.tag.outputs.PRODTAG }}
 
@@ -167,7 +169,7 @@ jobs:
         with:
           src: ${{ env.GH_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.FULLTAG }}
           dst: |
-            ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PYTHONTAG }}
+            ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.TAG }}
             ${{ env.D_REGISTRY }}/${{ needs.build.outputs.IMAGE_NAME }}:${{ needs.build.outputs.PRODTAG }}
 
       # - name: Push image to alternate registries

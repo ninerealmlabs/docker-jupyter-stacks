@@ -1,5 +1,5 @@
 ---
-# docker-compose.from-jupyter.yml
+# docker-compose.from-jupyter.yaml
 # ref: https://docs.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/multi-container-applications-docker-compose
 # ref: https://vgarcia.dev/blog/2019-06-17-building-docker-images-using-docker-compose-and-gitlab/
 version: '3.7'
@@ -10,17 +10,17 @@ services:
       context: ./src/base_env/
       args:
         BASE_IMAGE: jupyter/minimal-notebook
-        PYTHON_VERSION: 3.8.*
-    image: base_env:python38
+        JUPYTER_VERSION: 3.3.0
+    image: base_env:lab-3.3.0
 
   # general datasci image
   ds_env:
     build:
       context: ./src/ds_env/
       args:
-        BASE_IMAGE: ninerealmlabs/base_env:python38
-        PYTHON_VERSION: 3.8.*
-    image: ds_env:python38
+        BASE_IMAGE: ninerealmlabs/base_env:python39
+        PYTHON_VERSION: 3.9.*
+    image: ds_env:python39
     depends_on:
       - base_env
 
@@ -28,9 +28,9 @@ services:
     build:
       context: ./src/nlp_env/
       args:
-        BASE_IMAGE: ninerealmlabs/ds_env:python38
-        PYTHON_VERSION: 3.8.*
-    image: nlp_env:python38
+        BASE_IMAGE: ninerealmlabs/ds_env:python39
+        PYTHON_VERSION: 3.9.*
+    image: nlp_env:python39
     depends_on:
       - ds_env
 
@@ -38,9 +38,9 @@ services:
     build:
       context: ./src/pytorch_env/
       args:
-        BASE_IMAGE: ninerealmlabs/ds_env:python38
-        PYTHON_VERSION: 3.8.*
-    image: pytorch_env:python38
+        BASE_IMAGE: ninerealmlabs/ds_env:python39
+        PYTHON_VERSION: 3.9.*
+    image: pytorch_env:python39
     depends_on:
       - ds_env
 
@@ -48,9 +48,9 @@ services:
     build:
       context: ./src/web_env/
       args:
-        BASE_IMAGE: ninerealmlabs/ds_env:python38
-        PYTHON_VERSION: 3.8.*
-    image: web_env:python38
+        BASE_IMAGE: ninerealmlabs/ds_env:python39
+        PYTHON_VERSION: 3.9.*
+    image: web_env:python39
     depends_on:
       - ds_env
 
@@ -58,8 +58,8 @@ services:
     build:
       context: ./src/forecast_env/
       args:
-        BASE_IMAGE: ninerealmlabs/pytorch_env:python38
-        PYTHON_VERSION: 3.8.*
-    image: forecast_env:python38
+        BASE_IMAGE: ninerealmlabs/pytorch_env:python39
+        PYTHON_VERSION: 3.9.*
+    image: forecast_env:python39
     depends_on:
       - pytorch_env

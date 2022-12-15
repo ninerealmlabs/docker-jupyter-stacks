@@ -1,0 +1,95 @@
+# Black
+# ref: https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#configuration-via-a-file
+[tool.black]
+line-length = 100
+include = '\.pyi?$|\.ipynb$'
+extend-exclude = '''
+# # A regex preceded with ^/ will apply only to files and directories
+# # in the root of the project.
+# ^/foo.py  # exclude a file named foo.py in the root of the project (in addition to the defaults)
+\.ipynb_checkpoints$
+'''
+
+# Isort
+# ref: https://pycqa.github.io/isort/docs/configuration/config_files.html
+[tool.isort]
+# profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+# ensure_newline_before_comments = true
+line_length = 100
+force_alphabetical_sort_within_sections = true
+force_sort_within_sections = true
+honor_noqa = true
+default_section = "THIRDPARTY"
+forced_separate = ["ds_utils",]
+known_first_party = ["ds_utils",]
+known_pandas=["pandas","numpy",]
+known_sci=[
+  "scipy",
+  "sklearn",
+  "statsmodels",
+]
+sections=[
+  "FUTURE",
+  "STDLIB",
+  "THIRDPARTY",
+  "PANDAS",
+  "SCI",
+  "FIRSTPARTY",
+  "LOCALFOLDER",
+]
+skip = [
+  ".eggs",
+  "*.egg-info",
+  ".ipynb_checkpoints",
+  ".tox",
+  "ci/templates",
+  "build",
+  "dist",
+  "docs/conf.py",
+]
+
+# jupytext
+# ref: https://jupytext.readthedocs.io/en/latest
+[tool.jupytext]
+formats = "ipynb,py:percent"
+notebook_metadata_filter = "-all"
+cell_metadata_filter = "-all"
+
+# Pytest
+# ref: https://docs.pytest.org/en/6.2.x/customize.html
+[tool.pytest.ini_options]
+addopts = '''
+    -ra
+    --strict-markers
+    --ignore=docs/conf.py
+    --ignore=setup.py
+    --ignore=ci
+    --ignore=.eggs
+    --tb=short
+'''
+    # --doctest-modules
+    # --doctest-glob=\*.rst
+norecursedirs = [
+    ".git",
+    ".tox",
+    ".env",
+    "__pycache__",
+    "dist",
+    "docs",
+    "build",
+    "migrations",
+    "notebooks",
+    "writeup",
+]
+python_files = [
+    "test_*.py",
+    "*_test.py",
+    "tests.py",
+]
+testpaths = [
+    "tests",
+]

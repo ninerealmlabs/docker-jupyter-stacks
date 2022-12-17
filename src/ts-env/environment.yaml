@@ -1,0 +1,23 @@
+---
+name: base
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  ### package managers
+  - pip  # to prevent warnings
+  ### Additional dependencies on top of `ds-env` standards
+  - arch-py
+  - u8darts # can't install 'u8darts-all' due to pytorch requirements
+  - pmdarima
+  - prophet
+  # - pystan # arm issues; maybe isn't a hard dependency for prophet now?
+  - pywavelets
+  # - sktime # later versions don't (yet) support python 3.10
+  # - sktime-dl  # still WIP / may require pip
+  - statsforecast
+  - stumpy
+  - tbats
+  # - tslearn # arm availability?
+
+# prefix: /opt/conda/

@@ -1,3 +1,4 @@
+---
 name: base
 channels:
   - conda-forge
@@ -6,12 +7,16 @@ dependencies:
   ### package managers
   # - conda
   # - mamba
+  - mamba_gator # Web UI for managing conda environments
   - pip
   ### core deps
+  - cloudpickle
   - cython
+  - dill
   - distributed
   - joblib
   ### JupyterLab "OS-level" extensions
+  - ipywidgets
   # - jupyter_contrib_nbextensions
   # - jupyter_nbextensions_configurator
   - jupyterlab_code_formatter
@@ -19,14 +24,21 @@ dependencies:
   # - jupyterlab-flake8
   - jupyterlab-git
   - jupytext
-  - mamba_gator # Web UI for managing conda environments
   - nbdime
   - widgetsnbextension
+  ### sql
+  - h5py
+  - hdf5
+  - pyodbc
+  - pyarrow
+  - snowflake-connector-python
+  - snowflake-sqlalchemy
+  - sqlalchemy
+  - sqlite
   ### utils
   - attrs
   - black
-  - click
-  - cookiecutter
+  - bottleneck
   - colorama
   - flake8
   - flake8-bugbear
@@ -34,13 +46,14 @@ dependencies:
   - flake8-colors
   - flake8-comprehensions
   - flake8-isort
-  - ipdb
   - isort
   - markdown
+  - numba
   - numpydoc
-  # - nodejs
+  - openpyxl
   - pep8
   - pep8-naming
+  - protobuf
   - pycodestyle
   - pylint
   - pytest
@@ -48,8 +61,7 @@ dependencies:
   - python-dotenv
   - pyyaml
   - sphinx
-# ### pip
-#   - pip:
-#     - packagename
+  - tqdm
+  - xlrd
 
 # prefix: /opt/conda/

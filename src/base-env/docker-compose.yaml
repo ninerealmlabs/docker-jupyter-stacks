@@ -1,18 +1,18 @@
+---
 # docker-compose.yaml
 # RUN: docker-compose --env-file
 version: "3.7"
 
 services:
-  base_env:
+  base-env:
     platform: linux/amd64
     build:
       context: .
       args:
-        BASE_IMAGE: jupyter/minimal-notebook
-        JUPYTER_VERSION: 3.3.0
-        # PYTHON_VERSION: 3.9.*
+        SOURCE_IMAGE: jupyter/minimal-notebook:python-3.10
+        PYTHON_VERSION: 3.10.*
         # BLAS: mkl  # uncomment to build with MKL
-    image: base_env
+    image: base-env:python-3.10
     ports:
       - "8888:8888"
     # user: root
@@ -30,7 +30,7 @@ services:
 # ### build command
 # docker build . \
 #   --no-cache \
-#   --build-arg BASE_IMAGE="jupyter/minimal-notebook" \
-#   --build-arg JUPYTER_VERSION="3.3.0" \
+#   --build-arg SOURCE_IMAGE="jupyter/minimal-notebook" \
+#   --build-arg PYTHON_VERSION="3,9.*" \
 #   --build-arg BUILD_DATE=$(date +'%Y-%m-%d') \
-#   -t base_env:latest
+#   -t base-env:latest

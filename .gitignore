@@ -1,13 +1,15 @@
-!**.gitkeep
-
 # OS Junk
 .DS_Store
 Thumbs.db
 settings.json
 .vscode
 
+# docker stuff
 *.cache
 .imagelist
 
 # ignore local .env from versioning
 **.env
+
+# except keep
+!**.gitkeep

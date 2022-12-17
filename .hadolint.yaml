@@ -1,0 +1,36 @@
+---
+# # Exit with failure code only when rules with a severity above THRESHOLD are violated
+# # name of threshold level (error | warning | info | style | ignore | none)
+failure-threshold: info
+# # Output format (tty | json | checkstyle | codeclimate | gitlab_codeclimate | gnu | codacy)
+# format: tty
+# # Since labels are passed as build-time args, hadolint can't check
+# label-schema:
+#   maintainer: text
+#   build-date: rfc3339
+#   python-version: semver
+#   git-commit: hash
+# strict-labels: false
+disable-ignore-pragma: false
+no-color: false
+no-fail: false
+trustedRegistries:
+  - docker.io
+  - ghcr.io
+  - quay.io
+
+override:
+  # error:
+  # warning:
+  info:
+    # - DL3006 # use complete image+tag in from specification
+    # - DL3008 # pin versions in apt
+    # - DL3013 # pin versions in pip
+    - DL3015 # use "no-install-recommends" with apt
+  # style:
+
+ignored:
+  - DL3006 # use complete image+tag in from specification
+  - DL3008 # pin versions in apt
+  - DL3013 # pin versions in pip
+  # - DL3015 # use "no-install-recommends" with apt

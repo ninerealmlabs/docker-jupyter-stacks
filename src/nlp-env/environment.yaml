@@ -1,0 +1,24 @@
+---
+name: base
+channels:
+  - conda-forge
+  - huggingface
+  - defaults
+dependencies:
+  ### package managers
+  - pip  # to prevent warnings
+  ### Additional dependencies on top of `ds-env` sstandards
+  - gensim
+  - huggingface::datasets
+  - huggingface::safetensors
+  # - huggingface::sacremoses
+  - huggingface::tokenizers
+  - huggingface::transformers
+  - nltk
+  # - pattern==3.6.* # no longer depencency of gensim
+  - pyldavis
+  - sacremoses
+  - spacy
+  - spacy-lookups-data
+
+# prefix: /opt/conda/

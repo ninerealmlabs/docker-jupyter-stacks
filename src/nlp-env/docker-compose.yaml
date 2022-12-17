@@ -1,0 +1,26 @@
+---
+version: '3.7'
+
+services:
+  nlp-env:
+    build:
+      context: .
+      args:
+        SOURCE_IMAGE: ninerealmlabs/ds-env:python-3.10
+        PYTHON_VERSION: 3.10.*
+    image: nlp-env:python-3.10     # provide a name and tag for the image
+    ports:
+      - 8888:8888
+    # user: root
+    environment:
+      # - NB_USER=${NB_USER}
+      - JUPYTER_ENABLE_LAB=yes
+      - CHOWN_HOME=yes
+      # - JUPYTER_TOKEN=jupyter_notebook_token
+    command: start.sh jupyter lab
+#   volumes:  # Optional, same as `docker volume create`
+#   networks:  # Optional, same as `docker network create`
+
+### build command
+# docker build . --no-cache --build-arg SOURCE_IMAGE="ds-env:python-3.8" --build-arg BUILD_DATE=$(date +'%Y-%m-%d') -t nlp-env:python-3.8
+# docker build https://github.com/docker/rootfs.git#container:docker --build-arg PYTHON_VERSION=3.8.8 --build-arg BUILD_DATE=$(date +'%Y-%m-%d')  -t nlp-env:python-3.8

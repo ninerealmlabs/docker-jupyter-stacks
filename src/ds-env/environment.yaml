@@ -1,0 +1,37 @@
+---
+name: base
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  ### package managers
+  - pip  # to prevent warnings
+  ### data & ml
+  - category_encoders
+  - faker
+  - dataprep
+  - imbalanced-learn
+  # - jenkspy
+  - lightgbm
+  - missingno
+  - numexpr
+  - numpy
+  - pandas
+  - patsy
+  - scikit-image
+  - scikit-learn
+  - scipy
+  - statsmodels
+  - sympy
+  - xarray
+  - xgboost
+  ### plotting
+  - altair
+  - bokeh
+  - ipympl
+  - matplotlib-base
+  - plotnine
+  - plotly
+
+
+# prefix: /opt/conda/

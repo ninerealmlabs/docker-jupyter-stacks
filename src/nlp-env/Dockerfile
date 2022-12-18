@@ -15,6 +15,12 @@ LABEL build-date="${BUILD_DATE}"
 LABEL python-version="python-${PYTHON_VERSION}"
 LABEL git-commit="${GIT_COMMIT}"
 
+# Fix: https://github.com/hadolint/hadolint/wiki/DL4006
+# Fix: https://github.com/koalaman/shellcheck/wiki/SC3014
+# Fix: https://github.com/koalaman/shellcheck/wiki/SC3037
+# hadolint shell=bash
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 USER ${NB_UID}
 
 # Update environment

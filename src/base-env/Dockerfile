@@ -23,6 +23,8 @@ ENV JUPYTER_ENABLE_LAB=yes
 
 # Fix: https://github.com/hadolint/hadolint/wiki/DL4006
 # Fix: https://github.com/koalaman/shellcheck/wiki/SC3014
+# Fix: https://github.com/koalaman/shellcheck/wiki/SC3037
+# hadolint shell=bash
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 USER root

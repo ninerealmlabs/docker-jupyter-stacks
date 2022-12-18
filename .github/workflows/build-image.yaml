@@ -1,0 +1,151 @@
+---
+name: test-image
+# description:
+# Load and run tests from jupyter/docker-stacks (https://github.com/jupyter/docker-stacks)
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      SOURCE_IMAGE:
+        description: Parent/Source full image name (registry/image)
+        required: true
+        type: string
+      IMAGE_NAME:
+        description: Image name
+        required: true
+        type: string
+      PLATFORMS:
+        description: Image platform architectures
+        required: true
+        type: string
+      PYTHON_VERSION:
+        description: python version
+        required: true
+        type: string
+      GH_REGISTRY:
+        description: Github registry (ghcr.io/<OWNER>)
+        required: true
+        type: string
+      OWNER:
+        description: Registry name
+        required: true
+        type: string
+  workflow_dispatch:
+
+
+jobs:
+
+  build-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo 🛒
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry ✅
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Login to DockerHub ✅
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKER_USER }}
+      #     password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Get current date 🗓
+        id: date
+        shell: bash
+        run: |
+          DATE=$(date +'%Y%m%d')
+          echo "DATE: ${DATE}"
+          echo "::set-output name=DATE::${DATE}"
+
+      - name: Create tags 🏷
+        id: tags
+        shell: bash
+        run: |
+          PYTHON_TAG="python-$(echo ${PYTHON_VERSION/'.*'/}"
+          SHA_TAG="${GITHUB_SHA:0:7}"
+          SHORT_NAMETAG="${IMAGE_NAME}:${PYTHON_TAG}"
+          LONG_NAMETAG="${IMAGE_NAME}:${PYTHON_TAG}-${SHA_TAG}"
+          #---
+          echo "PYTHON_TAG: ${PYTHON_TAG}"
+          echo "SHA_TAG: ${SHA_TAG}"
+          echo "SHORT_NAMETAG: ${SHORT_NAMETAG}"
+          echo "LONG_NAMETAG: ${LONG_NAMETAG}"
+          #---
+          echo "::set-output name=PYTHON_TAG::${PYTHON_TAG}"
+          echo "::set-output name=SHA_TAG::${SHA_TAG}"
+          echo "::set-output name=SHORT_NAMETAG::${SHORT_NAMETAG}"
+          echo "::set-output name=LONG_NAMETAG::${LONG_NAMETAG}"
+        env:
+          PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+          IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
+
+      - name: Identify source ℹ️
+        id: source
+        shell: bash
+        run: |
+          # set source nametag depending on whether part of stack
+          if [[ "${SOURCE_IMAGE}" == *"${OWNER}"* ]]; then
+            SOURCE_NAMETAG="${SOURCE_IMAGE}:${PYTHON_TAG}"
+          else
+            SOURCE_NAMETAG="${SOURCE_IMAGE}:latest"
+          fi
+          #---
+          echo "SOURCE_NAMETAG: ${SOURCE_NAMETAG}"
+          #---
+          echo "::set-output name=SOURCE_NAMETAG::${SOURCE_NAMETAG}"
+        env:
+          SOURCE_IMAGE: ${{ inputs.SOURCE_IMAGE }}
+          OWNER: ${{ inputs.OWNER }}
+          PYTHON_TAG: ${{ steps.tags.outputs.PYTHON_TAG }}
+
+      ### https://github.com/docker/build-push-action
+      ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
+      - name: Build image 🛠
+        id: build
+        uses: docker/build-push-action@v3
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          platforms: ${{ inputs.PLATFORMS }}
+          context: src/${{ inputs.IMAGE_NAME }}
+          # file: ./Dockerfile
+          build-args: |
+            SOURCE_IMAGE=${{ steps.source.outputs.SOURCE_NAMETAG }}
+            PYTHON_VERSION=${{ inputs.PYTHON_VERSION }}
+            GIT_COMMIT=${{ steps.tags.outputs.SHA_TAG }}
+            BUILD_DATE=${{ steps.date.outputs.DATE }}
+          # cache-from: type=gha
+          cache-to: type=registry,ref=${{ inputs.GH_REGISTRY }}/${{ inputs.IMAGE_NAME }}:buildcache,mode=max
+          push: true
+          tags: |
+            ${{ inputs.GH_REGISTRY }}/${{ steps.tags.outputs.SHORT_NAMETAG }}
+            ${{ inputs.GH_REGISTRY }}/${{ steps.tags.outputs.LONG_NAMETAG }}
+
+      - name: Inspect image digest 🔬
+        shell: bash
+        run: echo ${{ steps.build.outputs.digest }}
+
+      - name: Inspect new image 🔬
+        shell: bash
+        run: |
+          docker pull ${{ inputs.GH_REGISTRY }}/${{ inputs.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+
+    outputs:
+      # IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
+      IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
+      PYTHON_TAG: ${{ steps.tags.outputs.PYTHON_TAG }}
+      # SHA_TAG: ${{ steps.tags.outputs.SHA_TAG }}
+      SHORT_NAMETAG: ${{ steps.tags.outputs.SHORT_NAMETAG }}
+      LONG_NAMETAG: ${{ steps.tags.outputs.LONG_NAMETAG }}

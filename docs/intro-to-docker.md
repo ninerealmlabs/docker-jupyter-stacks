@@ -1,5 +1,18 @@
 # Intro to docker
 
+- [Intro to docker](#intro-to-docker)
+  - [Installation](#installation)
+    - [Notes on Apple Silicon](#notes-on-apple-silicon)
+    - [\[Optional?\] Create dockerhub account](#optional-create-dockerhub-account)
+  - [Getting started with Docker CLI](#getting-started-with-docker-cli)
+  - [Tips \& Tricks](#tips--tricks)
+  - [Intro to docker/jupyter stacks](#intro-to-dockerjupyter-stacks)
+  - [Docker Volumes](#docker-volumes)
+  - [Docker-Compose](#docker-compose)
+    - [Create docker-compose.yaml](#create-docker-composeyaml)
+    - [Creating containers with docker-compose](#creating-containers-with-docker-compose)
+  - [Pull from Azure Container Registry](#pull-from-azure-container-registry)
+
 ## Installation
 
 Windows/Mac: Install [docker desktop](https://www.docker.com/products/docker-desktop)
@@ -303,7 +316,7 @@ EOF
 
 4. To create a container with docker-compose, run `docker-compose up`
 
-   - Open ./docker-compose.yml
+   - Open ./docker-compose.yaml
 
    - Just like `docker` commands in the CLI, `docker-compose` files can use variable substitution.
      Let's create a .env file to retain our environmental variables
@@ -345,7 +358,7 @@ EOF
 
    ```sh
    docker-compose down
-   docker-compose down -f /path/to/docker-compose.yml
+   docker-compose down -f /path/to/docker-compose.yaml
    ```
 
 ## Pull from Azure Container Registry

@@ -1,15 +1,62 @@
 #!/bin/bash
 
-# "fake" keyword arguments: https://unix.stackexchange.com/questions/129391/passing-named-arguments-to-shell-scripts
+##############################################################################
+# Defaults
+##############################################################################
+DEFAULT_PYTHON="3.10.*"
+# DEFAULT_PLATFORM="linux/amd64"
+DEFAULT_PLATFORM="linux/amd64,linux/arm64"
+
+##############################################################################
+# Help
+##############################################################################
+read -r -d '' usage <<EOF
+usage: $(basename "$0") [optargs]
+assumes 'scripts' dir and 'src' dir are sibling-directories
+
+optargs:
+  -h|--help             prints help
+  -p|--platform         pass platform(s) as str: default "${DEFAULT_PLATFORM}"
+  -s|--source           pass source image as str
+  -r|--registry         pass destination registry as str;
+                        must be present for multi-arch builds or if --push
+  -i|--image_name       name for output image
+  -v|--python_version   python version; default "${DEFAULT_PYTHON}"
+     --push             will push to registry if present
+     --clean            will clean new images from local docker
+     --debug            adds extra debugging messages to console
+
+note: $(basename "$0") takes keyword arguments in 'flag=value' format!
+
+example:
+$(basename "$0") \
+--platform="linux/amd64,linux/arm64" \
+--source="jupyter/minimal-notebook" \
+--registry="myregistry" \
+--image_name="base-env" \
+--python_version="3.10.*" \
+--push
+EOF
+
+##############################################################################
+# Parse Args
+# "fake" keyword arguments:
+# https://unix.stackexchange.com/questions/129391/passing-named-arguments-to-shell-scripts
+##############################################################################
 while [ $# -gt 0 ]; do
   case "$1" in
+    -h | --help)
+      ## Architecture/Platform for buildx
+      echo "${usage}"
+      exit 0
+      ;;
     -p=* | --platform=*)
       ## Architecture/Platform for buildx
       PLATFORM="${1#*=}"
       ;;
-    -b=* | --base_image=*)
+    -s=* | --source=*)
       ## Base image for build-arg
-      BASE_IMAGE="${1#*=}"
+      SOURCE_IMAGE="${1#*=}"
       ;;
     -r=* | --registry=*)
       ## Provide name of registry / owner
@@ -31,128 +78,146 @@ while [ $# -gt 0 ]; do
       ## Do you want to remove local images when done?
       CLEAN=true
       ;;
+    --debug)
+      ## Do you want to remove local images when done?
+      DEBUG=true
+      ;;
     *)
-      printf "*** Error: Invalid argument. Must use an '=' when passing args? ***\n"
+      printf "\e[1;31m%s\e[0m\n" "Error: Unknown argument: '${1}'"
+      printf "\e[1;31m%s\e[0m\n" "Try using '=' when passing args\n"
       exit 1
       ;;
   esac
   shift
 done
 
-PLATFORM=${PLATFORM:-"linux/amd64"}
-PYTHON_VERSION=${PYTHON_VERSION:-3.8.*}
-PUSH=${PUSH:-false}
-CLEAN=${CLEAN:-false}
-
-## do not set defaults for BASE_IMAGE or REGISTRY
-## REGISTRY is optional (if not provided will build local, assuming single-arch build)
-# REGISTRY=${REGISTRY:-ninerealmlabs} ## do not set default
-
-# BASE_IMAGE must be provided
-if [[ ${#BASE_IMAGE} = 0 ]]; then
-  printf "*** Error: Must provide BASE_IMAGE. ***\n"
+# SOURCE_IMAGE must be provided
+# if [[ ${#SOURCE_IMAGE} = 0 ]]; then
+if [[ -z ${SOURCE_IMAGE:+x} ]]; then
+  printf "\e[1;31m%s\e[0m\n" "Error: Must provide source."
   exit 1
 fi
 
 # IMAGE_NAME must be provided
-if [[ ${#IMAGE_NAME} = 0 ]]; then
-  printf "*** Error: Must provide IMAGE_NAME. ***\n"
+# if [[ ${#IMAGE_NAME} = 0 ]]; then
+if [[ -z ${IMAGE_NAME:+x} ]]; then
+  printf "\e[1;31m%s\e[0m\n" "Error: Must provide image_name."
   exit 1
 fi
 
 # if registry not provided/empty
-if [[ ${#REGISTRY} = 0 ]]; then
+# if [[ ${#REGISTRY} = 0 ]]; then
+if [[ -z ${REGISTRY:+x} ]]; then
+  [[ -n ${DEBUG:+x} ]] && printf "\e[33m%s\e[0m\n" "Warning: No registry provided; will try to save output locally."
   # can only provide single platform (i.e., local) to build
-  if [[ $(echo ${PLATFORM} | tr -cd , | wc -c | xargs) > 0 ]]; then
-    printf "*** Error: No registry provided, so will try to load locally. ***\n"
-    printf "*** Error: Cannot load multi-arch/multi-platform builds locally. ***\n"
+  if [[ $(echo "${PLATFORM}" | tr -cd , | wc -c | xargs) -gt 0 ]]; then
+    printf "\e[1;31m%s\e[0m\n" "Error: Cannot load multi-arch/platform builds locally."
+    printf "\e[1;31m%s\e[0m\n" "Provide registry or change to single-platform build."
+    printf "\e[1;31m%s\e[0m\n" "Platform: '${PLATFORM}'"
+    exit 1
   fi
   # cannot push w/o registry
-  if ${PUSH}; then
-    printf "*** Error: Cannot push without registry. ***\n"
-  fi
-  printf "*** Run with 'build-all.sh -r=<REGISTRY>' ***\n"
-  exit 1
-# Add trailing slash to REGISTRY if not empty
-else # [[ ${#REGISTRY} > 0 ]]; then
-  REGISTRY_="${REGISTRY}/"
-fi
-
-if ${PUSH}; then
-  _PUSH="--push"
-else
-  # if single-platform (as determined by 0 commas), then load locally
-  if [[ $(echo ${PLATFORM} | tr -cd , | wc -c | xargs) = 0 ]]; then
-    _PUSH="--load"
-  else
-    printf "*** Error: Cannot load multi-platform build locally.  Must push. ***\n"
+  if [[ -n ${PUSH:+x} ]]; then
+    printf "\e[1;31m%s\e[0m\n" "Error: Cannot push without registry."
     exit 1
   fi
 fi
 
-# Collect current docker images to preserve post-clean
-if ${CLEAN}; then
+# List currently-existing docker images to preserve post-clean
+if [[ -n ${CLEAN:+x} ]]; then
   # IMAGELIST=$(docker image ls -a --format {{.ID}})
   rm -f .imagelist \
-    && printf "%s\n" $(docker image ls -a --format {{.ID}}) > .imagelist
+    && printf "%s\n" "$(docker image ls -a --format '{{.ID}}')" > .imagelist
 fi
 
-# Docker doesn't like `.*` for version tags, so truncate from tag
-TAG_VERSION="${PYTHON_VERSION}"
-if [[ ${TAG_VERSION: -1} == "*" ]]; then
-  TAG_VERSION=${TAG_VERSION:0:${#TAG_VERSION}-2}
-fi
-
-# get git branch identifier for tags
-GIT_REF=$(git rev-parse --abbrev-ref HEAD)
+# Docker doesn't like '.*' for version tags, so truncate from tag
+VERSION_TAG="python-${PYTHON_VERSION/'.*'/}"
 # get git commit identifier for tags
-GIT_SHA=$(git rev-parse --short HEAD)
-# GIT_SHA=$(git rev-parse HEAD)
+SHA_TAG=$(git rev-parse --short HEAD)
 
-# # for debug
-# echo "PLATFORM: ${PLATFORM}"
-# echo "BASE_IMAGE: ${BASE_IMAGE}"
-# echo "REGISTRY: ${REGISTRY}"
-# echo "REGISTRY_: ${REGISTRY_}"
-# echo "IMAGE_NAME: ${IMAGE_NAME}"
-# echo "PYTHON_VERSION: ${PYTHON_VERSION}"
-# echo "TAG_VERSION: ${TAG_VERSION}"
-# echo "GIT_REF: ${GIT_REF}"
-# echo "GIT_SHA: ${GIT_SHA}"
-# echo "PUSH: ${PUSH}"
-# echo "_PUSH: ${_PUSH}"
+SHORT_TAG="${IMAGE_NAME}:${VERSION_TAG}"
+LONG_TAG="${IMAGE_NAME}:${VERSION_TAG}-${SHA_TAG}"
+if [[ -n ${REGISTRY:+x} ]]; then
+  SHORT_TAG="${REGISTRY}/${SHORT_TAG}"
+  LONG_TAG="${REGISTRY}/${LONG_TAG}"
+fi
 
-# # if using local images, use `docker` driver
-# # otherwise, use `docker-container` per defaults
-# if [[ ${_PUSH} == "--load" ]]; then
-#   docker buildx create --name mybuilder --driver docker --use
+# use default buildx builder to build from images loaded locally
+# ref: https://github.com/moby/moby/issues/42893
+docker buildx use default
+# docker buildx create --name mybuilder --use
+
+# printf "\e[1;36m%s\e[0m\n" "Building ${IMAGE_NAME} from ${SOURCE_IMAGE}"
+printf "\e[32m%s\e[0m " "Building"
+printf "\e[3;32m%s\e[0m " "${SHORT_TAG}"
+printf "\e[32m%s\e[0m " "from"
+printf "\e[3;32m%s\e[0m\n" "${SOURCE_IMAGE}"
+
+# args=(-f docker-compose.yaml)
+# args+=(--set "*.platform=${PLATFORM}")
+# args+=(--set "*.args.SOURCE_IMAGE=${SOURCE_IMAGE}")
+# args+=(--set "*.args.PYTHON_VERSION=${PYTHON_VERSION}")
+# args+=(--set "*.args.BUILD_DATE=$(date +'%Y-%m-%d')")
+# args+=(--set "*.args.GIT_COMMIT=${SHA_TAG}")
+# args+=(--set "*.tags=${SHORT_TAG}")
+# args+=(--set "*.tags=${LONG_TAG}")
+# if [[ -n ${PUSH:+x} ]]; then
+#   args+=(--push)
+# else
+#   args+=(--load)
 # fi
+#
+# [[ -n ${DEBUG:+x} ]] \
+#   && printf "\e[1;36m%s\e[0m " "bake args:" \
+#   && printf "\e[36m%s\e[0m\n" "${args[*]}"
+#
+# # buildx bake
+# cd "$(dirname "$0")/../src/${IMAGE_NAME}" && docker buildx bake "${args[@]}"
+# unset args
 
-docker buildx create --name mybuilder --use
+args=()
+args+=(--platform="${PLATFORM}")
+args+=(--build-arg SOURCE_IMAGE="${SOURCE_IMAGE}")
+args+=(--build-arg PYTHON_VERSION="${PYTHON_VERSION}")
+args+=(--build-arg BUILD_DATE="$(date +'%Y-%m-%d')")
+args+=(--build-arg GIT_COMMIT="${SHA_TAG}")
+args+=(--tag "${SHORT_TAG}")
+args+=(--tag "${LONG_TAG}")
+args+=(--progress=tty)  # "plain" will show container output
 
-cd $(dirname $0)/../src/${IMAGE_NAME} \
-  && docker buildx bake \
-    -f docker-compose.yml \
-    --set *.platform=${PLATFORM} \
-    --set *.args.BASE_IMAGE=${BASE_IMAGE} \
-    --set *.args.PYTHON_VERSION=${PYTHON_VERSION} \
-    --set *.args.BUILD_DATE=$(date +'%Y-%m-%d') \
-    --set *.tags="${REGISTRY_}${IMAGE_NAME}:python-${TAG_VERSION}" \
-    --set *.tags="${REGISTRY_}${IMAGE_NAME}:python-${TAG_VERSION}-${GIT_SHA}" \
-    ${_PUSH}
+if [[ -n ${PUSH:+x} ]]; then
+  args+=(--push)
+else
+  args+=(--load)
+fi
 
-# --no-cache \
+[[ -n ${DEBUG:+x} ]] \
+  && printf "\e[1;36m%s\e[0m " "buildx args:" \
+  && printf "\e[36m%s\e[0m\n" "${args[*]}"
 
-# remove builder instance
-docker buildx rm mybuilder
+# build
+docker buildx build "${args[@]}" "$(dirname "$0")/../src/${IMAGE_NAME}"
+BUILD_STATUS="$?"
+unset args
 
-if ${CLEAN}; then
+if [[ "${BUILD_STATUS}" -eq 0 ]]; then
+  printf "\e[1;32m%-8s\e[0m " "Success:"
+  printf "\e[32m%s\e[0m\n" "${SHORT_TAG}"
+else
+  printf "\e[1;31m%-8s\e[0m " "Failure:"
+  printf "\e[31m%s\e[0m\n" "${SHORT_TAG}"
+fi
+# # remove builder instance
+# docker buildx rm mybuilder
+
+if [[ -n ${CLEAN:+x} ]]; then
   # temporarily save list of images with new images
   rm -f .imagelist2 \
-    && printf "%s\n" $(docker image ls -a --format {{.ID}}) > .imagelist2
+    && printf "%s\n" "$(docker image ls -a --format '{{.ID}}')" > .imagelist2
   # remove only the new images we just build
-  docker image rm -f $(comm -13 .imagelist .imagelist2)
+  docker image rm -f "$(comm -13 .imagelist .imagelist2)"
   # remove our tempfiles
   rm -f .imagelist .imagelist2
-
 fi
+
+exit "${BUILD_STATUS}"

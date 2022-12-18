@@ -56,7 +56,7 @@ repos:
           - --strict
   # Lint & Format: Python
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.2
+    rev: v5.11.3
     hooks:
       - id: isort
         name: isort (python)
@@ -80,7 +80,7 @@ repos:
   - repo: local
     hooks:
       - id: hadolint
-        name: Lint Dockerfiles
+        name: hadolint
         description: Runs hadolint to lint Dockerfiles
         language: system
         types: [dockerfile]
@@ -88,7 +88,7 @@ repos:
 
   # Lint: Shell scripts
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.8.0.4
+    rev: v0.9.0.2
     hooks:
       - id: shellcheck
         args: [-x]

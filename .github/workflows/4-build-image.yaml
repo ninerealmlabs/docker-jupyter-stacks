@@ -89,8 +89,8 @@ jobs:
         run: |
           GIT_SHA="${GITHUB_SHA:0:7}"
           PYTHON_TAG="python-${python_version/'.*'/}"
-          SHORT_NAMETAG="${image_name}:${python_tag}"
-          LONG_NAMETAG="${image_name}:${python_tag}-${GIT_SHA}"
+          SHORT_NAMETAG="${image_name}:${PYTHON_TAG}"
+          LONG_NAMETAG="${image_name}:${PYTHON_TAG}-${GIT_SHA}"
           # ------------------------------------------------------------------
           echo "GIT_SHA: ${GIT_SHA}"
           echo "PYTHON_TAG: ${PYTHON_TAG}"

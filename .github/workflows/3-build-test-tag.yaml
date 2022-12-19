@@ -93,7 +93,7 @@ jobs:
     uses: ./.github/workflows/4-test-image.yaml
     with:
       runs_on: ${{ matrix.os }}
-      registry: ${{ inputs.gh_registry }}
+      gh_registry: ${{ inputs.gh_registry }}
       owner: ${{ inputs.owner }}
       image_name: ${{ inputs.image_name }}
       image_digest: ${{ needs.build-image-caller.outputs.image_digest }}

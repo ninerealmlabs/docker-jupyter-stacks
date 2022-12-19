@@ -88,9 +88,9 @@ jobs:
         shell: bash
         run: |
           GIT_SHA="${GITHUB_SHA:0:7}"
-          PYTHON_TAG="python-${python_version/'.*'/}"
-          SHORT_NAMETAG="${image_name}:${PYTHON_TAG}"
-          LONG_NAMETAG="${image_name}:${PYTHON_TAG}-${GIT_SHA}"
+          PYTHON_TAG="python-${PYTHON_VERSION/'.*'/}"
+          SHORT_NAMETAG="${IMAGE_NAME}:${PYTHON_TAG}"
+          LONG_NAMETAG="${IMAGE_NAME}:${PYTHON_TAG}-${GIT_SHA}"
           # ------------------------------------------------------------------
           echo "GIT_SHA: ${GIT_SHA}"
           echo "PYTHON_TAG: ${PYTHON_TAG}"
@@ -102,8 +102,8 @@ jobs:
           echo "short_nametag=${SHORT_NAMETAG}" >> $GITHUB_OUTPUT
           echo "long_nametag=${LONG_NAMETAG}" >> $GITHUB_OUTPUT
         env:
-          python_version: ${{ inputs.python_version }}
-          image_name: ${{ inputs.image_name }}
+          PYTHON_VERSION: ${{ inputs.python_version }}
+          IMAGE_NAME: ${{ inputs.image_name }}
 
       ### https://github.com/docker/build-push-action
       ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md

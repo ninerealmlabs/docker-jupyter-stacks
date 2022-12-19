@@ -1,5 +1,7 @@
 # Introduction
 
+[![workflow-runner](https://github.com/ninerealmlabs/docker-jupyter-stacks/actions/workflows/1-workflow-runner.yaml/badge.svg?event=schedule)](https://github.com/ninerealmlabs/docker-jupyter-stacks/actions/workflows/1-workflow-runner.yaml)
+
 This repo contains the source files for juptyer containers based on [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks).
 
 - [Introduction](#introduction)

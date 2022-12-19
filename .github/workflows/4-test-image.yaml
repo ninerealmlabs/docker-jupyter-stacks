@@ -10,8 +10,8 @@ on: # yamllint disable-line rule:truthy
         description: Github-hosted runner type
         required: true
         type: string
-      registry:
-        description: Source registry (ghcr.io/<owner> or docker.io/<owner>)
+      gh_registry:
+        description: Github registry (ghcr.io/<owner>)
         required: true
         type: string
       owner:
@@ -61,9 +61,17 @@ jobs:
       - name: Pull image 📥
         shell: bash
         run: |
-          docker pull ${{ inputs.registry }}/${{ inputs.owner }}/${{ inputs.image-name }}@${{ inputs.image-digest }}
+          docker pull "${{ inputs.gh_registry }}/${{ inputs.image-name }}@${{ inputs.image-digest }}"
+        # env:
+        #   GH_REGISTRY: ${{ inputs.gh_registry }}
+        #   # OWNER: ${{ inputs.owner }}
+        #   IMAGE_NAME: ${{ inputs.image-name }}
+        #   IMAGE_DIGEST: ${{ inputs.image-digest }}
 
       ### Load and run tests from jupyter/docker-stacks (https://github.com/jupyter/docker-stacks)
       - name: Run tests ✅
         shell: bash
-        run: python3 -m tests.run_tests --short-image-name ${{ inputs.image }} --owner ${{ inputs.owner }}
+        run: python3 -m tests.run_tests --short-image-name ${{ inputs.image-name }} --owner ${{ inputs.owner }}
+        # env:
+        #   OWNER: ${{ inputs.owner }}
+        #   IMAGE_NAME: ${{ inputs.image-name }}

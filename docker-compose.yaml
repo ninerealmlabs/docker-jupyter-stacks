@@ -7,7 +7,7 @@
 version: '3.7'
 
 services:
-  jupyter_env:
+  jupyter:
     image: ${IMG_NAME}
     ports:
       - 8888:8888
@@ -26,8 +26,8 @@ services:
 #   --rm \
 #   -p 8888:8888 \
 #   # --user root \
-#   --mount type=bind,source=~/Documents/~Projects,target=/home/${NB_USER}/work \
+#   --mount type=bind,source=~${MOUNT_PATH},target=/home/${NB_USER}/work \
 #   --env JUPYTER_ENABLE_LAB=yes \
 #   --env CHOWN_HOME=yes \
-#   --name jupyter_env ninerealmlabs/ds_env:python38 \
+#   --name jupyter ${IMG_NAME} \
 #   start.sh jupyter lab

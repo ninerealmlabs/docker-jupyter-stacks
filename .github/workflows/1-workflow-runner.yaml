@@ -41,33 +41,32 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PLATFORMS: "linux/amd64,linux/arm64"
+  platforms: "linux/amd64,linux/arm64"
   gh_registry: ghcr.io/ninerealmlabs
   d_registry: docker.io/ninerealmlabs
-  OWNER: ninerealmlabs
+  owner: ninerealmlabs
 
 jobs:
   export-envs:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
+      platforms: ${{ env.platforms }}
       gh_registry: ${{ env.gh_registry }}
       d_registry: ${{ env.d_registry }}
-      OWNER: ${{ env.OWNER }}
+      owner: ${{ env.owner }}
     steps:
       - run: echo "Exposing env vars to downstream jobs"
 
   python-loop:
     strategy:
       matrix:
-        PYTHON_VERSION: [3.8.*, 3.9.*, 3.10.*]
-    runs-on: ubuntu-22.04
+        python_version: [3.8.*, 3.9.*, 3.10.*]
     needs: [export-envs]
-    steps:
-      - name: build-stack
-        uses: ./.github/workflows/jobs/build-stack.yaml
-        with:
-          PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
-          PLATFORMS: ${{ needs.export-envs.outputs.PLATFORMS }}
-          gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-          d_registry: ${{ needs.export-envs.outputs.d_registry }}
-          OWNER: ${{ needs.export-envs.outputs.OWNER }}
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    uses: ./.github/workflows/2-build-stack.yaml
+    with:
+      python_version: ${{ matrix.python_version }}
+      platforms: ${{ needs.export-envs.outputs.platforms }}
+      gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
+      d_registry: ${{ needs.export-envs.outputs.d_registry }}
+      owner: ${{ needs.export-envs.outputs.owner }}

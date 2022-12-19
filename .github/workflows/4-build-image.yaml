@@ -32,10 +32,18 @@ on: # yamllint disable-line rule:truthy
         required: true
         type: string
     outputs:
-      image_digest: ${{ jobs.build-image-runner.outputs.image_digest }}
-      python_tag: ${{ jobs.build-image-runner.outputs.python_tag }}
-      short_nametag: ${{ jobs.build-image-runner.outputs.short_nametag }}
-      long_nametag: ${{ jobs.build-image-runner.outputs.long_nametag }}
+      python_tag:
+        description: Python version tag (python-<major.minor>)
+        value: ${{ jobs.build-image-runner.outputs.python_tag }}
+      short_nametag:
+        description: Image name and short tag (image:python-<major.minor>)
+        value: ${{ jobs.build-image-runner.outputs.short_nametag }}
+      long_nametag:
+        description: Image name and long tag (image:python-<major.minor>-<sha>)
+        value: ${{ jobs.build-image-runner.outputs.long_nametag }}
+      image_digest:
+        description: Image digest
+        value: ${{ jobs.build-image-runner.outputs.image_digest }}
   workflow_dispatch:
 
 
@@ -129,7 +137,7 @@ jobs:
           docker pull ${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ steps.build.outputs.digest }}
 
     outputs:
-      image_digest: ${{ steps.build.outputs.digest }}
       python_tag: ${{ steps.tags.outputs.python_tag }}
       short_nametag: ${{ steps.tags.outputs.short_nametag }}
       long_nametag: ${{ steps.tags.outputs.long_nametag }}
+      image_digest: ${{ steps.build.outputs.digest }}

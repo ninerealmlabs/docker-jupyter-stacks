@@ -38,10 +38,18 @@ on: # yamllint disable-line rule:truthy
         required: true
         type: string
     outputs:
-      image_digest: ${{ jobs.image-outputs.outputs.image_digest }}
-      # python_tag: ${{ jobs.image-outputs.outputs.python_tag }}
-      # short_nametag: ${{ jobs.image-outputs.outputs.short_nametag }}
-      # long_nametag: ${{ jobs.image-outputs.outputs.long_nametag }}
+      python_tag:
+        description: Python version tag (python-<major.minor>)
+        value: ${{ jobs.build-image-caller.outputs.python_tag }}
+      short_nametag:
+        description: Image name and short tag (image:python-<major.minor>)
+        value: ${{ jobs.build-image-caller.outputs.short_nametag }}
+      long_nametag:
+        description: Image name and long tag (image:python-<major.minor>-<sha>)
+        value: ${{ jobs.build-image-caller.outputs.long_nametag }}
+      image_digest:
+        description: Image digest
+        value: ${{ jobs.build-image-caller.outputs.image_digest }}
   workflow_dispatch:
 
 env:
@@ -65,10 +73,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-image-caller
     outputs:
-      image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
       # python_tag: ${{ jobs.build-image-caller.outputs.python_tag }}
       # short_nametag: ${{ jobs.build-image-caller.outputs.short_nametag }}
       # long_nametag: ${{ jobs.build-image-caller.outputs.long_nametag }}
+      image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
     steps:
       - run: echo "Return build-image-caller outputs as output of this workflow"
 

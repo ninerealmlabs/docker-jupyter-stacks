@@ -33,6 +33,7 @@ jobs:
   # runs-on: ubuntu-22.04
   base-env:
     # needs: []
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-steps/build-test-tag.yaml
     with:
       SOURCE_IMAGE: jupyter/minimal-notebook:latest
@@ -43,10 +44,10 @@ jobs:
       GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
       D_REGISTRY: ${{ inputs.D_REGISTRY }}
       OWNER: ${{ inputs.OWNER }}
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
 
   ds-env:
     needs: [base-env]
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-steps/build-test-tag.yaml
     with:
       SOURCE_IMAGE: ghcr.io/ninerealmlabs/base-env@${{ needs.base-env.outputs.IMAGE_DIGEST }}
@@ -57,10 +58,10 @@ jobs:
       GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
       D_REGISTRY: ${{ inputs.D_REGISTRY }}
       OWNER: ${{ inputs.OWNER }}
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
 
   nlp-env:
     needs: [ds-env]
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-steps/build-test-tag.yaml
     with:
       SOURCE_IMAGE: ghcr.io/ninerealmlabs/ds-env@${{ needs.ds-env.outputs.IMAGE_DIGEST }}
@@ -72,10 +73,9 @@ jobs:
       D_REGISTRY: ${{ inputs.D_REGISTRY }}
       OWNER: ${{ inputs.OWNER }}
 
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-
   ts-env:
     needs: [ds-env]
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-steps/build-test-tag.yaml
     with:
       SOURCE_IMAGE: ghcr.io/ninerealmlabs/ds-env@${{ needs.ds-env.outputs.IMAGE_DIGEST }}
@@ -86,10 +86,10 @@ jobs:
       GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
       D_REGISTRY: ${{ inputs.D_REGISTRY }}
       OWNER: ${{ inputs.OWNER }}
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
 
   web-env:
     needs: [nlp-env]
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-steps/build-test-tag.yaml
     with:
       SOURCE_IMAGE: ghcr.io/ninerealmlabs/nlp-env@${{ needs.nlp-env.outputs.IMAGE_DIGEST }}
@@ -100,4 +100,3 @@ jobs:
       GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
       D_REGISTRY: ${{ inputs.D_REGISTRY }}
       OWNER: ${{ inputs.OWNER }}
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'

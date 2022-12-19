@@ -50,6 +50,7 @@ env:
 
 jobs:
   build-image-caller:
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/3-tasks/build-image.yaml
     with:
       SOURCE_IMAGE: ${{ inputs.SOURCE_IMAGE }}
@@ -58,7 +59,6 @@ jobs:
       PLATFORMS: ${{ inputs.PLATFORMS }}
       GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
       OWNER: ${{ inputs.OWNER }}
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
 
   # get the outputs of 'build-image-caller' and set as outputs for this workflow
   image-outputs:
@@ -82,6 +82,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: build-image-caller
 
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/3-tasks/test-image.yaml
     with:
       RUNS_ON: ${{ matrix.os }}
@@ -89,7 +90,6 @@ jobs:
       OWNER: ${{ inputs.OWNER }}
       IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
       IMAGE_DIGEST: ${{ needs.build-image-caller.outputs.IMAGE_DIGEST }}
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
 
   ### Push to DockerHub if main branch / "release"
   tag-image-caller:
@@ -100,7 +100,7 @@ jobs:
 
     # push to registry on main branch only
     # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-    if: ${{ BRANCH_NAME }} == 'main'
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks' && ${{ BRANCH_NAME }} == 'main'
     uses: ./.github/workflows/3-tasks/tag-image.yaml
     with:
       GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
@@ -109,4 +109,3 @@ jobs:
       IMAGE_DIGEST: ${{ needs.build-image-caller.outputs.IMAGE_DIGEST }}
       SHORT_NAMETAG: ${{ needs.build-image-caller.outputs.SHORT_NAMETAG }}
       LONG_NAMETAG: ${{ needs.build-image-caller.outputs.LONG_NAMETAG }}
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'

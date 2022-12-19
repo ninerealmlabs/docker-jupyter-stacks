@@ -31,7 +31,7 @@ jobs:
           pip install --upgrade pre-commit
 
       - name: Run pre-commit hooks ✅
-        run: pre-commit run --all-files
+        run: SKIP=hadolint pre-commit run --all-files
 
       # linting multiple dockerfiles: https://github.com/hadolint/hadolint-action/issues/3
       - name: Lint Dockerfile

@@ -79,16 +79,16 @@ jobs:
         id: date
         shell: bash
         run: |
-          DATE=$(date +'%Y%m%d')
+          DATE="$(date +'%Y-%m-%d')"
           echo "DATE: ${DATE}"
-          echo "::set-output name=date::${DATE}"
+          echo "date=${DATE}" >> $GITHUB_OUTPUT
 
       - name: Create tags 🏷
         id: tags
         shell: bash
         run: |
           GIT_SHA="${GITHUB_SHA:0:7}"
-          PYTHON_TAG="python-$(echo ${python_version/'.*'/}"
+          PYTHON_TAG="python-${python_version/'.*'/}"
           SHORT_NAMETAG="${image_name}:${python_tag}"
           LONG_NAMETAG="${image_name}:${python_tag}-${GIT_SHA}"
           # ------------------------------------------------------------------
@@ -97,10 +97,10 @@ jobs:
           echo "SHORT_NAMETAG: ${SHORT_NAMETAG}"
           echo "LONG_NAMETAG: ${LONG_NAMETAG}"
           # ------------------------------------------------------------------
-          echo "::set-output name=git_sha::${GIT_SHA}"
-          echo "::set-output name=python_tag::${PYTHON_TAG}"
-          echo "::set-output name=short_nametag::${SHORT_NAMETAG}"
-          echo "::set-output name=long_nametag::${LONG_NAMETAG}"
+          echo "git_sha=${GIT_SHA}" >> $GITHUB_OUTPUT
+          echo "python_tag=${PYTHON_TAG}" >> $GITHUB_OUTPUT
+          echo "short_nametag=${SHORT_NAMETAG}" >> $GITHUB_OUTPUT
+          echo "long_nametag=${LONG_NAMETAG}" >> $GITHUB_OUTPUT
         env:
           python_version: ${{ inputs.python_version }}
           image_name: ${{ inputs.image_name }}

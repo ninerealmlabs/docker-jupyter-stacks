@@ -7,11 +7,11 @@ on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
       gh_registry:
-        description: Github registry (ghcr.io/<OWNER>)
+        description: Github registry (ghcr.io/<owner>)
         required: true
         type: string
       d_registry:
-        description: Docker registry (docker.io/<OWNER>)
+        description: Docker registry (docker.io/<owner>)
         required: true
         type: string
       image_name:

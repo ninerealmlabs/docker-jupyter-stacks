@@ -11,7 +11,7 @@ on: # yamllint disable-line rule:truthy
         required: true
         type: string
       registry:
-        description: Source registry (ghcr.io/<OWNER> or docker.io/<OWNER>)
+        description: Source registry (ghcr.io/<owner> or docker.io/<owner>)
         required: true
         type: string
       owner:

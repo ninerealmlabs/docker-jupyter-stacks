@@ -61,7 +61,7 @@ jobs:
       - name: Pull image 📥
         shell: bash
         run: |
-          docker pull "${{ inputs.gh_registry }}/${{ inputs.image-name }}@${{ inputs.image-digest }}"
+          docker pull "${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}"
         # env:
         #   GH_REGISTRY: ${{ inputs.gh_registry }}
         #   # OWNER: ${{ inputs.owner }}
@@ -71,7 +71,7 @@ jobs:
       ### Load and run tests from jupyter/docker-stacks (https://github.com/jupyter/docker-stacks)
       - name: Run tests ✅
         shell: bash
-        run: python3 -m tests.run_tests --short-image-name ${{ inputs.image-name }} --owner ${{ inputs.owner }}
+        run: python3 -m tests.run_tests --short-image-name ${{ inputs.image_name }} --owner ${{ inputs.owner }}
         # env:
         #   OWNER: ${{ inputs.owner }}
         #   IMAGE_NAME: ${{ inputs.image-name }}

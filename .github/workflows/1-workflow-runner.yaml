@@ -46,6 +46,13 @@ env:
   d_registry: docker.io/ninerealmlabs
   owner: ninerealmlabs
 
+# # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+# # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+# permissions:
+#   actions: read
+#   contents: read
+#   packages: write
+
 jobs:
   export-envs:
     runs-on: ubuntu-latest

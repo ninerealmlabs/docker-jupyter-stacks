@@ -6,23 +6,23 @@ name: test-image
 on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
-      RUNS_ON:
+      runs_on:
         description: Github-hosted runner type
         required: true
         type: string
-      REGISTRY:
+      registry:
         description: Source registry (ghcr.io/<OWNER> or docker.io/<OWNER>)
         required: true
         type: string
-      OWNER:
+      owner:
         description: Registry name
         required: true
         type: string
-      IMAGE_NAME:
+      image_name:
         description: Image name
         required: true
         type: string
-      IMAGE_DIGEST:
+      image_digest:
         description: SHA digest of image
         required: true
         type: string
@@ -33,8 +33,8 @@ jobs:
   ### possible issues with macOS/arm64
   # https://github.com/github/roadmap/issues/528
   # https://github.com/actions/setup-python/issues/547
-  test-image:
-    runs-on: ${{ inputs.RUNS_ON }}
+  test-image-runner:
+    runs-on: ${{ inputs.runs_on }}
     steps:
       - name: Checkout Repo 🛒
         uses: actions/checkout@v3
@@ -51,13 +51,12 @@ jobs:
           pip install --upgrade pip
           pip install --upgrade -r requirements-dev.txt
 
-      # # should be unneeded since using 'composite'
-      # - name: Login to GitHub Container Registry
-      #   uses: docker/login-action@v2
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.repository_owner }}
-      #     password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull image 📥
         shell: bash

@@ -66,4 +66,6 @@ retag, and push them to docker.io (or quay.io)
 
 ## References
 
+- ['Workflows' defined inside `jobs`; 'Actions' defined inside `steps`](https://github.com/actions/checkout/issues/692#issuecomment-1259789797)
 - [Reusable workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows)
+- [Actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions)

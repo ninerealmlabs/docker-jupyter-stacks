@@ -6,27 +6,27 @@ name: tag-image
 on: # yamllint disable-line rule:truthy
   workflow_call:
     inputs:
-      GH_REGISTRY:
+      gh_registry:
         description: Github registry (ghcr.io/<OWNER>)
         required: true
         type: string
-      D_REGISTRY:
+      d_registry:
         description: Docker registry (docker.io/<OWNER>)
         required: true
         type: string
-      IMAGE_NAME:
+      image_name:
         description: Image name
         required: true
         type: string
-      IMAGE_DIGEST:
+      image_digest:
         description: SHA digest of image
         required: true
         type: string
-      SHORT_NAMETAG:
+      short_nametag:
         description: Image name and short tag (image:python-<major.minor>)
         required: true
         type: string
-      LONG_NAMETAG:
+      long_nametag:
         description: Image name and long tag (image:python-<major.minor>-<sha>)
         required: true
         type: string
@@ -37,7 +37,7 @@ jobs:
   ### possible issues with macOS/arm64
   # https://github.com/github/roadmap/issues/528
   # https://github.com/actions/setup-python/issues/547
-  tag-image:
+  tag-image-runner:
     runs-on: ubuntu-latest
 
     # push to registry on main branch only
@@ -52,7 +52,7 @@ jobs:
       - name: Push image to alternate registries 💾
         uses: akhilerm/tag-push-action@v2.1.0
         with:
-          src: ${{ inputs.GH_REGISTRY }}/${{ inputs.IMAGE_NAME }}@${{ inputs.IMAGE_DIGEST }}
+          src: ${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}
           dst: |
-            ${{ inputs.D_REGISTRY }}/${{ inputs.SHORT_NAMETAG }}
-            ${{ inputs.D_REGISTRY }}/${{ inputs.LONG_NAMETAG }}
+            ${{ inputs.d_registry }}/${{ inputs.short_nametag }}
+            ${{ inputs.d_registry }}/${{ inputs.long_nametag }}

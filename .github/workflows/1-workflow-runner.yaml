@@ -42,16 +42,16 @@ concurrency:
 
 env:
   PLATFORMS: "linux/amd64,linux/arm64"
-  GH_REGISTRY: ghcr.io/ninerealmlabs
-  D_REGISTRY: docker.io/ninerealmlabs
+  gh_registry: ghcr.io/ninerealmlabs
+  d_registry: docker.io/ninerealmlabs
   OWNER: ninerealmlabs
 
 jobs:
   export-envs:
     runs-on: ubuntu-22.04
     outputs:
-      GH_REGISTRY: ${{ env.GH_REGISTRY }}
-      D_REGISTRY: ${{ env.D_REGISTRY }}
+      gh_registry: ${{ env.gh_registry }}
+      d_registry: ${{ env.d_registry }}
       OWNER: ${{ env.OWNER }}
     steps:
       - run: echo "Exposing env vars to downstream jobs"
@@ -68,6 +68,6 @@ jobs:
         with:
           PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
           PLATFORMS: ${{ needs.export-envs.outputs.PLATFORMS }}
-          GH_REGISTRY: ${{ needs.export-envs.outputs.GH_REGISTRY }}
-          D_REGISTRY: ${{ needs.export-envs.outputs.D_REGISTRY }}
+          gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
+          d_registry: ${{ needs.export-envs.outputs.d_registry }}
           OWNER: ${{ needs.export-envs.outputs.OWNER }}

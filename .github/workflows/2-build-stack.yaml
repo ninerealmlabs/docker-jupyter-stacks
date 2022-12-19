@@ -15,11 +15,11 @@ on: # yamllint disable-line rule:truthy
         description: Image platform architecture(s)
         required: true
         type: string
-      GH_REGISTRY:
+      gh_registry:
         description: Github registry (ghcr.io/<OWNER>)
         required: true
         type: string
-      D_REGISTRY:
+      d_registry:
         description: Docker registry (docker.io/<OWNER>)
         required: true
         type: string
@@ -41,8 +41,8 @@ jobs:
       # ------------------------------------------
       PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
       PLATFORMS: ${{ inputs.PLATFORMS }}
-      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
-      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      gh_registry: ${{ inputs.gh_registry }}
+      d_registry: ${{ inputs.d_registry }}
       OWNER: ${{ inputs.OWNER }}
 
   ds-env:
@@ -55,8 +55,8 @@ jobs:
       # ------------------------------------------
       PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
       PLATFORMS: ${{ inputs.PLATFORMS }}
-      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
-      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      gh_registry: ${{ inputs.gh_registry }}
+      d_registry: ${{ inputs.d_registry }}
       OWNER: ${{ inputs.OWNER }}
 
   nlp-env:
@@ -69,8 +69,8 @@ jobs:
       # ------------------------------------------
       PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
       PLATFORMS: ${{ inputs.PLATFORMS }}
-      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
-      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      gh_registry: ${{ inputs.gh_registry }}
+      d_registry: ${{ inputs.d_registry }}
       OWNER: ${{ inputs.OWNER }}
 
   ts-env:
@@ -83,8 +83,8 @@ jobs:
       # ------------------------------------------
       PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
       PLATFORMS: ${{ inputs.PLATFORMS }}
-      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
-      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      gh_registry: ${{ inputs.gh_registry }}
+      d_registry: ${{ inputs.d_registry }}
       OWNER: ${{ inputs.OWNER }}
 
   web-env:
@@ -97,6 +97,6 @@ jobs:
       # ------------------------------------------
       PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
       PLATFORMS: ${{ inputs.PLATFORMS }}
-      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
-      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      gh_registry: ${{ inputs.gh_registry }}
+      d_registry: ${{ inputs.d_registry }}
       OWNER: ${{ inputs.OWNER }}

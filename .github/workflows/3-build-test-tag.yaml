@@ -52,9 +52,9 @@ on: # yamllint disable-line rule:truthy
         value: ${{ jobs.build-image-caller.outputs.image_digest }}
   workflow_dispatch:
 
-env:
-  # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-  branch_name: ${{ GITHUB_HEAD_REF || GITHUB_REF_NAME }}
+# env:
+#   # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
+#   branch_name: ${{ GITHUB_HEAD_REF || GITHUB_REF_NAME }}
 
 jobs:
   build-image-caller:
@@ -106,7 +106,8 @@ jobs:
 
     # push to registry on main branch only
     # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks' && ${{ env.branch_name }} == 'main'
+    # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks' && ${{ github.head_ref || github.ref_name }} == 'main'
     uses: ./.github/workflows/4-tag-image.yaml
     with:
       gh_registry: ${{ inputs.gh_registry }}

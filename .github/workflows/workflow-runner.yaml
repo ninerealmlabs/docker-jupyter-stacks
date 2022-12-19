@@ -1,0 +1,73 @@
+---
+name: workflow-runner
+# --- Description ------------------------------------------------------------
+# "Outermost" workflow
+# - Triggers on cron, PR, push-to-main, or manual
+# - Exposes 'static' environment variables to subsequent tasks
+# - Sets up stack build for each version of python
+# ----------------------------------------------------------------------------
+
+on: # yamllint disable-line rule:truthy
+  schedule:
+    # # at: 01:00 on the first of every month
+    - cron: "0 1 1 * *"
+  pull_request:
+    paths-ignore:
+      # - ".github/**"
+      - docs/**
+      - scripts/**
+      - '*.md'
+      - '**/.gitignore'
+      - docker-compose.yaml
+      - LICENSE
+  push:
+    branches:
+      - main
+    paths-ignore:
+      # - ".github/**"
+      - docs/**
+      - scripts/**
+      - '*.md'
+      - '**/.gitignore'
+      - docker-compose.yaml
+      - LICENSE
+  workflow_dispatch:
+
+# https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  # only cancel in-progress jobs or runs for the current workflow - matches against branch & tags
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PLATFORMS: "linux/amd64,linux/arm64"
+  GH_REGISTRY: ghcr.io/ninerealmlabs
+  D_REGISTRY: docker.io/ninerealmlabs
+  OWNER: ninerealmlabs
+
+jobs:
+  export-envs:
+    runs-on: ubuntu-22.04
+    outputs:
+      GH_REGISTRY: ${{ env.GH_REGISTRY }}
+      D_REGISTRY: ${{ env.D_REGISTRY }}
+      OWNER: ${{ env.OWNER }}
+    steps:
+      - run: echo "Exposing env vars to downstream jobs"
+
+  python-loop:
+    strategy:
+      matrix:
+        PYTHON_VERSION: [3.8.*, 3.9.*, 3.10.*]
+    runs-on: ubuntu-22.04
+    needs: [export-envs]
+    steps:
+      - name: build-stack
+        uses: ./.github/workflows/jobs/build-stack.yaml
+        with:
+          PYTHON_VERSION: ${{ matrix.PYTHON_VERSION }}
+          PLATFORMS: ${{ needs.export-envs.outputs.PLATFORMS }}
+          GH_REGISTRY: ${{ needs.export-envs.outputs.GH_REGISTRY }}
+          D_REGISTRY: ${{ needs.export-envs.outputs.D_REGISTRY }}
+          OWNER: ${{ needs.export-envs.outputs.OWNER }}

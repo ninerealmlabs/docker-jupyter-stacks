@@ -41,8 +41,15 @@ base-env - customizes `jupyter/minimal-notebook`
           └ web-env - add packages/binaries for web scraping, including a chromedriver/geckodriver binary
 ```
 
-> Images may have compatibility issues preventing builds depending
-> on platform architecture and python version.
+_Images may have compatibility issues preventing builds depending_
+_on platform architecture and python version._
+
+> If image dependencies change, they must be reflected in:
+>
+> - [./README.md (at repo root)](./README.md)
+> - [./scripts/dependencies.txt](./scripts/dependencies.txt)
+> - [./tests/images-hierarcy.py](./tests/images-hierarcy.py)
+> - [./.github/workflows/1-jobs/build-stack.yaml](./.github/workflows/1-jobs/build-stack.yaml)
 
 ## Features
 

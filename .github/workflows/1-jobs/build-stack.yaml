@@ -1,0 +1,103 @@
+---
+name: build-stack
+# --- Description ------------------------------------------------------------
+# Workflow that manages image dependencies & build order
+# ----------------------------------------------------------------------------
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      PYTHON_VERSION:
+        description: python version
+        required: true
+        type: string
+      PLATFORMS:
+        description: Image platform architecture(s)
+        required: true
+        type: string
+      GH_REGISTRY:
+        description: Github registry (ghcr.io/<OWNER>)
+        required: true
+        type: string
+      D_REGISTRY:
+        description: Docker registry (docker.io/<OWNER>)
+        required: true
+        type: string
+      OWNER:
+        description: Registry name
+        required: true
+        type: string
+  workflow_dispatch:
+
+jobs:
+  # runs-on: ubuntu-22.04
+  base-env:
+    # needs: []
+    uses: ./.github/workflows/2-steps/build-test-tag.yaml
+    with:
+      SOURCE_IMAGE: jupyter/minimal-notebook:latest
+      IMAGE_NAME: base-env
+      # ------------------------------------------
+      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+      PLATFORMS: ${{ inputs.PLATFORMS }}
+      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
+      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      OWNER: ${{ inputs.OWNER }}
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+
+  ds-env:
+    needs: [base-env]
+    uses: ./.github/workflows/2-steps/build-test-tag.yaml
+    with:
+      SOURCE_IMAGE: ghcr.io/ninerealmlabs/base-env@${{ needs.base-env.outputs.IMAGE_DIGEST }}
+      IMAGE_NAME: ds-env
+      # ------------------------------------------
+      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+      PLATFORMS: ${{ inputs.PLATFORMS }}
+      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
+      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      OWNER: ${{ inputs.OWNER }}
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+
+  nlp-env:
+    needs: [ds-env]
+    uses: ./.github/workflows/2-steps/build-test-tag.yaml
+    with:
+      SOURCE_IMAGE: ghcr.io/ninerealmlabs/ds-env@${{ needs.ds-env.outputs.IMAGE_DIGEST }}
+      IMAGE_NAME: nlp-env
+      # ------------------------------------------
+      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+      PLATFORMS: ${{ inputs.PLATFORMS }}
+      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
+      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      OWNER: ${{ inputs.OWNER }}
+
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+
+  ts-env:
+    needs: [ds-env]
+    uses: ./.github/workflows/2-steps/build-test-tag.yaml
+    with:
+      SOURCE_IMAGE: ghcr.io/ninerealmlabs/ds-env@${{ needs.ds-env.outputs.IMAGE_DIGEST }}
+      IMAGE_NAME: ts-env
+      # ------------------------------------------
+      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+      PLATFORMS: ${{ inputs.PLATFORMS }}
+      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
+      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      OWNER: ${{ inputs.OWNER }}
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+
+  web-env:
+    needs: [nlp-env]
+    uses: ./.github/workflows/2-steps/build-test-tag.yaml
+    with:
+      SOURCE_IMAGE: ghcr.io/ninerealmlabs/nlp-env@${{ needs.nlp-env.outputs.IMAGE_DIGEST }}
+      IMAGE_NAME: web-env
+      # ------------------------------------------
+      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+      PLATFORMS: ${{ inputs.PLATFORMS }}
+      GH_REGISTRY: ${{ inputs.GH_REGISTRY }}
+      D_REGISTRY: ${{ inputs.D_REGISTRY }}
+      OWNER: ${{ inputs.OWNER }}
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'

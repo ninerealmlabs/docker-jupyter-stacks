@@ -1,5 +1,5 @@
 ---
-name: test-image
+name: tag-image
 # description:
 # Gets image from github registry, retags, and pushes to docker registry
 
@@ -50,7 +50,6 @@ jobs:
 
       # copy image from ghcr to dockerhub
       - name: Push image to alternate registries 💾
-        # uses: akhilerm/tag-push-action@main
         uses: akhilerm/tag-push-action@v2.1.0
         with:
           src: ${{ inputs.GH_REGISTRY }}/${{ inputs.IMAGE_NAME }}@${{ inputs.IMAGE_DIGEST }}

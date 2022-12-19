@@ -1,7 +1,8 @@
 ---
-name: test-image
-# description:
-# Load and run tests from jupyter/docker-stacks (https://github.com/jupyter/docker-stacks)
+name: build-image
+# --- Description ------------------------------------------------------------
+# Build image using docker buildx for multi-arch support
+# ----------------------------------------------------------------------------
 
 on: # yamllint disable-line rule:truthy
   workflow_call:
@@ -14,12 +15,12 @@ on: # yamllint disable-line rule:truthy
         description: Image name
         required: true
         type: string
-      PLATFORMS:
-        description: Image platform architectures
-        required: true
-        type: string
       PYTHON_VERSION:
         description: python version
+        required: true
+        type: string
+      PLATFORMS:
+        description: Image platform architectures
         required: true
         type: string
       GH_REGISTRY:
@@ -30,12 +31,16 @@ on: # yamllint disable-line rule:truthy
         description: Registry name
         required: true
         type: string
+    outputs:
+      IMAGE_DIGEST: ${{ jobs.build-image-runner.outputs.IMAGE_DIGEST }}
+      PYTHON_TAG: ${{ jobs.build-image-runner.outputs.PYTHON_TAG }}
+      SHORT_NAMETAG: ${{ jobs.build-image-runner.outputs.SHORT_NAMETAG }}
+      LONG_NAMETAG: ${{ jobs.build-image-runner.outputs.LONG_NAMETAG }}
   workflow_dispatch:
 
 
 jobs:
-
-  build-image:
+  build-image-runner:
     runs-on: ubuntu-latest
 
     steps:
@@ -74,42 +79,23 @@ jobs:
         id: tags
         shell: bash
         run: |
+          GIT_SHA="${GITHUB_SHA:0:7}"
           PYTHON_TAG="python-$(echo ${PYTHON_VERSION/'.*'/}"
-          SHA_TAG="${GITHUB_SHA:0:7}"
           SHORT_NAMETAG="${IMAGE_NAME}:${PYTHON_TAG}"
-          LONG_NAMETAG="${IMAGE_NAME}:${PYTHON_TAG}-${SHA_TAG}"
-          #---
+          LONG_NAMETAG="${IMAGE_NAME}:${PYTHON_TAG}-${GIT_SHA}"
+          # ------------------------------------------------------------------
+          echo "GIT_SHA: ${GIT_SHA}"
           echo "PYTHON_TAG: ${PYTHON_TAG}"
-          echo "SHA_TAG: ${SHA_TAG}"
           echo "SHORT_NAMETAG: ${SHORT_NAMETAG}"
           echo "LONG_NAMETAG: ${LONG_NAMETAG}"
-          #---
+          # ------------------------------------------------------------------
+          echo "::set-output name=GIT_SHA::${GIT_SHA}"
           echo "::set-output name=PYTHON_TAG::${PYTHON_TAG}"
-          echo "::set-output name=SHA_TAG::${SHA_TAG}"
           echo "::set-output name=SHORT_NAMETAG::${SHORT_NAMETAG}"
           echo "::set-output name=LONG_NAMETAG::${LONG_NAMETAG}"
         env:
           PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
           IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
-
-      - name: Identify source ℹ️
-        id: source
-        shell: bash
-        run: |
-          # set source nametag depending on whether part of stack
-          if [[ "${SOURCE_IMAGE}" == *"${OWNER}"* ]]; then
-            SOURCE_NAMETAG="${SOURCE_IMAGE}:${PYTHON_TAG}"
-          else
-            SOURCE_NAMETAG="${SOURCE_IMAGE}:latest"
-          fi
-          #---
-          echo "SOURCE_NAMETAG: ${SOURCE_NAMETAG}"
-          #---
-          echo "::set-output name=SOURCE_NAMETAG::${SOURCE_NAMETAG}"
-        env:
-          SOURCE_IMAGE: ${{ inputs.SOURCE_IMAGE }}
-          OWNER: ${{ inputs.OWNER }}
-          PYTHON_TAG: ${{ steps.tags.outputs.PYTHON_TAG }}
 
       ### https://github.com/docker/build-push-action
       ### https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md
@@ -122,9 +108,9 @@ jobs:
           context: src/${{ inputs.IMAGE_NAME }}
           # file: ./Dockerfile
           build-args: |
-            SOURCE_IMAGE=${{ steps.source.outputs.SOURCE_NAMETAG }}
+            SOURCE_IMAGE=${{ inputs.SOURCE_IMAGE }}
             PYTHON_VERSION=${{ inputs.PYTHON_VERSION }}
-            GIT_COMMIT=${{ steps.tags.outputs.SHA_TAG }}
+            GIT_COMMIT=${{ steps.tags.outputs.GIT_SHA }}
             BUILD_DATE=${{ steps.date.outputs.DATE }}
           # cache-from: type=gha
           cache-to: type=registry,ref=${{ inputs.GH_REGISTRY }}/${{ inputs.IMAGE_NAME }}:buildcache,mode=max
@@ -143,9 +129,7 @@ jobs:
           docker pull ${{ inputs.GH_REGISTRY }}/${{ inputs.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
 
     outputs:
-      # IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
       IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
       PYTHON_TAG: ${{ steps.tags.outputs.PYTHON_TAG }}
-      # SHA_TAG: ${{ steps.tags.outputs.SHA_TAG }}
       SHORT_NAMETAG: ${{ steps.tags.outputs.SHORT_NAMETAG }}
       LONG_NAMETAG: ${{ steps.tags.outputs.LONG_NAMETAG }}

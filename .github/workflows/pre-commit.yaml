@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repo ⚡️
+      - name: Checkout Repo 🛒
         uses: actions/checkout@v3
 
       - name: Set Up Python 🐍
@@ -34,7 +34,7 @@ jobs:
         run: SKIP=hadolint pre-commit run --all-files
 
       # linting multiple dockerfiles: https://github.com/hadolint/hadolint-action/issues/3
-      - name: Lint Dockerfile
+      - name: Lint Dockerfile ✅
         uses: hadolint/hadolint-action@v3.0.0
         with:
           dockerfile: "Dockerfile"

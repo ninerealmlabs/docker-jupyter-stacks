@@ -65,7 +65,7 @@ jobs:
       - run: echo "Exposing env vars to downstream jobs"
 
   # python loop can run in parallel
-  build-loop:
+  build-stack-caller:
     strategy:
       # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
       matrix:

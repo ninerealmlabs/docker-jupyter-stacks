@@ -104,7 +104,7 @@ jobs:
   tag-image-caller:
     needs:
       - build-image-caller
-      - test-image-caller
+      # - test-image-caller
 
     # push to registry on main branch only
     # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables

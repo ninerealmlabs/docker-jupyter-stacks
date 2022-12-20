@@ -50,7 +50,7 @@ on: # yamllint disable-line rule:truthy
 jobs:
   build-image-runner:
     runs-on: ubuntu-latest
-
+    continue-on-error: true
     steps:
       - name: Checkout Repo 🛒
         uses: actions/checkout@v3

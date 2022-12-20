@@ -30,7 +30,6 @@ on: # yamllint disable-line rule:truthy
   workflow_dispatch:
 
 jobs:
-  # runs-on: ubuntu-22.04
   base-env:
     # needs: []
     if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'

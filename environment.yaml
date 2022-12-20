@@ -1,0 +1,40 @@
+---
+name: jupyterlab
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip
+  - black
+  - colorama
+  - flake8
+  - flake8-bugbear
+  - flake8-builtins
+  - flake8-colors
+  - flake8-comprehensions
+  - flake8-isort
+  - isort
+  - markdown
+  - numba
+  - numpydoc
+  - openpyxl
+  - pep8
+  - pep8-naming
+  - protobuf
+  - pycodestyle
+  - pylint
+  - pytest
+  - python-dateutil
+  - python-dotenv
+  - pyyaml
+  ### docker image tests; also in 'requirements-dev.txt'
+  # - docker
+  - plumbum
+  # - pre-commit
+  # # `pytest-xdist` is a plugin that provides the `--numprocesses` flag,
+  # # allowing us to run `pytest` tests in parallel
+  # - pytest-xdist
+  - requests
+  - tabulate
+  - pip:
+      - docker

@@ -76,7 +76,7 @@ jobs:
         #   IMAGE_DIGEST: ${{ inputs.image-digest }}
 
       ### Load and run tests from jupyter/docker-stacks (https://github.com/jupyter/docker-stacks)
-      - name: Run tests ✅
+      - name: Run tests 🧪
         shell: bash
         run: python3 -m tests.run_tests --short-image-name ${{ inputs.image_name }} --owner ${{ inputs.owner }}
         # env:

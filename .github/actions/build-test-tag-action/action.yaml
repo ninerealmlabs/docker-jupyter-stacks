@@ -1,0 +1,102 @@
+---
+name: build-test-tag
+description: calls build, test, and tag actions
+# --- Description ------------------------------------------------------------
+# - Builds (multi-arch) docker image & caches to ghcr.io (build-image.yaml)
+# - Runs test (test-image.yaml)
+# - Retags & pushes to docker registry (tag-image.yaml)
+# ----------------------------------------------------------------------------
+inputs:
+  source_image:
+    description: Parent/Source image name (repository/name)
+    required: true
+  image_name:
+    description: Image name
+    required: true
+  python_version:
+    description: python version
+    required: true
+  platforms:
+    description: Image platform architectures
+    required: true
+  gh_registry:
+    description: Github registry (ghcr.io/<owner>)
+    required: true
+  d_registry:
+    description: Docker registry (docker.io/<owner>)
+    required: true
+  owner:
+    description: Registry name
+    required: true
+outputs:
+  python_tag:
+    description: Python version tag (python-<major.minor>)
+    value: ${{ jobs.build-image-caller.outputs.python_tag }}
+  short_nametag:
+    description: Image name and short tag (image:python-<major.minor>)
+    value: ${{ jobs.build-image-caller.outputs.short_nametag }}
+  long_nametag:
+    description: Image name and long tag (image:python-<major.minor>-<sha>)
+    value: ${{ jobs.build-image-caller.outputs.long_nametag }}
+  image_digest:
+    description: Image digest
+    value: ${{ jobs.build-image-caller.outputs.image_digest }}
+
+runs:
+  using: composite
+  steps:
+    ### should completed outside of Action and apply inside
+    ### since 'using: composite'
+    # - name: Checkout Repo 🛒
+    #   uses: actions/checkout@v3
+
+    # - name: Login to GitHub Container Registry ✅
+    #   uses: docker/login-action@v2
+    #   with:
+    #     registry: ghcr.io
+    #     username: ${{ github.repository_owner }}
+    #     password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build Image 🛠
+      id: build
+      uses: ./.github/actions/build-image-action
+      with:
+        source_image: ${{ inputs.source_image }}
+        image_name: ${{ inputs.image_name }}
+        python_version: ${{ inputs.python_version }}
+        platforms: ${{ inputs.platforms }}
+        gh_registry: ${{ inputs.gh_registry }}
+        owner: ${{ inputs.owner }}
+
+    - name: Test Image ✅
+      id: test
+      uses: ./.github/actions/test-image-action
+      with:
+        gh_registry: ${{ inputs.gh_registry }}
+        owner: ${{ inputs.owner }}
+        image_name: ${{ inputs.image_name }}
+        image_digest: ${{ steps.build.outputs.digest }}
+
+    # # push to registry on main branch only
+    # - name: Login to DockerHub ✅
+    #   if: |
+    #     github.repository == 'ninerealmlabs/docker-jupyter-stacks' &&
+    #     github.ref_name == 'main'
+    #   uses: docker/login-action@v2
+    #   with:
+    #     username: ${{ secrets.DOCKER_USER }}
+    #     password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Tag Image 🏷
+      id: tag
+      if: |
+          github.repository == 'ninerealmlabs/docker-jupyter-stacks' &&
+          github.ref_name == 'main'
+      uses: ./.github/actions/tag-image-action
+      with:
+        gh_registry: ${{ inputs.gh_registry }}
+        d_registry: ${{ inputs.d_registry }}
+        image_name: ${{ inputs.image_name }}
+        image_digest: ${{ steps.build.outputs.digest }}
+        short_nametag: ${{ steps.build.outputs.short_nametag }}
+        long_nametag: ${{ steps.build.outputs.long_nametag }}

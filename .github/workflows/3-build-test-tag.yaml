@@ -57,69 +57,58 @@ on: # yamllint disable-line rule:truthy
 #   branch_name: ${{ GITHUB_HEAD_REF || GITHUB_REF_NAME }}
 
 jobs:
-  build-image-caller:
+  build-image:
+    runs-on: self-hosted # ubuntu-latest
+
+    continue-on-error: true
     if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/4-build-image.yaml
-    secrets: inherit
-    with:
-      source_image: ${{ inputs.source_image }}
-      image_name: ${{ inputs.image_name }}
-      python_version: ${{ inputs.python_version }}
-      platforms: ${{ inputs.platforms }}
-      gh_registry: ${{ inputs.gh_registry }}
-      owner: ${{ inputs.owner }}
-
-  # get the outputs of 'build-image-caller' and set as outputs for this workflow
-  image-outputs:
-    runs-on: ubuntu-latest
-    needs: build-image-caller
-    outputs:
-      # python_tag: ${{ jobs.build-image-caller.outputs.python_tag }}
-      # short_nametag: ${{ jobs.build-image-caller.outputs.short_nametag }}
-      # long_nametag: ${{ jobs.build-image-caller.outputs.long_nametag }}
-      image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
     steps:
-      - run: echo "Return build-image-caller outputs as output of this workflow"
+      - name: Checkout Repo 🛒
+        uses: actions/checkout@v3
 
-  # ### possible issues with macOS/arm64, incl. lack of docker presupport
-  # # https://github.com/actions/runner-images/issues/2150
-  # # https://github.com/github/roadmap/issues/528
-  # # https://github.com/actions/setup-python/issues/547
-  # test-image-caller:
-  #   # strategy:
-  #   #   matrix:
-  #   #     os: [ubuntu-latest, macos-latest]
-  #   needs: build-image-caller
+      - name: Login to GitHub Container Registry ✅
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-  #   uses: ./.github/workflows/4-test-image.yaml
-  #   secrets: inherit
-  #   with:
-  #     # runs_on: ${{ matrix.os }}
-  #     runs_on: ubuntu-latest
-  #     gh_registry: ${{ inputs.gh_registry }}
-  #     owner: ${{ inputs.owner }}
-  #     image_name: ${{ inputs.image_name }}
-  #     image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
+      - name: Build Image 🛠
+        id: build
+        uses: ./.github/actions/build-image-action
+        with:
+          source_image: ${{ inputs.source_image }}
+          image_name: ${{ inputs.image_name }}
+          python_version: ${{ inputs.python_version }}
+          platforms: ${{ inputs.platforms }}
+          gh_registry: ${{ inputs.gh_registry }}
+          owner: ${{ inputs.owner }}
 
-  ### Push to DockerHub if main branch / "release"
-  tag-image-caller:
-    needs:
-      - build-image-caller
-      # - test-image-caller
+      - name: Test Image 🧪
+        id: test
+        uses: ./.github/actions/test-image-action
+        with:
+          gh_registry: ${{ inputs.gh_registry }}
+          owner: ${{ inputs.owner }}
+          image_name: ${{ inputs.image_name }}
+          image_digest: ${{ steps.build.outputs.digest }}
 
-    # push to registry on main branch only
-    # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-    # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
-    if: |
-      github.repository == 'ninerealmlabs/docker-jupyter-stacks' &&
-      github.ref_name == 'main'
-    uses: ./.github/workflows/4-tag-image.yaml
-    secrets: inherit
-    with:
-      gh_registry: ${{ inputs.gh_registry }}
-      d_registry: ${{ inputs.d_registry }}
-      image_name: ${{ inputs.image_name }}
-      image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
-      short_nametag: ${{ needs.build-image-caller.outputs.short_nametag }}
-      long_nametag: ${{ needs.build-image-caller.outputs.long_nametag }}
+      ### push to registry on main branch only
+      - name: Login to DockerHub ✅
+        if: github.ref_name == 'main'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Tag Image 🏷
+        id: tag
+        if: github.ref_name == 'main'
+        uses: ./.github/actions/tag-image-action
+        with:
+          gh_registry: ${{ inputs.gh_registry }}
+          d_registry: ${{ inputs.d_registry }}
+          image_name: ${{ inputs.image_name }}
+          image_digest: ${{ steps.build.outputs.digest }}
+          short_nametag: ${{ steps.build.outputs.short_nametag }}
+          long_nametag: ${{ steps.build.outputs.long_nametag }}

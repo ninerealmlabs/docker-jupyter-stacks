@@ -137,7 +137,7 @@ USER root
 
 # Modify standard jupyter lab preferences
 # https://jupyterlab.readthedocs.io/en/stable/user/directories.html#jupyterlab-application-directory
-ENV LAB_SETTINGS="/opt/conda/share/jupyter/lab/settings/"
+ENV LAB_SETTINGS="/opt/conda/share/jupyter/lab/settings"
 RUN mkdir -p "${LAB_SETTINGS}"
 COPY --chown=root: ./config/root/overrides.json "${LAB_SETTINGS}/overrides.json"
 COPY --chown=root: --chmod=644 ./config/root/.gitattributes_global /etc/gitattributes_global

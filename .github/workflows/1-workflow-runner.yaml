@@ -55,7 +55,7 @@ env:
 
 jobs:
   export-envs:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted # ubuntu-latest
     outputs:
       platforms: ${{ env.platforms }}
       gh_registry: ${{ env.gh_registry }}
@@ -65,10 +65,31 @@ jobs:
       - run: echo "Exposing env vars to downstream jobs"
 
   # python loop can run in parallel
-  python-loop:
+  build-loop:
     strategy:
+      # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
       matrix:
         python_version: [3.8.*, 3.9.*, 3.10.*]
+        # image_name: [base-env, ds-env, nlp-env, ts-env, web-env]
+        # # 'include' is processed AFTER 'exclude'
+        # exclude:
+        #   - python_version: 3.10.*
+        #     image_name: nlp-env
+        #   - python_version: 3.10.*
+        #     image_name: web-env
+        # include:
+        #   - image_name: base-env
+        #     source_image: jupyter/minimal-notebook:latest
+        #     # source-tag: latest
+        #   - image_name: ds-env
+        #     source_image: base-env
+        #   - image_name: nlp-env
+        #     source_image: ds-env
+        #   - image_name: ts-env
+        #     source_image: ds-env
+        #   - image_name: web-env
+        #     source_image: nlp-env
+
     needs: [export-envs]
     if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-build-stack.yaml

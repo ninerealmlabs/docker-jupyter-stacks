@@ -1,0 +1,125 @@
+---
+name: build-and-tag
+# --- Description ------------------------------------------------------------
+# - Builds (multi-arch) docker image & caches to ghcr.io (build-image.yaml)
+# - Runs test (test-image.yaml)
+# - Retags & pushes to docker registry (tag-image.yaml)
+# ----------------------------------------------------------------------------
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      source_image:
+        description: Parent/Source image name (repository/name)
+        required: true
+        type: string
+      image_name:
+        description: Image name
+        required: true
+        type: string
+      python_version:
+        description: python version
+        required: true
+        type: string
+      platforms:
+        description: Image platform architectures
+        required: true
+        type: string
+      gh_registry:
+        description: Github registry (ghcr.io/<owner>)
+        required: true
+        type: string
+      d_registry:
+        description: Docker registry (docker.io/<owner>)
+        required: true
+        type: string
+      owner:
+        description: Registry name
+        required: true
+        type: string
+    outputs:
+      python_tag:
+        description: Python version tag (python-<major.minor>)
+        value: ${{ jobs.build-image-caller.outputs.python_tag }}
+      short_nametag:
+        description: Image name and short tag (image:python-<major.minor>)
+        value: ${{ jobs.build-image-caller.outputs.short_nametag }}
+      long_nametag:
+        description: Image name and long tag (image:python-<major.minor>-<sha>)
+        value: ${{ jobs.build-image-caller.outputs.long_nametag }}
+      image_digest:
+        description: Image digest
+        value: ${{ jobs.build-image-caller.outputs.image_digest }}
+  workflow_dispatch:
+
+# env:
+#   # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
+#   branch_name: ${{ GITHUB_HEAD_REF || GITHUB_REF_NAME }}
+
+jobs:
+  build-image-caller:
+    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    uses: ./.github/workflows/4-build-image.yaml
+    secrets: inherit
+    with:
+      source_image: ${{ inputs.source_image }}
+      image_name: ${{ inputs.image_name }}
+      python_version: ${{ inputs.python_version }}
+      platforms: ${{ inputs.platforms }}
+      gh_registry: ${{ inputs.gh_registry }}
+      owner: ${{ inputs.owner }}
+
+  # get the outputs of 'build-image-caller' and set as outputs for this workflow
+  image-outputs:
+    runs-on: self-hosted # ubuntu-latest
+    needs: build-image-caller
+    outputs:
+      # python_tag: ${{ jobs.build-image-caller.outputs.python_tag }}
+      # short_nametag: ${{ jobs.build-image-caller.outputs.short_nametag }}
+      # long_nametag: ${{ jobs.build-image-caller.outputs.long_nametag }}
+      image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
+    steps:
+      - run: echo "Return build-image-caller outputs as output of this workflow"
+
+  # ### possible issues with macOS/arm64, incl. lack of docker presupport
+  # # https://github.com/actions/runner-images/issues/2150
+  # # https://github.com/github/roadmap/issues/528
+  # # https://github.com/actions/setup-python/issues/547
+  # test-image-caller:
+  #   # strategy:
+  #   #   matrix:
+  #   #     os: [ubuntu-latest, macos-latest]
+  #   needs: build-image-caller
+
+  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+  #   uses: ./.github/workflows/4-test-image.yaml
+  #   secrets: inherit
+  #   with:
+  #     # runs_on: ${{ matrix.os }}
+  #     runs_on: ubuntu-latest
+  #     gh_registry: ${{ inputs.gh_registry }}
+  #     owner: ${{ inputs.owner }}
+  #     image_name: ${{ inputs.image_name }}
+  #     image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
+
+  ### Push to DockerHub if main branch / "release"
+  tag-image-caller:
+    needs:
+      - build-image-caller
+      # - test-image-caller
+
+    # push to registry on main branch only
+    # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
+    # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
+    if: |
+      github.repository == 'ninerealmlabs/docker-jupyter-stacks' &&
+      github.ref_name == 'main'
+    uses: ./.github/workflows/4-tag-image.yaml
+    secrets: inherit
+    with:
+      gh_registry: ${{ inputs.gh_registry }}
+      d_registry: ${{ inputs.d_registry }}
+      image_name: ${{ inputs.image_name }}
+      image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
+      short_nametag: ${{ needs.build-image-caller.outputs.short_nametag }}
+      long_nametag: ${{ needs.build-image-caller.outputs.long_nametag }}

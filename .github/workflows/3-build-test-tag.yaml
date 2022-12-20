@@ -80,25 +80,25 @@ jobs:
     steps:
       - run: echo "Return build-image-caller outputs as output of this workflow"
 
-  ### possible issues with macOS/arm64, incl. lack of docker presupport
-  # https://github.com/actions/runner-images/issues/2150
-  # https://github.com/github/roadmap/issues/528
-  # https://github.com/actions/setup-python/issues/547
-  test-image-caller:
-    # strategy:
-    #   matrix:
-    #     os: [ubuntu-latest, macos-latest]
-    needs: build-image-caller
+  # ### possible issues with macOS/arm64, incl. lack of docker presupport
+  # # https://github.com/actions/runner-images/issues/2150
+  # # https://github.com/github/roadmap/issues/528
+  # # https://github.com/actions/setup-python/issues/547
+  # test-image-caller:
+  #   # strategy:
+  #   #   matrix:
+  #   #     os: [ubuntu-latest, macos-latest]
+  #   needs: build-image-caller
 
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/4-test-image.yaml
-    with:
-      # runs_on: ${{ matrix.os }}
-      runs_on: ubuntu-latest
-      gh_registry: ${{ inputs.gh_registry }}
-      owner: ${{ inputs.owner }}
-      image_name: ${{ inputs.image_name }}
-      image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
+  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+  #   uses: ./.github/workflows/4-test-image.yaml
+  #   with:
+  #     # runs_on: ${{ matrix.os }}
+  #     runs_on: ubuntu-latest
+  #     gh_registry: ${{ inputs.gh_registry }}
+  #     owner: ${{ inputs.owner }}
+  #     image_name: ${{ inputs.image_name }}
+  #     image_digest: ${{ needs.build-image-caller.outputs.image_digest }}
 
   ### Push to DockerHub if main branch / "release"
   tag-image-caller:

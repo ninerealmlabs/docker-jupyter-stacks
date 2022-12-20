@@ -60,6 +60,7 @@ jobs:
   build-image-caller:
     if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/4-build-image.yaml
+    secrets: inherit
     with:
       source_image: ${{ inputs.source_image }}
       image_name: ${{ inputs.image_name }}
@@ -92,6 +93,7 @@ jobs:
 
   #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
   #   uses: ./.github/workflows/4-test-image.yaml
+  #   secrets: inherit
   #   with:
   #     # runs_on: ${{ matrix.os }}
   #     runs_on: ubuntu-latest
@@ -111,6 +113,7 @@ jobs:
     # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
     if: github.repository == 'ninerealmlabs/docker-jupyter-stacks' && ${{ github.head_ref || github.ref_name }} == 'main'
     uses: ./.github/workflows/4-tag-image.yaml
+    secrets: inherit
     with:
       gh_registry: ${{ inputs.gh_registry }}
       d_registry: ${{ inputs.d_registry }}

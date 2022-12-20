@@ -72,6 +72,7 @@ jobs:
     needs: [export-envs]
     if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-build-stack.yaml
+    secrets: inherit
     with:
       python_version: ${{ matrix.python_version }}
       platforms: ${{ needs.export-envs.outputs.platforms }}

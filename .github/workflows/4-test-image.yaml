@@ -61,7 +61,12 @@ jobs:
       - name: Pull image 📥
         shell: bash
         run: |
+          # pull image by sha
           docker pull "${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}"
+          # retag with 'latest' for test script
+          docker tag \
+            "${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}" \
+            "${{ inputs.gh_registry }}/${{ inputs.image_name }}:latest"
         # env:
         #   GH_REGISTRY: ${{ inputs.gh_registry }}
         #   # OWNER: ${{ inputs.owner }}

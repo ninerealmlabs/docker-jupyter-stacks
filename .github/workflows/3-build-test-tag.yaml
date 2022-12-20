@@ -111,7 +111,9 @@ jobs:
     # push to registry on main branch only
     # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
     # https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks' && ${{ github.head_ref || github.ref_name }} == 'main'
+    if: |
+      github.repository == 'ninerealmlabs/docker-jupyter-stacks' &&
+      github.ref_name == 'main'
     uses: ./.github/workflows/4-tag-image.yaml
     secrets: inherit
     with:

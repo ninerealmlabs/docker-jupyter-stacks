@@ -66,7 +66,9 @@ jobs:
           # retag with 'latest' for test script
           docker tag \
             "${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}" \
-            "${{ inputs.gh_registry }}/${{ inputs.image_name }}:latest"
+            "${{ inputs.owner }}/${{ inputs.image_name }}:latest"
+          # check work
+          docker image list
         # env:
         #   GH_REGISTRY: ${{ inputs.gh_registry }}
         #   # OWNER: ${{ inputs.owner }}

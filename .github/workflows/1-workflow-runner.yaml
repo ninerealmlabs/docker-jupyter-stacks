@@ -54,17 +54,17 @@ env:
 #   packages: write
 
 jobs:
-  # # "Any environment variables set in an env context defined at the workflow level in the caller workflow
-  # #  are NOT propagated to the called workflow"
-  # export-envs:
-  #   runs-on: self-hosted # ubuntu-latest
-  #   outputs:
-  #     platforms: ${{ env.platforms }}
-  #     gh_registry: ${{ env.gh_registry }}
-  #     d_registry: ${{ env.d_registry }}
-  #     owner: ${{ env.owner }}
-  #   steps:
-  #     - run: echo "Exposing env vars to downstream jobs"
+  # "Any environment variables set in an env context defined at the workflow level in the caller workflow
+  #  are NOT propagated to the called workflow"
+  export-envs:
+    runs-on: self-hosted # ubuntu-latest
+    outputs:
+      platforms: ${{ env.platforms }}
+      gh_registry: ${{ env.gh_registry }}
+      d_registry: ${{ env.d_registry }}
+      owner: ${{ env.owner }}
+    steps:
+      - run: echo "Exposing env vars to downstream jobs"
 
   # python loop can run in parallel
   build-stack-caller:
@@ -96,13 +96,13 @@ jobs:
     uses: ./.github/workflows/2-build-stack.yaml
     secrets: inherit
     with:
-      python_version: ${{ matrix.python_version }}
-      platforms: ${{ env.platforms }}
-      gh_registry: ${{ env.gh_registry }}
-      d_registry: ${{ env.d_registry }}
-      owner: ${{ env.owner }}
-    #   platforms: ${{ needs.export-envs.outputs.platforms }}
-    #   gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-    #   d_registry: ${{ needs.export-envs.outputs.d_registry }}
-    #   owner: ${{ needs.export-envs.outputs.owner }}
-    # needs: [export-envs]
+      # python_version: ${{ matrix.python_version }}
+      # platforms: ${{ env.platforms }}
+      # gh_registry: ${{ env.gh_registry }}
+      # d_registry: ${{ env.d_registry }}
+      # owner: ${{ env.owner }}
+      platforms: ${{ needs.export-envs.outputs.platforms }}
+      gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
+      d_registry: ${{ needs.export-envs.outputs.d_registry }}
+      owner: ${{ needs.export-envs.outputs.owner }}
+    needs: [export-envs]

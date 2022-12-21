@@ -96,7 +96,7 @@ jobs:
     uses: ./.github/workflows/2-build-stack.yaml
     secrets: inherit
     with:
-      # python_version: ${{ matrix.python_version }}
+      python_version: ${{ matrix.python_version }}
       # platforms: ${{ env.platforms }}
       # gh_registry: ${{ env.gh_registry }}
       # d_registry: ${{ env.d_registry }}

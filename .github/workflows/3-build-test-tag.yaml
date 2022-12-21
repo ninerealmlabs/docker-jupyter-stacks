@@ -63,6 +63,16 @@ jobs:
     continue-on-error: true
     if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     steps:
+      # https://stackoverflow.com/questions/70483902/how-to-actually-clean-up-the-repository-on-self-hosted-runner-after-github-actio
+      - name: Cleanup build folder 🧹
+        shell: bash
+        run: |
+          cd ${{ github.workspace }}
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
       - name: Checkout Repo 🛒
         uses: actions/checkout@v3
 
@@ -84,14 +94,14 @@ jobs:
           gh_registry: ${{ inputs.gh_registry }}
           owner: ${{ inputs.owner }}
 
-      - name: Test Image 🧪
-        id: test
-        uses: ./.github/actions/test-image-action
-        with:
-          gh_registry: ${{ inputs.gh_registry }}
-          owner: ${{ inputs.owner }}
-          image_name: ${{ inputs.image_name }}
-          image_digest: ${{ steps.build.outputs.digest }}
+      # - name: Test Image 🧪
+      #   id: test
+      #   uses: ./.github/actions/test-image-action
+      #   with:
+      #     gh_registry: ${{ inputs.gh_registry }}
+      #     owner: ${{ inputs.owner }}
+      #     image_name: ${{ inputs.image_name }}
+      #     image_digest: ${{ steps.build.outputs.digest }}
 
       ### push to registry on main branch only
       - name: Login to DockerHub ✅

@@ -38,7 +38,6 @@ jobs:
     with:
       source_image: jupyter/minimal-notebook:latest
       image_name: base-env
-      # ------------------------------------------
       python_version: ${{ inputs.python_version }}
       platforms: ${{ inputs.platforms }}
       gh_registry: ${{ inputs.gh_registry }}
@@ -53,7 +52,6 @@ jobs:
     with:
       source_image: ghcr.io/ninerealmlabs/base-env@${{ needs.base-env.outputs.image_digest }}
       image_name: ds-env
-      # ------------------------------------------
       python_version: ${{ inputs.python_version }}
       platforms: ${{ inputs.platforms }}
       gh_registry: ${{ inputs.gh_registry }}
@@ -68,7 +66,6 @@ jobs:
     with:
       source_image: ghcr.io/ninerealmlabs/ds-env@${{ needs.ds-env.outputs.image_digest }}
       image_name: nlp-env
-      # ------------------------------------------
       python_version: ${{ inputs.python_version }}
       platforms: ${{ inputs.platforms }}
       gh_registry: ${{ inputs.gh_registry }}
@@ -83,7 +80,6 @@ jobs:
     with:
       source_image: ghcr.io/ninerealmlabs/ds-env@${{ needs.ds-env.outputs.image_digest }}
       image_name: ts-env
-      # ------------------------------------------
       python_version: ${{ inputs.python_version }}
       platforms: ${{ inputs.platforms }}
       gh_registry: ${{ inputs.gh_registry }}
@@ -98,7 +94,6 @@ jobs:
     with:
       source_image: ghcr.io/ninerealmlabs/nlp-env@${{ needs.nlp-env.outputs.image_digest }}
       image_name: web-env
-      # ------------------------------------------
       python_version: ${{ inputs.python_version }}
       platforms: ${{ inputs.platforms }}
       gh_registry: ${{ inputs.gh_registry }}

@@ -15,8 +15,9 @@ on: # yamllint disable-line rule:truthy
         type: string
       source_pin:
         description: Tag or SHA digest of image
-        required: false
+        required: true
         type: string
+        default: 'latest'
       image_name:
         description: Image name
         required: true

@@ -7,7 +7,7 @@ inputs:
     description: Parent/Source full image name (registry/image)
     required: true
   source_tag:
-    description: Tag digest of source image
+    description: Tag of source image
     required: true
     # default: 'latest' # doesn't actually pass default; hacked in in called action
   source_digest:
@@ -36,12 +36,6 @@ outputs:
   git_tag:
     description: Git short sha
     value: ${{ steps.tags.outputs.git_tag }}
-  # short_nametag:
-  #   description: Image name and short tag (image:python-<major.minor>)
-  #   value: ${{ steps.tags.outputs.short_nametag }}
-  # long_nametag:
-  #   description: Image name and long tag (image:python-<major.minor>-<sha>)
-  #   value: ${{ steps.tags.outputs.long_nametag }}
   image_digest:
     description: Image digest
     value: ${{ steps.build.outputs.digest }}

@@ -3,6 +3,9 @@ name: save-artifact
 description: save variables to artifact
 
 inputs:
+  image_name:
+    description: Image name (future source_image)
+    required: true
   python_version:
     description: Python version (<major.minor.*>)
     required: true
@@ -12,12 +15,6 @@ inputs:
   git_tag:
     description: Git short sha
     required: true
-  # short_nametag:
-  #   description: Image name and short tag (image:python-<major.minor>)
-  #   required: true
-  # long_nametag:
-  #   description: Image name and long tag (image:python-<major.minor>-<sha>)
-  #   required: true
   image_digest:
     description: Image digest
     required: true
@@ -31,11 +28,10 @@ runs:
       run: |
         mkdir -p ./outputs
         cat << EOF >> ./outputs/vars
+          image_name "${{ inputs.image_name }}"
           python_version "${{ inputs.python_version }}"
           python_tag "${{ inputs.python_tag }}"
           git_tag "${{ inputs.git_tag }}"
-          short_nametag "${{ inputs.short_nametag }}"
-          long_nametag "${{ inputs.long_nametag }}"
           image_digest "${{ inputs.image_digest }}"
         EOF
         # ------------------------------------------------------------------

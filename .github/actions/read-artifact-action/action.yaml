@@ -7,7 +7,28 @@ description: reads variable from artifact
 #     description: Name of artifact to download
 #     required: true
 #     default: vars
+#     source_image:
+#       description: Parent/Source image name (repository/name)
+#       required: true
+#       type: string
+#     source_tag:
+#       description: Tag digest of source image
+#       required: true
+#       type: string
+#       default: 'latest'
+#     source_digest:
+#       description: SHA digest of source image
+#       required: false
+#       type: string
+#       default: ''
+#     python_version:
+#       description: Python version (<major.minor.*>)
+#       required: true
+#       type: string
 outputs:
+  image_name:
+    description: Image name (future source_image)
+    value: ${{ steps.vars.outputs.image_name }}
   python_version:
     description: Python version (<major.minor.*>)
     value: ${{ steps.vars.outputs.python_version }}
@@ -17,12 +38,6 @@ outputs:
   git_tag:
     description: Git short sha
     value: ${{ steps.vars.outputs.git_tag }}
-  # short_nametag:
-  #   description: Image name and short tag (image:python-<major.minor>)
-  #   value: ${{ steps.vars.outputs.short_nametag }}
-  # long_nametag:
-  #   description: Image name and long tag (image:python-<major.minor>-<sha>)
-  #   value: ${{ steps.vars.outputs.long_nametag }}
   image_digest:
     description: Image digest
     value: ${{ steps.vars.outputs.image_digest }}

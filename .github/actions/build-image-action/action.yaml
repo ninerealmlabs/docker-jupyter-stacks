@@ -61,9 +61,9 @@ runs:
       id: source
       shell: bash
       run: |
-        echo "SOURCE_IMAGE: ${{ inputs.source_image }}"
-        echo "SOURCE_TAG: ${{ inputs.source_tag }}"
-        echo "SOURCE_DIGEST: ${{ inputs.source_digest }}"
+        echo "SOURCE_IMAGE: ${SOURCE_IMAGE}"
+        echo "SOURCE_TAG: ${SOURCE_TAG}"
+        echo "SOURCE_DIGEST: ${SOURCE_DIGEST}"
         # ------------------------------------------------------------------
         SOURCE_FULLNAME="${SOURCE_IMAGE}:${SOURCE_TAG}"
         [[ "${SOURCE_DIGEST}" == sha256* ]] && SOURCE_FULLNAME="${SOURCE_FULLNAME}@${SOURCE_DIGEST}"
@@ -71,10 +71,10 @@ runs:
         echo "SOURCE_FULLNAME: ${SOURCE_FULLNAME}"
         # ------------------------------------------------------------------
         echo "source_fullname=${SOURCE_FULLNAME}" >> $GITHUB_OUTPUT
-      # env:
-      #   SOURCE_IMAGE: ${{ inputs.source_image }}
-      #   SOURCE_TAG: ${{ inputs.source_tag }}
-      #   SOURCE_DIGEST: ${{ inputs.source_digest }}
+      env:
+        SOURCE_IMAGE: ${{ inputs.source_image }}
+        SOURCE_TAG: ${{ inputs.source_tag }}
+        SOURCE_DIGEST: ${{ inputs.source_digest }}
 
     - name: Get current date 🗓
       id: date

@@ -17,7 +17,7 @@ on: # yamllint disable-line rule:truthy
         description: Tag or SHA digest of image
         required: false
         type: string
-        default: 'latest'
+        default: 'latest' # doesn't actually pass default; hacked in in called action
       image_name:
         description: Image name
         required: true

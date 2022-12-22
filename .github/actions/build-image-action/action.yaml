@@ -9,7 +9,7 @@ inputs:
   source_pin:
     description: Tag or SHA digest of image
     required: false
-    default: 'latest'
+    default: 'latest' # doesn't actually pass default; hacked in below
   image_name:
     description: Image name
     required: true
@@ -73,7 +73,7 @@ runs:
         if [[ "${SOURCE_PIN}" == sha256* ]]; then
           SOURCE_FULLNAME="${SOURCE_IMAGE}@${SOURCE_PIN}"
         else
-          SOURCE_FULLNAME="${SOURCE_IMAGE}:${SOURCE_PIN}"
+          SOURCE_FULLNAME="${SOURCE_IMAGE}:${SOURCE_PIN:-latest}"
         fi
         # ------------------------------------------------------------------
         echo "SOURCE_FULLNAME: ${SOURCE_FULLNAME}"

@@ -53,7 +53,9 @@ jobs:
 
     # continue-on-error: true
     # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: |
+      ${{ github.event.workflow_run.conclusion == 'success' }}
+      || ${{ github.event.workflow_dispatch }}
     steps:
       ### --- Prep -----------------------------------------------------------
       # https://stackoverflow.com/questions/70483902/how-to-actually-clean-up-the-repository-on-self-hosted-runner-after-github-actio
@@ -73,11 +75,33 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
-      - name: Read passed inputs 📖
+      # if workflow_run
+      - if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        name: Read passed inputs from artifact 📖
         id: source_inputs
         uses: ./.github/actions/read-artifact-action
         # with:
         #   artifact_name: vars
+
+      - if: ${{ github.event.workflow_dispatch }}
+        name: Read passed inputs 📖
+        id: source_inputs
+        shell: bash
+        run: |
+          echo "SOURCE_IMAGE: ${SOURCE_IMAGE}"
+          echo "SOURCE_TAG: ${SOURCE_TAG}"
+          echo "SOURCE_DIGEST: ${SOURCE_DIGEST}"
+          echo "PYTHON_VERSION: ${PYTHON_VERSION}"
+          # ------------------------------------------------------------------
+          echo "source_image=${{ inputs.source_image }}" >> $GITHUB_OUTPUT
+          echo "source_tag=${{ inputs.source_tag }}" >> $GITHUB_OUTPUT
+          echo "source_digest=${{ inputs.source_digest }}" >> $GITHUB_OUTPUT
+          echo "python_version=${{ inputs.python_version }}" >> $GITHUB_OUTPUT
+        env:
+          SOURCE_IMAGE: ${{ inputs.source_image }}
+          SOURCE_TAG: ${{ inputs.source_tag }}
+          SOURCE_DIGEST: ${{ inputs.source_digest }}
+          PYTHON_VERSION: ${{ inputs.python_version }}
 
       - name: Login to GitHub Container Registry ✅
         uses: docker/login-action@v2

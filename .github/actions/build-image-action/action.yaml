@@ -6,6 +6,10 @@ inputs:
   source_image:
     description: Parent/Source full image name (registry/image)
     required: true
+  source_pin:
+    description: Tag or SHA digest of image
+    required: false
+    default: 'latest'
   image_name:
     description: Image name
     required: true
@@ -39,10 +43,10 @@ runs:
   using: composite
   steps:
 
-    - name: Set up QEMU
+    - name: Set up QEMU 🦤
       uses: docker/setup-qemu-action@v2
 
-    - name: Set up Docker Buildx
+    - name: Set up Docker Buildx 🐳
       id: buildx
       uses: docker/setup-buildx-action@v2
 
@@ -61,6 +65,23 @@ runs:
     #   with:
     #     username: ${{ secrets.DOCKER_USER }}
     #     password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Parse source 🕵️
+      id: tag_or_sha
+      shell: bash
+      run: |
+        if [[ "${SOURCE_PIN}" == sha256* ]]; then
+          SOURCE_FULLNAME="${SOURCE_IMAGE}@${SOURCE_PIN}"
+        else
+          SOURCE_FULLNAME="${SOURCE_IMAGE}:${SOURCE_PIN}"
+        fi
+        # ------------------------------------------------------------------
+        echo "SOURCE_FULLNAME: ${SOURCE_FULLNAME}"
+        # ------------------------------------------------------------------
+        echo "source_fullname=${SOURCE_FULLNAME}" >> $GITHUB_OUTPUT
+      env:
+        SOURCE_IMAGE: ${{ inputs.source_image }}
+        SOURCE_DIGEST: ${{ inputs.source_digest }}
 
     - name: Get current date 🗓
       id: date
@@ -103,7 +124,7 @@ runs:
         context: src/${{ inputs.image_name }}
         # file: ./Dockerfile
         build-args: |
-          SOURCE_IMAGE=${{ inputs.source_image }}
+          SOURCE_IMAGE=${{ steps.tag_or_sha.outputs.source_fullname }}
           PYTHON_VERSION=${{ inputs.python_version }}
           GIT_COMMIT=${{ steps.tags.outputs.git_sha }}
           BUILD_DATE=${{ steps.date.outputs.date }}

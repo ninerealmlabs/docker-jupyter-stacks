@@ -65,7 +65,7 @@ jobs:
       d_registry: ${{ env.d_registry }}
       owner: ${{ env.owner }}
     steps:
-      - run: echo "Exposing env vars to downstream jobs"
+      - run: echo "Exposing env vars to downstream jobs 📬"
 
   # # python loop can run in parallel
   # build-stack-caller:

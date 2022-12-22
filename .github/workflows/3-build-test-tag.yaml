@@ -98,6 +98,25 @@ jobs:
           gh_registry: ${{ inputs.gh_registry }}
           owner: ${{ inputs.owner }}
 
+      - name: Pass outputs 📬
+        id: outputs
+        shell: bash
+        run: |
+          PYTHON_TAG="${{ steps.build.outputs.python_tag }}"
+          SHORT_NAMETAG="${{ steps.build.outputs.short_nametag }}"
+          LONG_NAMETAG="${{ steps.build.outputs.long_nametag }}"
+          IMAGE_DIGEST="${{ steps.build.outputs.image_digest }}"
+          # ------------------------------------------------------------------
+          echo "PYTHON_TAG: ${PYTHON_TAG}"
+          echo "SHORT_NAMETAG: ${SHORT_NAMETAG}"
+          echo "LONG_NAMETAG: ${LONG_NAMETAG}"
+          echo "IMAGE_DIGEST: ${IMAGE_DIGEST}"
+          # ------------------------------------------------------------------
+          echo "python_tag=${PYTHON_TAG}" >> $GITHUB_OUTPUT
+          echo "short_nametag=${SHORT_NAMETAG}" >> $GITHUB_OUTPUT
+          echo "long_nametag=${LONG_NAMETAG}" >> $GITHUB_OUTPUT
+          echo "image_digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
+
       # - name: Test Image 🧪
       #   id: test
       #   uses: ./.github/actions/test-image-action

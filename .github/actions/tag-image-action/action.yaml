@@ -12,14 +12,14 @@ inputs:
   image_name:
     description: Image name
     required: true
+  python_tag:
+    description: Python tag (python-<major.minor>)
+    required: true
+  git_tag:
+    description: Git short sha
+    required: true
   image_digest:
-    description: SHA digest of image
-    required: true
-  short_nametag:
-    description: Image name and short tag (image:python-<major.minor>)
-    required: true
-  long_nametag:
-    description: Image name and long tag (image:python-<major.minor>-<sha>)
+    description: digest of image
     required: true
 
 runs:
@@ -46,5 +46,5 @@ runs:
       with:
         src: ${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}
         dst: |
-          ${{ inputs.d_registry }}/${{ inputs.short_nametag }}
-          ${{ inputs.d_registry }}/${{ inputs.long_nametag }}
+          ${{ inputs.d_registry }}/${{ inputs.image_name }}:${{ inputs.python_tag }}
+          ${{ inputs.d_registry }}/${{ inputs.image_name }}:${{ inputs.python_tag }}-${{ inputs.git_tag }}

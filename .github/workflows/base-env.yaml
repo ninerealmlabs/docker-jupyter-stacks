@@ -1,0 +1,167 @@
+---
+# --- Description ------------------------------------------------------------
+# Build base-env (initiate build tree)
+# - Triggers on cron, PR, push-to-main, or manual
+# - Exposes 'static' environment variables to subsequent tasks
+# - Sets up stack build for each version of python
+# ----------------------------------------------------------------------------
+name: base-env
+
+on: # yamllint disable-line rule:truthy
+  schedule:
+    # # at: 01:00 on the first of every month
+    - cron: "0 1 1 * *"
+  pull_request:
+    paths-ignore:
+      # - ".github/**"
+      - docs/**
+      - scripts/**
+      - '*.md'
+      - '**/.gitignore'
+      - docker-compose.yaml
+      - LICENSE
+  push:
+    branches:
+      - main
+    paths-ignore:
+      # - ".github/**"
+      - docs/**
+      - scripts/**
+      - '*.md'
+      - '**/.gitignore'
+      - docker-compose.yaml
+      - LICENSE
+  workflow_dispatch:
+
+# https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  # only cancel in-progress jobs or runs for the current workflow - matches against branch & tags
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # group: ${{ github.ref }}
+  cancel-in-progress: true
+
+# define static vars here
+env:
+  source_image: jupyter/minimal-notebook
+  source_tag: latest
+  source_digest: ''
+  image_name: base-env
+  platforms: "linux/amd64,linux/arm64"
+  gh_registry: ghcr.io/ninerealmlabs
+  d_registry: docker.io/ninerealmlabs
+  owner: ninerealmlabs
+
+# # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+# # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+# permissions:
+#   actions: read
+#   contents: read
+#   packages: write
+
+jobs:
+  build: # used for image name
+    runs-on: self-hosted # ubuntu-latest
+
+    strategy:
+      # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+      # sadly, there's no way to set dependencies between matrix-generated jobs
+      matrix:
+        python_version: [3.8.*] # , 3.9.*, 3.10.*]
+
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    steps:
+      ### --- Prep -----------------------------------------------------------
+      # https://stackoverflow.com/questions/70483902/how-to-actually-clean-up-the-repository-on-self-hosted-runner-after-github-actio
+      - name: Cleanup build folder 🧹
+        shell: bash
+        run: |
+          cd ${{ github.workspace }}
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
+      - name: Checkout Repo 🛒
+        uses: actions/checkout@v3
+
+      ### unneeded in initial job
+      # - name: Read passed inputs 📖
+      #   id: source_inputs
+      #   uses: ./.github/actions/read-artifact
+      #   # with:
+      #   #   artifact_name: vars
+
+      - name: Login to GitHub Container Registry ✅
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      ### --- Build ----------------------------------------------------------
+      - name: Build Image 🛠
+        id: build
+        uses: ./.github/actions/build-image-action
+        with:
+          source_image: ${{ env.source_image }}
+          source_tag: ${{ env.source_tag }}
+          source_digest: ${{ env.source_digest }}
+          image_name: ${{ env.image_name }}
+          python_version: ${{ matrix.python_version }}
+          platforms: ${{ env.platforms }}
+          gh_registry: ${{ env.gh_registry }}
+          owner: ${{ env.owner }}
+
+      # ### --- Test -----------------------------------------------------------
+      # - name: Test Image 🧪
+      #   id: test
+      #   uses: ./.github/actions/test-image-action
+      #   with:
+      #     gh_registry: ${{ env.gh_registry }}
+      #     owner: ${{ env.owner }}
+      #     image_name: ${{ inputs.image_name }}
+      #     image_digest: ${{ steps.build.outputs.digest }}
+
+      ### --- Pass -----------------------------------------------------------
+      - name: Save outputs to artifacts 💾
+        uses: ./.github/actions/build-image-action
+        with:
+          image_name: ${{ env.image_name }}
+          python_tag: ${{ steps.build.outputs.python_tag }}
+          git_tag: ${{ steps.build.outputs.git_tag }}
+          # short_nametag: ${{ steps.build.outputs.short_nametag }}
+          # long_nametag: ${{ steps.build.outputs.long_nametag }}
+          image_digest: ${{ steps.build.outputs.digest }}
+          python_version: ${{ matrix.python_version }}
+
+      ### --- Push to Dockerhub ----------------------------------------------
+      # push to registry on main branch only
+      - if: github.ref_name == 'main'
+        name: Login to DockerHub ✅
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      # - if: github.ref_name == 'main'
+      #   name: Tag Image 🏷
+      #   id: tag
+      #   uses: ./.github/actions/tag-image-action
+      #   with:
+      #     gh_registry: ${{ env.gh_registry }}
+      #     d_registry: ${{ env.d_registry }}
+      #     image_name: ${{ env.image_name }}
+      #     # short_nametag: ${{ steps.build.outputs.short_nametag }}
+      #     # long_nametag: ${{ steps.build.outputs.long_nametag }}
+      #     python_tag: ${{ steps.build.outputs.python_tag }}
+      #     git_tag: ${{ steps.build.outputs.git_tag }}
+      #     image_digest: ${{ steps.build.outputs.digest }}
+
+      - if: github.ref_name == 'main'
+        name: Tag & Push image to docker 🏷
+        uses: akhilerm/tag-push-action@v2.1.0
+        with:
+          src: ${{ env.gh_registry }}/${{ env.image_name }}@${{ steps.build.outputs.digest }}
+          dst: |
+            ${{ env.d_registry }}/${{ env.image_name }}:${{ steps.build.outputs.python_tag }}
+            ${{ env.d_registry }}/${{ env.image_name }}:${{ steps.build.outputs.python_tag }}-${{ steps.build.outputs.git_tag }}

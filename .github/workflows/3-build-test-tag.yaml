@@ -13,6 +13,10 @@ on: # yamllint disable-line rule:truthy
         description: Parent/Source image name (repository/name)
         required: true
         type: string
+      # source_digest:
+      #   description: SHA digest of image
+      #   required: false
+      #   type: string
       image_name:
         description: Image name
         required: true

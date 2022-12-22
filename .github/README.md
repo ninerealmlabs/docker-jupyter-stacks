@@ -12,16 +12,16 @@
 
 ## Overview
 
-This CI/CD pipeline nests reusable workflows 4 layers deep:
+This CI/CD pipeline nests reusable workflows 3 layers deep:
 
 ```txt
-./workflows/workflow-runner.yaml
-  └ ./workflows/1-jobs/build-stack.yaml
-      └ ./workflows/2-steps/build-test-tag.yaml
-          ├ ./workflows/3-tasks/build-image.yaml
-          ├ ./workflows/3-tasks/test-image.yaml
-          └ ./workflows/3-tasks/tag-image.yaml
+1-workflow-runner.yaml
+  └ 2-build-stack.yaml
+      └ 3-build-test-tag.yaml
 ```
+
+`build-test-tag.yaml` calls local [`composite actions`](./.github/actions/),
+which are strung together to compose the build-test-tag job.
 
 > For a less-nested CI/CD pipeline, check out the [prior version](https://github.com/ninerealmlabs/docker-jupyter-stacks/commit/a9f33274b46c71bdf2266a0f1b14151fa8b8dbe8),
 > which uses a (relatively boilerplate) template per image environment

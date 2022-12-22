@@ -50,6 +50,7 @@ jobs:
     uses: ./.github/workflows/3-build-test-tag.yaml
     secrets: inherit
     with:
+      ### TODO: not passing image_digest
       source_image: ghcr.io/ninerealmlabs/base-env@${{ needs.base-env.outputs.image_digest }}
       image_name: ds-env
       python_version: ${{ inputs.python_version }}

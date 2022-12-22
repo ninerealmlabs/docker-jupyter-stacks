@@ -6,10 +6,14 @@ inputs:
   source_image:
     description: Parent/Source full image name (registry/image)
     required: true
-  source_pin:
-    description: Tag or SHA digest of image
+  source_tag:
+    description: Tag digest of source image
     required: false
-    default: 'latest' # doesn't actually pass default; hacked in below
+    default: 'latest' # doesn't actually pass default; hacked in in called action
+  source_sha:
+    description: SHA digest of source image
+    required: false
+    default: '' # doesn't actually pass default; hacked in in called action
   image_name:
     description: Image name
     required: true
@@ -67,13 +71,16 @@ runs:
     #     password: ${{ secrets.DOCKER_TOKEN }}
 
     - name: Parse source 🕵️
-      id: tag_or_sha
+      id: source
       shell: bash
       run: |
+        echo "SOURCE_IMAGE: ${SOURCE_IMAGE}"
+        echo "SOURCE_TAG: ${SOURCE_TAG}"
+        echo "SOURCE_SHA: ${SOURCE_SHA}"
+        # ------------------------------------------------------------------
+        SOURCE_FULLNAME="${SOURCE_IMAGE}:${SOURCE_TAG}"
         if [[ "${SOURCE_PIN}" == sha256* ]]; then
-          SOURCE_FULLNAME="${SOURCE_IMAGE}@${SOURCE_PIN}"
-        else
-          SOURCE_FULLNAME="${SOURCE_IMAGE}:${SOURCE_PIN:-latest}"
+          SOURCE_FULLNAME="${SOURCE_FULLNAME}@${SOURCE_PIN}"
         fi
         # ------------------------------------------------------------------
         echo "SOURCE_FULLNAME: ${SOURCE_FULLNAME}"
@@ -81,7 +88,8 @@ runs:
         echo "source_fullname=${SOURCE_FULLNAME}" >> $GITHUB_OUTPUT
       env:
         SOURCE_IMAGE: ${{ inputs.source_image }}
-        SOURCE_DIGEST: ${{ inputs.source_digest }}
+        SOURCE_TAG: ${{ inputs.source_tag }}
+        SOURCE_SHA: ${{ inputs.source_sha }}
 
     - name: Get current date 🗓
       id: date
@@ -124,7 +132,7 @@ runs:
         context: src/${{ inputs.image_name }}
         # file: ./Dockerfile
         build-args: |
-          SOURCE_IMAGE=${{ steps.tag_or_sha.outputs.source_fullname }}
+          SOURCE_IMAGE=${{ steps.source.outputs.source_fullname }}
           PYTHON_VERSION=${{ inputs.python_version }}
           GIT_COMMIT=${{ steps.tags.outputs.git_sha }}
           BUILD_DATE=${{ steps.date.outputs.date }}
@@ -137,7 +145,8 @@ runs:
 
     - name: Inspect image digest 🔬
       shell: bash
-      run: echo ${{ steps.build.outputs.digest }}
+      run: |
+        echo "IMAGE DIGEST: ${{ steps.build.outputs.digest }}""
 
     - name: Inspect new image 🔬
       shell: bash

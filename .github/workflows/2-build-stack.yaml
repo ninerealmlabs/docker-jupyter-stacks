@@ -37,7 +37,8 @@ jobs:
     secrets: inherit
     with:
       source_image: jupyter/minimal-notebook
-      # source_pin: latest
+      # source_tag: latest
+      # source_sha: ''
       image_name: base-env
       python_version: ${{ inputs.python_version }}
       platforms: ${{ inputs.platforms }}
@@ -53,7 +54,8 @@ jobs:
     with:
       ### TODO: not passing image_digest
       source_image: ghcr.io/ninerealmlabs/base-env # @${{ needs.base-env.outputs.image_digest }}
-      source_pin: ${{ needs.base-env.outputs.image_digest }}
+      source_tag: ${{ inputs.python_version }}
+      source_sha: ${{ needs.base-env.outputs.image_digest }}
       image_name: ds-env
       python_version: ${{ inputs.python_version }}
       platforms: ${{ inputs.platforms }}
@@ -61,47 +63,50 @@ jobs:
       d_registry: ${{ inputs.d_registry }}
       owner: ${{ inputs.owner }}
 
-  nlp-env:
-    needs: [ds-env]
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/3-build-test-tag.yaml
-    secrets: inherit
-    with:
-      source_image: ghcr.io/ninerealmlabs/ds-env
-      source_pin: ${{ needs.ds-env.outputs.image_digest }}
-      image_name: nlp-env
-      python_version: ${{ inputs.python_version }}
-      platforms: ${{ inputs.platforms }}
-      gh_registry: ${{ inputs.gh_registry }}
-      d_registry: ${{ inputs.d_registry }}
-      owner: ${{ inputs.owner }}
+  # nlp-env:
+  #   needs: [ds-env]
+  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+  #   uses: ./.github/workflows/3-build-test-tag.yaml
+  #   secrets: inherit
+  #   with:
+  #     source_image: ghcr.io/ninerealmlabs/ds-env
+  #     source_tag: ${{ inputs.python_version }}
+  #     source_sha: ${{ needs.ds-env.outputs.image_digest }}
+  #     image_name: nlp-env
+  #     python_version: ${{ inputs.python_version }}
+  #     platforms: ${{ inputs.platforms }}
+  #     gh_registry: ${{ inputs.gh_registry }}
+  #     d_registry: ${{ inputs.d_registry }}
+  #     owner: ${{ inputs.owner }}
 
-  ts-env:
-    needs: [ds-env]
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/3-build-test-tag.yaml
-    secrets: inherit
-    with:
-      source_image: ghcr.io/ninerealmlabs/ds-env
-      source_pin: ${{ needs.ds-env.outputs.image_digest }}
-      image_name: ts-env
-      python_version: ${{ inputs.python_version }}
-      platforms: ${{ inputs.platforms }}
-      gh_registry: ${{ inputs.gh_registry }}
-      d_registry: ${{ inputs.d_registry }}
-      owner: ${{ inputs.owner }}
+  # ts-env:
+  #   needs: [ds-env]
+  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+  #   uses: ./.github/workflows/3-build-test-tag.yaml
+  #   secrets: inherit
+  #   with:
+  #     source_image: ghcr.io/ninerealmlabs/ds-env
+  #     source_tag: ${{ inputs.python_version }}
+  #     source_sha: ${{ needs.ds-env.outputs.image_digest }}
+  #     image_name: ts-env
+  #     python_version: ${{ inputs.python_version }}
+  #     platforms: ${{ inputs.platforms }}
+  #     gh_registry: ${{ inputs.gh_registry }}
+  #     d_registry: ${{ inputs.d_registry }}
+  #     owner: ${{ inputs.owner }}
 
-  web-env:
-    needs: [nlp-env]
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/3-build-test-tag.yaml
-    secrets: inherit
-    with:
-      source_image: ghcr.io/ninerealmlabs/nlp-env
-      source_pin: ${{ needs.nlp-env.outputs.image_digest }}
-      image_name: web-env
-      python_version: ${{ inputs.python_version }}
-      platforms: ${{ inputs.platforms }}
-      gh_registry: ${{ inputs.gh_registry }}
-      d_registry: ${{ inputs.d_registry }}
-      owner: ${{ inputs.owner }}
+  # web-env:
+  #   needs: [nlp-env]
+  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+  #   uses: ./.github/workflows/3-build-test-tag.yaml
+  #   secrets: inherit
+  #   with:
+  #     source_image: ghcr.io/ninerealmlabs/nlp-env
+  #     source_tag: ${{ inputs.python_version }}
+  #     source_sha: ${{ needs.nlp-env.outputs.image_digest }}
+  #     image_name: web-env
+  #     python_version: ${{ inputs.python_version }}
+  #     platforms: ${{ inputs.platforms }}
+  #     gh_registry: ${{ inputs.gh_registry }}
+  #     d_registry: ${{ inputs.d_registry }}
+  #     owner: ${{ inputs.owner }}

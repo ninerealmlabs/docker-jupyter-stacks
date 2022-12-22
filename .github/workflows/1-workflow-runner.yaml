@@ -99,28 +99,28 @@ jobs:
       owner: ${{ needs.export-envs.outputs.owner }}
     needs: [export-envs]
 
-  # python loop can run in parallel
-  python-39:
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/2-build-stack.yaml
-    secrets: inherit
-    with:
-      python_version: 3.9.*
-      platforms: ${{ needs.export-envs.outputs.platforms }}
-      gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-      d_registry: ${{ needs.export-envs.outputs.d_registry }}
-      owner: ${{ needs.export-envs.outputs.owner }}
-    needs: [export-envs]
+  # # python loop can run in parallel
+  # python-39:
+  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+  #   uses: ./.github/workflows/2-build-stack.yaml
+  #   secrets: inherit
+  #   with:
+  #     python_version: 3.9.*
+  #     platforms: ${{ needs.export-envs.outputs.platforms }}
+  #     gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
+  #     d_registry: ${{ needs.export-envs.outputs.d_registry }}
+  #     owner: ${{ needs.export-envs.outputs.owner }}
+  #   needs: [export-envs]
 
-  # python loop can run in parallel
-  python-310:
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/2-build-stack.yaml
-    secrets: inherit
-    with:
-      python_version: 3.10.*
-      platforms: ${{ needs.export-envs.outputs.platforms }}
-      gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-      d_registry: ${{ needs.export-envs.outputs.d_registry }}
-      owner: ${{ needs.export-envs.outputs.owner }}
-    needs: [export-envs]
+  # # python loop can run in parallel
+  # python-310:
+  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+  #   uses: ./.github/workflows/2-build-stack.yaml
+  #   secrets: inherit
+  #   with:
+  #     python_version: 3.10.*
+  #     platforms: ${{ needs.export-envs.outputs.platforms }}
+  #     gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
+  #     d_registry: ${{ needs.export-envs.outputs.d_registry }}
+  #     owner: ${{ needs.export-envs.outputs.owner }}
+  #   needs: [export-envs]

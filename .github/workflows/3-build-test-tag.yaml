@@ -13,11 +13,16 @@ on: # yamllint disable-line rule:truthy
         description: Parent/Source image name (repository/name)
         required: true
         type: string
-      source_pin:
-        description: Tag or SHA digest of image
+      source_tag:
+        description: Tag digest of source image
         required: false
         type: string
         default: 'latest' # doesn't actually pass default; hacked in in called action
+      source_sha:
+        description: SHA digest of source image
+        required: false
+        type: string
+        default: '' # doesn't actually pass default; hacked in in called action
       image_name:
         description: Image name
         required: true
@@ -45,16 +50,16 @@ on: # yamllint disable-line rule:truthy
     outputs:
       python_tag:
         description: Python version tag (python-<major.minor>)
-        value: ${{ jobs.build-image-caller.outputs.python_tag }}
+        value: ${{ jobs.build-image.outputs.python_tag }}
       short_nametag:
         description: Image name and short tag (image:python-<major.minor>)
-        value: ${{ jobs.build-image-caller.outputs.short_nametag }}
+        value: ${{ jobs.build-image.outputs.short_nametag }}
       long_nametag:
         description: Image name and long tag (image:python-<major.minor>-<sha>)
-        value: ${{ jobs.build-image-caller.outputs.long_nametag }}
+        value: ${{ jobs.build-image.outputs.long_nametag }}
       image_digest:
         description: Image digest
-        value: ${{ jobs.build-image-caller.outputs.image_digest }}
+        value: ${{ jobs.build-image.outputs.image_digest }}
   workflow_dispatch:
 
 # env:
@@ -93,7 +98,8 @@ jobs:
         uses: ./.github/actions/build-image-action
         with:
           source_image: ${{ inputs.source_image }}
-          source_pin: ${{ inputs.source_pin }}
+          source_tag: ${{ inputs.source_tag }}
+          source_sha: ${{ inputs.source_sha }}
           image_name: ${{ inputs.image_name }}
           python_version: ${{ inputs.python_version }}
           platforms: ${{ inputs.platforms }}

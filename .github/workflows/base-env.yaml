@@ -47,9 +47,7 @@ env:
 
 jobs:
   build: # used for image name
-    runs-on:
-      - self-hosted
-      - ubuntu-latest
+    runs-on: self-hosted
 
     strategy:
       # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs

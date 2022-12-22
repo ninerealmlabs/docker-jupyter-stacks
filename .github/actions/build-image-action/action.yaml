@@ -146,7 +146,7 @@ runs:
     - name: Inspect image digest 🔬
       shell: bash
       run: |
-        echo "IMAGE DIGEST: ${{ steps.build.outputs.digest }}""
+        echo "IMAGE DIGEST: ${{ steps.build.outputs.digest }}"
 
     - name: Inspect new image 🔬
       shell: bash

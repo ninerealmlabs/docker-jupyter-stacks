@@ -2,26 +2,26 @@
 name: ds-env
 
 on: # yamllint disable-line rule:truthy
-  # workflow_dispatch:
-  #   inputs:
-  #     source_image:
-  #       description: Parent/Source image name (repository/name)
-  #       required: true
-  #       type: string
-  #     source_tag:
-  #       description: Tag digest of source image
-  #       required: true
-  #       type: string
-  #       default: 'latest'
-  #     source_digest:
-  #       description: SHA digest of source image
-  #       required: false
-  #       type: string
-  #       default: ''
-  #     python_version:
-  #       description: Python version (<major.minor.*>)
-  #       required: true
-  #       type: string
+  workflow_dispatch:
+    inputs:
+      source_image:
+        description: Parent/Source image name (repository/name)
+        required: true
+        type: string
+      source_tag:
+        description: Tag digest of source image
+        required: true
+        type: string
+        default: 'latest'
+      source_digest:
+        description: SHA digest of source image
+        required: false
+        type: string
+        default: ''
+      python_version:
+        description: Python version (<major.minor.*>)
+        required: true
+        type: string
   workflow_run:
     workflows: [base-env]
     types:
@@ -75,7 +75,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
 
-      # if workflow_run
+      # if workflow_run, read from artifact
       - if: ${{ github.event.workflow_run.conclusion == 'success' }}
         name: Read passed inputs from artifact 📖
         id: source_inputs
@@ -83,6 +83,7 @@ jobs:
         # with:
         #   artifact_name: vars
 
+      # if workflow_dispatch, read inputs
       - if: ${{ github.event.workflow_dispatch }}
         name: Read passed inputs 📖
         id: source_inputs
@@ -117,7 +118,7 @@ jobs:
         with:
           source_image: ${{ steps.source_inputs.outputs.image_name }}
           source_tag: ${{ steps.source_inputs.outputs.python_tag }}
-          source_digest: ${{ steps.source_inputs.outputs.image_digest }}
+          source_digest: ${{ steps.source_inputs.outputs.source_digest }}
           image_name: ${{ env.image_name }}
           python_version: ${{ steps.source_inputs.outputs.python_version }}
           platforms: ${{ env.platforms }}
@@ -142,7 +143,7 @@ jobs:
           python_version: ${{ steps.source_inputs.outputs.python_version }}
           python_tag: ${{ steps.build.outputs.python_tag }}
           git_tag: ${{ steps.build.outputs.git_tag }}
-          image_digest: ${{ steps.build.outputs.digest }}
+          image_digest: ${{ steps.build.outputs.image_digest }}
 
 
       ### --- Push to Dockerhub ----------------------------------------------

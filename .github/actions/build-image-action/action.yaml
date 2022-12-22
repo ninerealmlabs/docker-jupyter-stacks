@@ -82,13 +82,13 @@ runs:
       id: tags
       shell: bash
       run: |
-        GIT_SHA="${GITHUB_SHA:0:7}"
+        GIT_TAG="${GITHUB_SHA:0:7}"
         PYTHON_TAG="python-${PYTHON_VERSION/'.*'/}"
         # ------------------------------------------------------------------
-        echo "GIT_SHA: ${GIT_SHA}"
+        echo "GIT_TAG: ${GIT_TAG}"
         echo "PYTHON_TAG: ${PYTHON_TAG}"
         # ------------------------------------------------------------------
-        echo "git_sha=${GIT_SHA}" >> $GITHUB_OUTPUT
+        echo "git_tag=${GIT_TAG}" >> $GITHUB_OUTPUT
         echo "python_tag=${PYTHON_TAG}" >> $GITHUB_OUTPUT
       env:
         PYTHON_VERSION: ${{ inputs.python_version }}
@@ -106,14 +106,14 @@ runs:
         build-args: |
           SOURCE_IMAGE=${{ steps.source.outputs.source_fullname }}
           PYTHON_VERSION=${{ inputs.python_version }}
-          GIT_COMMIT=${{ steps.tags.outputs.git_sha }}
+          GIT_COMMIT=${{ steps.tags.outputs.git_tag }}
           BUILD_DATE=${{ steps.date.outputs.date }}
         # cache-from: type=gha
         cache-to: type=registry,ref=${{ inputs.gh_registry }}/${{ inputs.image_name }}:buildcache,mode=max
         push: true
         tags: |
           ${{ inputs.gh_registry }}/${{ inputs.image_name }}:${{ steps.tags.outputs.python_tag }}
-          ${{ inputs.gh_registry }}/${{ inputs.image_name }}:${{ steps.tags.outputs.python_tag }}-${{ steps.tags.outputs.git_sha }}
+          ${{ inputs.gh_registry }}/${{ inputs.image_name }}:${{ steps.tags.outputs.python_tag }}-${{ steps.tags.outputs.git_tag }}
 
     - name: Inspect image digest 🔬
       shell: bash

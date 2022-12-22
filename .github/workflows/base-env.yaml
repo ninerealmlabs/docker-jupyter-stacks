@@ -71,6 +71,10 @@ jobs:
 
       - name: Checkout Repo 🛒
         uses: actions/checkout@v3
+        # allow workflow_run to trigger on non-main branch:
+        # https://stackoverflow.com/questions/63343937/how-to-use-the-github-actions-workflow-run-event
+        with:
+          ref: ${{ github.ref }}
 
       ### unneeded in initial job
       # - name: Read passed inputs 📖
@@ -118,7 +122,7 @@ jobs:
           python_version: ${{ matrix.python_version }}
           python_tag: ${{ steps.build.outputs.python_tag }}
           git_tag: ${{ steps.build.outputs.git_tag }}
-          image_digest: ${{ steps.build.outputs.digest }}
+          image_digest: ${{ steps.build.outputs.image_digest }}
 
       ### --- Push to Dockerhub ----------------------------------------------
       # push to registry on main branch only

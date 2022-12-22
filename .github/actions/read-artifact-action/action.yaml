@@ -7,24 +7,7 @@ description: reads variable from artifact
 #     description: Name of artifact to download
 #     required: true
 #     default: vars
-#     source_image:
-#       description: Parent/Source image name (repository/name)
-#       required: true
-#       type: string
-#     source_tag:
-#       description: Tag digest of source image
-#       required: true
-#       type: string
-#       default: 'latest'
-#     source_digest:
-#       description: SHA digest of source image
-#       required: false
-#       type: string
-#       default: ''
-#     python_version:
-#       description: Python version (<major.minor.*>)
-#       required: true
-#       type: string
+
 outputs:
   image_name:
     description: Image name (future source_image)

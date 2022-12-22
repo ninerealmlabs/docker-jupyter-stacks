@@ -1,0 +1,25 @@
+---
+name: base
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  ### package managers
+  - pip  # to prevent warnings
+  ### Additional dependencies on top of `ds-env` sstandards
+  - beautifulsoup4
+  - graphviz
+  - lxml
+  - mlxtend
+  - networkx
+  - python-graphviz
+  - pydotplus
+  - requests
+  - scrapy
+  - selenium
+  ### markovclick deps
+  ### retentioneering deps
+  # - vega
+  # - pymongo
+  # - umap-learn
+# prefix: /opt/conda/

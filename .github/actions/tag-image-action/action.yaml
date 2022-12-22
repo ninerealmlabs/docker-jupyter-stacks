@@ -1,0 +1,36 @@
+---
+name: (Re)Tag image and push to registry
+description: Pull image from github registry, retags, and pushes to (docker) registry
+
+inputs:
+  gh_registry:
+    description: Github registry (ghcr.io/<owner>)
+    required: true
+  d_registry:
+    description: Docker registry (docker.io/<owner>)
+    required: true
+  image_name:
+    description: Image name
+    required: true
+  python_tag:
+    description: Python tag (python-<major.minor>)
+    required: true
+  git_tag:
+    description: Git short sha
+    required: true
+  image_digest:
+    description: digest of image
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    # copy image from ghcr to dockerhub
+    - name: Push image to alternate registries 💾
+      uses: akhilerm/tag-push-action@v2.1.0
+      with:
+        src: ${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}
+        dst: |
+          ${{ inputs.d_registry }}/${{ inputs.image_name }}:${{ inputs.python_tag }}
+          ${{ inputs.d_registry }}/${{ inputs.image_name }}:${{ inputs.python_tag }}-${{ inputs.git_tag }}

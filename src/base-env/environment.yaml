@@ -1,0 +1,67 @@
+---
+name: base
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  ### package managers
+  # - conda
+  # - mamba
+  - mamba_gator # Web UI for managing conda environments
+  - pip
+  ### core deps
+  - cloudpickle
+  - cython
+  - dill
+  - distributed
+  - joblib
+  ### JupyterLab "OS-level" extensions
+  - ipywidgets
+  # - jupyter_contrib_nbextensions
+  # - jupyter_nbextensions_configurator
+  - jupyterlab_code_formatter
+  - jupyterlab_widgets # backend for ipywidgets
+  # - jupyterlab-flake8
+  - jupyterlab-git
+  - jupytext
+  - nbdime
+  - widgetsnbextension
+  ### sql
+  - h5py
+  - hdf5
+  - pyodbc
+  - pyarrow
+  - snowflake-connector-python
+  - snowflake-sqlalchemy
+  - sqlalchemy
+  - sqlite
+  ### utils
+  - attrs
+  - black
+  - bottleneck
+  - colorama
+  - flake8
+  - flake8-bugbear
+  - flake8-builtins
+  - flake8-colors
+  - flake8-comprehensions
+  - flake8-isort
+  - isort
+  - markdown
+  - numba
+  - numpydoc
+  - openpyxl
+  - pep8
+  - pep8-naming
+  - protobuf
+  - pycodestyle
+  - pylint
+  - pytest
+  - python-dateutil
+  - python-dotenv
+  - pyyaml
+  - sphinx
+  - tqdm
+  - xlrd
+
+# prefix: /opt/conda/

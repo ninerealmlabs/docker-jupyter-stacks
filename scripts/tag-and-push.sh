@@ -1,48 +1,25 @@
 #!/bin/bash
-echo "Have you logged in with $(docker login)?"
+printf "\e[33m%s\e[0m\n" "Have you logged in with 'docker login'?"
 
 REGISTRY="ninerealmlabs"
 
 # tag: python-version as version
-for PYTHON_VERSION in "3.7.*" "3.8.*" "3.9.*"; do
+IMAGES=("base-env" "ds-env" "ts-env" "nlp-env" "web-env")
+for IMAGE_NAME in "${IMAGES[@]}"; do
+  printf "\e[32m%s\e[0m\n" "Tagging and pushing ${IMAGE_NAME} to registry..."
 
-  TAG_VERSION=${PYTHON_VERSION}
-  if [[ ${TAG_VERSION: -1} == "*" ]]; then
-    TAG_VERSION=${TAG_VERSION:0:${#TAG_VERSION}-2}
-  fi
-  echo ${TAG_VERSION}
+  for PYTHON_VERSION in "3.8.*" "3.9.*" "3.10.*"; do
+    VERSION_TAG="python-${PYTHON_VERSION/'.*'/}"
+    SHA_TAG=$(git show --oneline | awk '{print $1}')
+    SHORT_TAG="${IMAGE_NAME}:${VERSION_TAG}"
+    LONG_TAG="${IMAGE_NAME}:${VERSION_TAG}-${SHA_TAG}"
 
-  docker tag base_env ${REGISTRY}/base_env:${TAG_VERSION}
-  docker tag ds_env ${REGISTRY}/ds_env:${TAG_VERSION}
-  docker tag forecast_env ${REGISTRY}/forecast_env:${TAG_VERSION}
-  docker tag nlp_env ${REGISTRY}/nlp_env:${TAG_VERSION}
-  docker tag pytorch_env ${REGISTRY}/pytorch_env:${TAG_VERSION}
-  docker tag web_env ${REGISTRY}/web_env:${TAG_VERSION}
+    docker tag "${SHORT_TAG}" "${REGISTRY}/${SHORT_TAG}"
+    docker tag "${LONG_TAG}" "${REGISTRY}/${LONG_TAG}"
+  done
+
+  # Docker 19.*: pushing without explicity tag will push all tags
+  docker push "${REGISTRY}/${IMAGE_NAME}"
+  printf "\e[32m%s\e[0m\n" "$(date) -- ${IMAGE_NAME} push complete."
 
 done
-
-# tag: git commit sha
-SHORT=$(git show --oneline | awk '{print $1}')
-FULL=$(git rev-parse HEAD)
-
-docker tag base_env ${REGISTRY}/base_env:${SHORT}
-docker tag ds_env ${REGISTRY}/ds_env:${SHORT}
-docker tag forecast_env ${REGISTRY}/forecast_env:${SHORT}
-docker tag nlp_env ${REGISTRY}/nlp_env:${SHORT}
-docker tag pytorch_env ${REGISTRY}/pytorch_env:${SHORT}
-docker tag web_env ${REGISTRY}/web_env:${SHORT}
-
-echo "Tag complete."
-
-echo "Pushing to registry..."
-# Docker 19.*: pushing without explicity tag will push all tags
-
-# push images
-docker push ${REGISTRY}/base_env
-docker push ${REGISTRY}/ds_env
-docker push ${REGISTRY}/forecast_env
-docker push ${REGISTRY}/nlp_env
-docker push ${REGISTRY}/pytorch_env
-docker push ${REGISTRY}/web_env
-
-echo "$(date) -- Push complete."

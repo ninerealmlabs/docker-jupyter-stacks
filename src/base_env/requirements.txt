@@ -1,3 +1,0 @@
-jupytext
-jupyterlab-git
-aquirdturtle_collapsible_headings

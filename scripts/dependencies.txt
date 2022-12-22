@@ -1,0 +1,17 @@
+## https://stackoverflow.com/questions/1494178/how-to-define-hash-tables-in-bash
+## <CHILD> : <PARENT>
+## String MUST separate key/value pairs with ":"
+## This format includes whitespace for legibility; must trim before use.
+## Finally, builds occur in the order listed here.
+## A parent image must appear higher in the list than the image(s) that uses it
+## ---------------------------------------------------------------------------
+##  base-env
+##    └ ds-env
+##        ├ ts-env
+##        └ nlp-env
+##            └ web-env
+## ---------------------------------------------------------------------------
+ds-env  : base-env
+nlp-env : ds-env
+ts-env  : ds-env
+web-env : nlp-env

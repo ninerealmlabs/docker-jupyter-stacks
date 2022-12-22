@@ -2,8 +2,15 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
+  - repo: local
+    hooks:
+      - id: forbid-yml
+        name: Forbid .yaml file extensions (use .yaml)
+        entry: YAML file extension must be .yaml
+        language: fail
+        files: \.yml$
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1   # v3.2.0
+    rev: v4.4.0   # v3.2.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -11,51 +18,82 @@ repos:
       - id: check-added-large-files
         args: [--maxkb=500000]
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.1.10     # v1.1.10
+    rev: v1.3.1
     hooks:
       - id: remove-crlf
       - id: remove-tabs
   - repo: https://github.com/sirosen/texthooks
-    rev: 0.2.2
+    rev: 0.4.0
     hooks:
-        # - id: fix-smartquotes # ignoring b/c pattern fix require smartquotes
+      - id: fix-smartquotes
       - id: fix-ligatures
+  # Autoformat: YAML, JSON, Markdown, etc.
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.5.1     # Use the sha or tag you want to point at
+    rev: v3.0.0-alpha.4 # Use the sha or tag you want to point at
     hooks:
       - id: prettier
+        args:
+          - --ignore-unknown
+          # - "--ignore-path '**/*.md'"
+          # - "--ignore-path '**/*.y*ml'"
+
+  # Lint: Markdown
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.30.0     # v0.30.0
+    rev: v0.32.2 # v0.30.0
     hooks:
-      - id: markdownlint-fix
-        args: [--config=.markdownlint.yaml]
+      - id: markdownlint
+        args:
+          - --config=.markdownlint.yaml
+          - --fix
+  # Lint: YAML
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.26.3
+    rev: v1.28.0
     hooks:
       - id: yamllint
-        args: [-c=.yamllint.yaml]
-  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
-    rev: 0.1.0
+        args:
+          - --config-file=.yamllint.yaml
+          - --format=parsable
+          - --strict
+  # Lint & Format: Python
+  - repo: https://github.com/pycqa/isort
+    rev: v5.11.3
     hooks:
-      - id: yamlfmt
-        args: [--mapping, '2', --sequence, '4', --offset, '2', --preserve-quotes]
-  # - repo: https://github.com/pycqa/isort
-  #   rev: "5.10.1" # 5.10.1
-  #   hooks:
-  #     - id: isort
-  #       name: isort (python)
-  # - repo: https://github.com/psf/black
-  #   rev: "21.12b0" # 21.11b1
-  #   hooks:
-  #     - id: black
-  # - repo: https://github.com/pycqa/flake8
-  #   rev: "4.0.1" # 3.9.2
-  #   hooks:
-  #     - id: flake8
-  #       additional_dependencies:
-  #         - flake8-bugbear
-  #         - flake8-builtins
-  #         - flake8-colors
-  #         - flake8-comprehensions
-  #         - flake8-isort
-  #         - pep8-naming
+      - id: isort
+        name: isort (python)
+  - repo: https://github.com/psf/black
+    rev: 22.12.0
+    hooks:
+      - id: black
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-bugbear
+          - flake8-builtins
+          - flake8-colors
+          - flake8-comprehensions
+          - flake8-isort
+          - pep8-naming
+
+  # Lint: Dockerfile with system hadolint
+  - repo: local
+    hooks:
+      - id: hadolint
+        name: hadolint
+        description: Runs hadolint to lint Dockerfiles
+        language: system
+        types: [dockerfile]
+        entry: hadolint
+
+  # Lint: Shell scripts
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.2
+    hooks:
+      - id: shellcheck
+        args: [-x]
+
+# # Docker hooks do not work in pre-commit.ci
+# # See: <https://github.com/pre-commit-ci/issues/issues/11>
+# ci:
+#   skip: [hadolint-docker]

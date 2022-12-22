@@ -1,143 +1,57 @@
 # Introduction
 
-This repo contains the source files for 'Data Science Anywhere' Data Science environments.
-The 'base_env' image is modeled after [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks)
-scipy-notebook; 'ds_env" add some additional customizations.
+[![workflow-runner](https://github.com/ninerealmlabs/docker-jupyter-stacks/actions/workflows/1-workflow-runner.yaml/badge.svg?event=schedule)](https://github.com/ninerealmlabs/docker-jupyter-stacks/actions/workflows/1-workflow-runner.yaml)
+
+This repo contains the source files for juptyer containers based on [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks).
+
+- [Introduction](#introduction)
+  - [Prerequisites](#prerequisites)
+  - [Quick Start](#quick-start)
+  - [Image dependencies / inheritance](#image-dependencies--inheritance)
+  - [Features](#features)
+  - [Versioning](#versioning)
+  - [Development](#development)
+    - [Build](#build)
+      - [Build Single Image](#build-single-image)
+      - [Build Stack](#build-stack)
+    - [Push to Registry](#push-to-registry)
 
 ## Prerequisites
 
 If unfamiliar with docker see our [Intro to Docker tutorial](./docs/intro-to-docker.md)
 
-## Installation
-
-1. Installation process:
-   - [Download Docker Desktop](https://www.docker.com/products/docker-desktop)
-   - [Getting started with Docker](https://docs.docker.com/)
-2. Clone this repo
-
-## Launch
+## Quick Start
 
 1. Create/edit a `.env` file in project root to specify image and local path to be mounted
 
    ```sh
-   IMG_NAME="ninerealmlabs/ds_env:python38"
-   MOUNT_PATH="~"
+   IMG_NAME="ninerealmlabs/ds-env:python-3.10"
+   MOUNT_PATH="~/Documents"
    ```
 
 2. Launch locally with `docker-compose up -d` from project root.
 3. View URL and token with `docker logs <IMAGENAME>`
 4. Run `docker-compose down` to tear down the docker container
 
-## Build
-
-Images are built using [docker buildx](https://docs.docker.com/buildx/working-with-buildx/#overview),
-which provides support for multi-architecture/multi-platform builds.
-Images are automatically tagged with python version and short git sha.
-Build scripts assume that the output image name is the same as the source folder name under /src
-
-> To update the default version of python, run `/scripts/update_default_python.sh` from project root
-> and provide the semver version
->
-> ```sh
-> bash ./scripts/update_default_python.sh "3.9.*"
-> ```
-
-### Build Single Image
-
-To update a _single_ image, run the `build.sh` script.
-_Remember, images have inheritance and updating a single image will not (necessarily) update the_
-_packages inherited from the source image!_
-
-`build.sh` takes the following keyword arguments in `flag=value` format:
-| `short flag` | `long flag` | `default value` |
-| --- | --- | --- |
-| -p | --platform | "linux/amd64" |
-| -b | --base*image | \_depends on image* |
-| -r | --registry | _blank / no default_ |
-| -i | --image*name | \_blank / no default* |
-| -v | --python_version | "3.8.\*" |
-| | --push | `true` if present |
-| | --clean | `true` if present |
-
-- `platform` is for multi-architecture builds (amd64, arm64/aarch64, etc.), assuming jupyter/docker-stacks [implements this](https://github.com/jupyter/docker-stacks/pull/1368)
-  - If loading locally, only a single architecture can be provided, otherwise both `--registry` and `--push` are required
-- `base_image` is the source image to build from. This can be provide as full `<registry>/<image>:<tag>` format.
-- `registry` is the dockerhub (or other container registry) to push to.
-- `image_name` is name of the output image. The build script assumes the Dockerfile and required materials are
-  in a subdirectory under /src with called <image_name>
-- `python_version` is the python version to pin
-- If present, `--push` will push to registry; otherwise, images will load locally
-- If present, `--clean` will remove the local images once built
-
-Examples:
-
-```sh
-# build 'ds_env' locally (note: this assumes that 'base_env' is also available locally)
-bash ./scripts/build.sh --base_image="base_env:python38" --image_name="ds_env"
-
-# build 'ds_env' to use Python 3.9.4, push to `ninerealmlabs` registry
-bash ./scripts/build.sh --base_image="base_env:python38" --registry="ninerealmlabs" --image_name="ds_env" --push
-
-# build multi-arch image (_must_ push)
-bash ./scripts/build.sh -p="linux/amd64,linux/arm64" -b="base_env:python38" -r="ninerealmlabs" -i="ds_env" --push
-```
-
-### Build Stack
-
-To build all images in the stack, run `bash ./scripts/build-all.sh` from project root.
-
-- Consider whether to update the python version(s) specified in the for loop.
-- _Update dependencies in `./scripts/dependencies`_ if required
-
-> **Note:** `docker-build.yml` is deprecated and we prefer `build-all.sh`.
-> However, it should still function if the build args are set appropriately.
-
-`build-all.sh` takes the following keyword arguments in `flag=value` format:
-| `short flag` | `long flag` | `default value` |
-| :---: | :---: | :---: |
-| -p | --platform | "linux/amd64" |
-| -r | --registry | ninerealmlabs |
-| -p | --push | `true` if present |
-| -c | --clean | `true` if present |
-
-- `platform` is for multi-architecture builds (amd64, arm64/aarch64, etc.), assuming jupyter/docker-stacks [implements this](https://github.com/jupyter/docker-stacks/pull/1368)
-  - If loading locally, only a single architecture can be provided,
-    otherwise both `--registry` and `--push` are required
-- `registry` is the dockerhub (or other container registry) to push to. REGISTRY must be provided.
-- If present, `--push` will push to registry; otherwise, images will load locally
-- If present, `--clean` will remove the local images once built
-
-Examples:
-
-```sh
-# build all images locally
-bash /scripts/build-all.sh --REGISTRY="ninerealmlabs"
-
-# build all images, push to `ninerealmlabs` registry, and clean
-bash /scripts/build-all.sh --REGISTRY="ninerealmlabs" --PUSH --CLEAN
-
-# build multi-arch images (_must_ push)
-bash /scripts/build-all.sh -a="linux/amd64,linux/arm64" -r="ninerealmlabs" -p
-```
-
-## Push to Registry
-
-Build scripts include options to push. If you build local images and later decide to push to your registry:
-
-1. Tag images with `docker tag <imagename> <registry>/<imagename>`
-2. Log in with `docker login` and provide username and password/token when prompted
-3. Push images to registry with `docker push <registry>/<imagename>`
-
 ## Image dependencies / inheritance
 
 ```txt
-base_env
-  └ ds_env
-      ├ nlp_env
-      ├ pytorch_env
-      │   └ forecast_env
-      └ web_env
+base-env - customizes `jupyter/minimal-notebook`
+  └ ds-env - from `base-env`, catchup `jupyter/scipy-notebook` + customizations
+      ├ ts-env  - adds packages for timeseries analysis & forecasting
+      └ nlp-env - add packages for text analysis & NLP modeling
+          └ web-env - add packages/binaries for web scraping, including a chromedriver/geckodriver binary
 ```
+
+_Images may have compatibility issues preventing builds depending_
+_on platform architecture and python version._
+
+> If image dependencies change, they must be reflected in:
+>
+> - [./README.md (at repo root)](./README.md)
+> - [./scripts/dependencies.txt](./scripts/dependencies.txt)
+> - [./tests/images-hierarcy.py](./tests/images-hierarcy.py)
+> - [./.github/workflows/1-jobs/build-stack.yaml](./.github/workflows/1-jobs/build-stack.yaml)
 
 ## Features
 
@@ -146,29 +60,128 @@ base_env
   allowing concurrent .ipynb and .py develpment
 - Jupyterlab-git allows use of git repos from within JupyterLab
 
-## Known Issues
+## Versioning
 
-- **27 June 2021**
+Immages are tagged by _python version_ and _python version_-_git sha_
+Since images are automatically build on a timer, it is possible to have newer images
+overwrite older images if there has been no new activity in the git repo.
 
-  - [base_env] _jupyter-sql_ extensions are currently not update for JupyterLab 3.
-    Docker images will need to be rebuilt if/when the bugfixes/patches are released.
-  - [forecast_env] `greykite` requires `fbprophet` library and has tight dependencies;
-    [`fbprophet` will not build on python 3.9](https://github.com/linkedin/greykite/issues/11)
-  - [web_env] [`scrapy` is not available on `conda` or `conda-forge` for python 3.9](https://github.com/scrapy/scrapy/issues/5195)
-  - [Docker on Apple Silicon](https://docs.docker.com/docker-for-mac/apple-silicon/)
-    Not all images are available for ARM64 architecture.
-    You can add `--platform linux/amd64` to the `docker run` command to run an Intel image under emulation.
+**Notes:**
 
-## Roadmap
+- `conda` pins are implemented dynamically in build to stabilize the environment around specific constraints:
+  - Python version {major}.{minor}
+  <!-- - `numpy` version {major}.{minor} -- version number specified in `environment.yaml` -->
+  <!-- - `blas` -- BLAS is set at build time; defaults to `openblas`.
+         To build with `MKL`, set `--build-arg BLAS=` -->
 
-- [ ] Add ARM64 architectures (pending jupyter/docker-stacks support)
-  - [ ] base_env
-  - [ ] ds_env
-  - [ ] nlp_env
-  - [ ] web_env
-  - [ ] pytorch_env
-  - [ ] forecast_env
-- [ ] BLAS-specific images
+<!-- ## Known Issues -->
 
-<!-- * [ ] Add Tensorflow/Keras -->
-<!-- * [ ] Add CUDA and ROCm -->
+## Development
+
+### Build
+
+Images are built using [docker buildx](https://docs.docker.com/buildx/working-with-buildx/#overview),
+which provides support for multi-architecture/multi-platform builds.
+Images are automatically tagged with python version and short git sha.
+Build scripts assume that the output image name is the same as the source folder name under `/src`
+
+#### Build Single Image
+
+To update a _single_ image, run the `build.sh` script.
+_Remember, images have inheritance and updating a single image will not (necessarily) update the_
+_packages inherited from the source image!_
+
+`build.sh` takes the following keyword arguments in `flag=value` format:
+| `short flag` | `long flag` | `default value` |
+| --- | --- | --- |
+| -p | --platform | `linux/amd64,linux/arm64` |
+| -s | --source | **required** |
+| -r | --registry | _blank / no default_ |
+| -i | --image_name | **required** |
+| -v | --python_version | `3.10.*` |
+| | --push | `true` if present |
+| | --clean | `true` if present |
+| | --debug | `true` if present |
+
+- `platform` defines CPU architecture (`linux/amd64`, `linux/arm64`, etc.)
+- `source` is the source image to build from. This can be provide as full `<registry>/<image>:<tag>` format.
+- `registry` is the dockerhub (or other container registry) to push to.
+- `image_name` is name of the output image.
+   The build script assumes the Dockerfile and required materials are in the <image_name> subdirectory under `/src`
+- `python_version` is the python version to pin
+- If present, `--push` will push to registry; otherwise, images will attempt to load locally
+- If present, `--clean` will remove the local images once built
+- If present, `--debug` will add debug printouts
+
+> _Notes:_
+>
+> - If multiple architectures are provided, it is not possible to load locally.
+>   In this case, both `--registry=<registry>` and `--push` are required
+> - If `--push` is enabled, it assumes the current CLI session has `docker login` privileges
+
+Examples:
+
+```sh
+# build 'base-env' locally with python 3.10
+bash ./scripts/build.sh --source="jupyter/minimal-notebook" --image_name="base-env" -v="3.10.*"
+
+# build 'ds-env' (note: this assumes that 'base-env' is also available locally); push to `ninerealmlabs` registry
+bash ./scripts/build.sh --source="base-env:python-3.10" --registry="ninerealmlabs" --image_name="ds-env" --push
+
+# build multi-arch image (_must_ push b/c of multiarch build)
+bash ./scripts/build.sh -p="linux/amd64,linux/arm64" -b="base-env:python38" -r="ninerealmlabs" -i="ds-env" --push
+```
+
+#### Build Stack
+
+To build all images in the stack, run `bash ./scripts/build-stack.sh` from project root.
+
+- Consider whether to update the python version(s) specified
+- Review/Update dependencies in `./scripts/dependencies.txt`
+- Review/Update dependencies in `./tests/images_hierarcy.py`
+
+`build-stack.sh` takes the following keyword arguments in `flag=value` format:
+| `short flag` | `long flag` | `default value` |
+| :---: | :---: | :---: |
+| -p | --platform | `linux/amd64,linux/arm64` |
+| -s | --source | `jupyter/minimal-notebook` |
+| -r | --registry | _blank / no default_ |
+| -p | --push | `true` if present |
+| -c | --clean | `true` if present |
+| | --debug | `true` if present |
+
+- `platform` defines CPU architecture (`linux/amd64`, `linux/arm64`, etc.)
+- `registry` is the dockerhub (or other container registry) to push to. REGISTRY must be provided.
+- If present, `--push` will push to registry; otherwise, images will load locally
+- If present, `--clean` will remove the local images once built
+- If present, `--debug` will add debug printouts
+
+> _Notes:_
+>
+> - If multiple architectures are provided, it is not possible to load locally.
+>   In this case, both `--registry=<registry>` and `--push` are required
+> - If `--push` is enabled, it assumes the current CLI session has `docker login` privileges
+
+Examples:
+
+```sh
+# build all images locally - only a single platform can be used
+bash ./scripts/build-stack.sh --platform="linux/amd64" --registry="ninerealmlabs"
+
+# build all images, push to `ninerealmlabs` registry, and clean
+bash ./scripts/build-stack.sh --registry="ninerealmlabs" --push --clean
+
+# build multi-arch images (_must_ push)
+bash ./scripts/build-stack.sh -p="linux/amd64,linux/arm64" -r="ninerealmlabs" --push
+```
+
+### Push to Registry
+
+Build scripts include options to push.
+If you build local images and later decide to push to your registry:
+
+1. Tag images with `docker tag <imagename> <registry>/<imagename>:<new tag>`
+2. Log in with `docker login` and provide username and password/token when prompted
+3. Push images and all new tags to registry with `docker push <registry>/<imagename>`
+
+See also [tag-and-push.sh](./scripts/tag-and-push.sh)

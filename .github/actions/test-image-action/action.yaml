@@ -1,0 +1,49 @@
+---
+name: Run unit tests for images
+description: Load and run tests from jupyter/docker-stacks (https://github.com/jupyter/docker-stacks)
+
+inputs:
+  gh_registry:
+    description: Github registry (ghcr.io/<owner>)
+    required: true
+  owner:
+    description: Image repository owner
+    required: true
+  image_name:
+    description: Image name
+    required: true
+  image_digest:
+    description: Image digest
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set Up Python 🐍
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+      # if: ${{ inputs.platform == 'x86_64' }}
+
+    - name: Install Dev Dependencies 📦
+      shell: bash
+      run: |
+        pip install --upgrade pip
+        pip install --upgrade -r requirements-dev.txt
+
+    - name: Pull image 📥
+      shell: bash
+      run: |
+        # pull image by sha
+        docker pull "${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}"
+        # retag with 'latest' for test script
+        docker tag \
+          "${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ inputs.image_digest }}" \
+          "${{ inputs.owner }}/${{ inputs.image_name }}:latest"
+        # check work
+        docker image list
+
+    ### Load and run tests from jupyter/docker-stacks (https://github.com/jupyter/docker-stacks)
+    - name: Run tests ✅
+      shell: bash
+      run: python3 -m tests.run_tests --short-image-name ${{ inputs.image }} --owner ${{ inputs.owner }}

@@ -60,37 +60,37 @@ jobs:
     steps:
       - run: echo "Exposing env vars to downstream jobs 📬"
 
-  # # python loop can run in parallel
-  # build-stack-caller:
-  #   strategy:
-  #     # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
-  #     # sadly, there's no way to set dependencies between matrix-generated jobs
-  #     matrix:
-  #       python_version: [3.8.*, 3.9.*, 3.10.*]
-
-  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-  #   uses: ./.github/workflows/2-build-stack.yaml
-  #   secrets: inherit
-  #   with:
-  #     python_version: ${{ matrix.python_version }}
-  #     platforms: ${{ needs.export-envs.outputs.platforms }}
-  #     gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-  #     d_registry: ${{ needs.export-envs.outputs.d_registry }}
-  #     owner: ${{ needs.export-envs.outputs.owner }}
-  #   needs: [export-envs]
-
   # python loop can run in parallel
-  python-38:
+  build-stack-caller:
+    strategy:
+      # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+      # sadly, there's no way to set dependencies between matrix-generated jobs
+      matrix:
+        python_version: [3.8.*, 3.9.*, 3.10.*]
+
     if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-build-stack.yaml
     secrets: inherit
     with:
-      python_version: 3.8.*
+      python_version: ${{ matrix.python_version }}
       platforms: ${{ needs.export-envs.outputs.platforms }}
       gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
       d_registry: ${{ needs.export-envs.outputs.d_registry }}
       owner: ${{ needs.export-envs.outputs.owner }}
     needs: [export-envs]
+
+  # # python loop can run in parallel
+  # python-38:
+  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+  #   uses: ./.github/workflows/2-build-stack.yaml
+  #   secrets: inherit
+  #   with:
+  #     python_version: 3.8.*
+  #     platforms: ${{ needs.export-envs.outputs.platforms }}
+  #     gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
+  #     d_registry: ${{ needs.export-envs.outputs.d_registry }}
+  #     owner: ${{ needs.export-envs.outputs.owner }}
+  #   needs: [export-envs]
 
   # # python loop can run in parallel
   # python-39:

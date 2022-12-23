@@ -51,7 +51,8 @@ _on platform architecture and python version._
 > - [./README.md (at repo root)](./README.md)
 > - [./scripts/dependencies.txt](./scripts/dependencies.txt)
 > - [./tests/images-hierarcy.py](./tests/images-hierarcy.py)
-> - [./.github/workflows/1-jobs/build-stack.yaml](./.github/workflows/1-jobs/build-stack.yaml)
+> - [./.github/workflows/2-image-dependencies.yaml](./.github/workflows/2-image-dependencies.yaml)
+> - [./.github/workflows/hub-overview.yaml](./.github/workflows/hub-overview.yaml)
 
 ## Features
 

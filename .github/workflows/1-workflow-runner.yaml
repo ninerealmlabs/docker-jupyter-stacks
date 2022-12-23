@@ -83,7 +83,7 @@ jobs:
   # matrix doesn't seem to correctly distribute reusable workflows --> python versions
   # explicit is better than implicit?
   python-38:
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-build-stack.yaml
     secrets: inherit
     with:
@@ -96,7 +96,7 @@ jobs:
 
   # python loop can run in parallel
   python-39:
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-build-stack.yaml
     secrets: inherit
     with:
@@ -109,7 +109,7 @@ jobs:
 
   # python loop can run in parallel
   python-310:
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-build-stack.yaml
     secrets: inherit
     with:

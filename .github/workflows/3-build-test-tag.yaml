@@ -106,8 +106,7 @@ jobs:
   build-image:
     # runs-on: self-hosted
     runs-on: ubuntu-latest
-
-    continue-on-error: true
+    # continue-on-error: true
     # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
 
     # map step outputs to job outputs
@@ -150,15 +149,7 @@ jobs:
           gh_registry: ${{ inputs.gh_registry }}
           owner: ${{ inputs.owner }}
 
-      # - name: Test Image 🧪
-      #   id: test
-      #   uses: ./.github/actions/test-image-action
-      #   with:
-      #     gh_registry: ${{ inputs.gh_registry }}
-      #     owner: ${{ inputs.owner }}
-      #     image_name: ${{ inputs.image_name }}
-      #     image_digest: ${{ steps.build.outputs.digest }}
-
+      # translate step outputs to job outputs
       - name: Pass outputs 📬
         id: outputs
         shell: bash
@@ -174,6 +165,15 @@ jobs:
           echo "python_tag=${PYTHON_TAG}" >> $GITHUB_OUTPUT
           echo "git_tag=${GIT_TAG}" >> $GITHUB_OUTPUT
           echo "image_digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
+
+      # - name: Test Image 🧪
+      #   id: test
+      #   uses: ./.github/actions/test-image-action
+      #   with:
+      #     gh_registry: ${{ inputs.gh_registry }}
+      #     owner: ${{ inputs.owner }}
+      #     image_name: ${{ inputs.image_name }}
+      #     image_digest: ${{ steps.build.outputs.digest }}
 
       ### push to registry on main branch only
       - name: Login to DockerHub ✅

@@ -1,5 +1,5 @@
 ---
-name: workflows-runner
+name: Build image stack
 # --- Description ------------------------------------------------------------
 # "Outermost" workflow
 # - Triggers on cron, PR, push-to-main, or manual
@@ -40,12 +40,12 @@ concurrency:
   # group: ${{ github.ref }}
   cancel-in-progress: true
 
-# define 'static' vars here
-env:
-  platforms: "linux/amd64,linux/arm64"
+# yamllint disable rule:colons
+env: # define 'static' vars here
+  platforms:   "linux/amd64,linux/arm64"
   gh_registry: ghcr.io/ninerealmlabs
-  d_registry: docker.io/ninerealmlabs
-  owner: ninerealmlabs
+  d_registry:  docker.io/ninerealmlabs
+  owner:       ninerealmlabs
 
 jobs:
   # "Any environment variables set in an env context defined at the workflow level in the caller workflow
@@ -54,68 +54,61 @@ jobs:
     # runs-on: self-hosted
     runs-on: ubuntu-latest
     outputs:
-      platforms: ${{ env.platforms }}
+      platforms:   ${{ env.platforms }}
       gh_registry: ${{ env.gh_registry }}
-      d_registry: ${{ env.d_registry }}
-      owner: ${{ env.owner }}
+      d_registry:  ${{ env.d_registry }}
+      owner:       ${{ env.owner }}
     steps:
       - run: echo "Exposing env vars to downstream jobs 📬"
-
-  # # python loop can run in parallel
-  # build-stack-caller:
-  #   strategy:
-  #     # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
-  #     # sadly, there's no way to set dependencies between matrix-generated jobs
-  #     matrix:
-  #       python_version: [3.8.*, 3.9.*, 3.10.*]
-
-  #   if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-  #   uses: ./.github/workflows/2-build-stack.yaml
-  #   secrets: inherit
-  #   with:
-  #     python_version: ${{ matrix.python_version }}
-  #     platforms: ${{ needs.export-envs.outputs.platforms }}
-  #     gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-  #     d_registry: ${{ needs.export-envs.outputs.d_registry }}
-  #     owner: ${{ needs.export-envs.outputs.owner }}
-  #   needs: [export-envs]
 
   # matrix doesn't seem to correctly distribute reusable workflows --> python versions
   # explicit is better than implicit?
   python-38:
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    needs: [export-envs]
     uses: ./.github/workflows/2-build-stack.yaml
-    secrets: inherit
     with:
       python_version: 3.8.*
-      platforms: ${{ needs.export-envs.outputs.platforms }}
-      gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-      d_registry: ${{ needs.export-envs.outputs.d_registry }}
-      owner: ${{ needs.export-envs.outputs.owner }}
-    needs: [export-envs]
+      platforms:      ${{ needs.export-envs.outputs.platforms }}
+      gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
+      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      owner:          ${{ needs.export-envs.outputs.owner }}
+    secrets: inherit
 
-  # python loop can run in parallel
   python-39:
+    needs: [export-envs]
     # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
     uses: ./.github/workflows/2-build-stack.yaml
-    secrets: inherit
     with:
       python_version: 3.9.*
-      platforms: ${{ needs.export-envs.outputs.platforms }}
-      gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-      d_registry: ${{ needs.export-envs.outputs.d_registry }}
-      owner: ${{ needs.export-envs.outputs.owner }}
-    needs: [export-envs]
-
-  # python loop can run in parallel
-  python-310:
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/2-build-stack.yaml
+      platforms:      ${{ needs.export-envs.outputs.platforms }}
+      gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
+      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      owner:          ${{ needs.export-envs.outputs.owner }}
     secrets: inherit
+
+  python-310:
+    needs: [export-envs]
+    uses: ./.github/workflows/2-build-stack.yaml
     with:
       python_version: 3.10.*
-      platforms: ${{ needs.export-envs.outputs.platforms }}
-      gh_registry: ${{ needs.export-envs.outputs.gh_registry }}
-      d_registry: ${{ needs.export-envs.outputs.d_registry }}
-      owner: ${{ needs.export-envs.outputs.owner }}
-    needs: [export-envs]
+      platforms:      ${{ needs.export-envs.outputs.platforms }}
+      gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
+      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      owner:          ${{ needs.export-envs.outputs.owner }}
+    secrets: inherit
+
+  # # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+  # build-stack-caller:
+  #   strategy:
+  #     matrix:
+  #       python_version: [3.8.*, 3.9.*, 3.10.*]
+  #   needs: [export-envs]
+  #   uses: ./.github/workflows/2-build-stack.yaml
+  #   with:
+  #     python_version: ${{ matrix.python_version }}
+  #     platforms:      ${{ needs.export-envs.outputs.platforms }}
+  #     gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
+  #     d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+  #     owner:          ${{ needs.export-envs.outputs.owner }}
+  #   secrets: inherit
+# yamllint enable

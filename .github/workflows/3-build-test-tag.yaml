@@ -1,5 +1,5 @@
 ---
-name: build-and-tag
+name: Build Test Tag
 # --- Description ------------------------------------------------------------
 # - Builds (multi-arch) docker image & caches to ghcr.io (build-image.yaml)
 # - Runs test (test-image.yaml)
@@ -98,22 +98,20 @@ on: # yamllint disable-line rule:truthy
         required: true
         type: string
 
-# env:
-#   # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-#   branch_name: ${{ GITHUB_HEAD_REF || GITHUB_REF_NAME }}
-
 jobs:
   build-image:
     # runs-on: self-hosted
     runs-on: ubuntu-latest
+
     # continue-on-error: true
-    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
 
     # map step outputs to job outputs
     outputs:
-      python_tag: ${{ steps.build.outputs.python_tag }}
-      git_tag: ${{ steps.build.outputs.git_tag }}
+      # yamllint disable rule:colons
+      python_tag:   ${{ steps.build.outputs.python_tag }}
+      git_tag:      ${{ steps.build.outputs.git_tag }}
       image_digest: ${{ steps.build.outputs.image_digest }}
+      # yamllint enable
 
     steps:
       # https://stackoverflow.com/questions/70483902/how-to-actually-clean-up-the-repository-on-self-hosted-runner-after-github-actio
@@ -140,31 +138,33 @@ jobs:
         id: build
         uses: ./.github/actions/build-image-action
         with:
-          source_image: ${{ inputs.source_image }}
-          source_tag: ${{ inputs.source_tag }}
-          source_digest: ${{ inputs.source_digest }}
-          image_name: ${{ inputs.image_name }}
+          # yamllint disable rule:colons
+          source_image:   ${{ inputs.source_image }}
+          source_tag:     ${{ inputs.source_tag }}
+          source_digest:  ${{ inputs.source_digest }}
+          image_name:     ${{ inputs.image_name }}
           python_version: ${{ inputs.python_version }}
-          platforms: ${{ inputs.platforms }}
-          gh_registry: ${{ inputs.gh_registry }}
-          owner: ${{ inputs.owner }}
+          platforms:      ${{ inputs.platforms }}
+          gh_registry:    ${{ inputs.gh_registry }}
+          owner:          ${{ inputs.owner }}
+          # yamllint enable
 
-      # translate step outputs to job outputs
-      - name: Pass outputs 📬
-        id: outputs
-        shell: bash
-        run: |
-          PYTHON_TAG="${{ steps.build.outputs.python_tag }}"
-          GIT_TAG="${{ steps.build.outputs.git_tag }}"
-          IMAGE_DIGEST="${{ steps.build.outputs.image_digest }}"
-          # ------------------------------------------------------------------
-          echo "PYTHON_TAG: ${PYTHON_TAG}"
-          echo "GIT_TAG: ${GIT_TAG}"
-          echo "IMAGE_DIGEST: ${IMAGE_DIGEST}"
-          # ------------------------------------------------------------------
-          echo "python_tag=${PYTHON_TAG}" >> $GITHUB_OUTPUT
-          echo "git_tag=${GIT_TAG}" >> $GITHUB_OUTPUT
-          echo "image_digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
+      # # translate step outputs to job outputs
+      # - name: Pass outputs 📬
+      #   id: outputs
+      #   shell: bash
+      #   run: |
+      #     PYTHON_TAG="${{ steps.build.outputs.python_tag }}"
+      #     GIT_TAG="${{ steps.build.outputs.git_tag }}"
+      #     IMAGE_DIGEST="${{ steps.build.outputs.image_digest }}"
+      #     # ------------------------------------------------------------------
+      #     echo "PYTHON_TAG: ${PYTHON_TAG}"
+      #     echo "GIT_TAG: ${GIT_TAG}"
+      #     echo "IMAGE_DIGEST: ${IMAGE_DIGEST}"
+      #     # ------------------------------------------------------------------
+      #     echo "python_tag=${PYTHON_TAG}" >> $GITHUB_OUTPUT
+      #     echo "git_tag=${GIT_TAG}" >> $GITHUB_OUTPUT
+      #     echo "image_digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
 
       # - name: Test Image 🧪
       #   id: test
@@ -182,18 +182,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
-
-      # - name: Tag Image 🏷
-      #   id: tag
-      #   if: github.ref_name == 'main'
-      #   uses: ./.github/actions/tag-image-action
-      #   with:
-      #     gh_registry: ${{ inputs.gh_registry }}
-      #     d_registry: ${{ inputs.d_registry }}
-      #     image_name: ${{ inputs.image_name }}
-      #     image_digest: ${{ steps.build.outputs.image_digest }}
-      #     python_tag: ${{ steps.build.outputs.python_tag }}
-      #     git_tag: ${{ steps.build.outputs.git_tag }}
 
       - if: github.ref_name == 'main'
         name: Tag & Push image to docker 🏷

@@ -42,7 +42,7 @@ concurrency:
 
 # define 'static' vars here
 env:
-  platforms: "linux/amd64,linux/arm64"
+  platforms: "linux/amd64" # ,linux/arm64"
   gh_registry: ghcr.io/ninerealmlabs
   d_registry: docker.io/ninerealmlabs
   owner: ninerealmlabs
@@ -51,7 +51,8 @@ jobs:
   # "Any environment variables set in an env context defined at the workflow level in the caller workflow
   #  are NOT propagated to the called workflow"
   export-envs:
-    runs-on: self-hosted # ubuntu-latest
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       platforms: ${{ env.platforms }}
       gh_registry: ${{ env.gh_registry }}

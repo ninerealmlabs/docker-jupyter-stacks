@@ -104,10 +104,11 @@ on: # yamllint disable-line rule:truthy
 
 jobs:
   build-image:
-    runs-on: self-hosted # ubuntu-latest
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     continue-on-error: true
-    if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
 
     # map step outputs to job outputs
     outputs:

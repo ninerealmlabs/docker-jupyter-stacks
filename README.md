@@ -62,7 +62,7 @@ _on platform architecture and python version._
 
 ## Versioning
 
-Immages are tagged by _python version_ and _python version_-_git sha_
+Images are tagged by _python version_ and _python version_-_git hash_
 Since images are automatically build on a timer, it is possible to have newer images
 overwrite older images if there has been no new activity in the git repo.
 
@@ -82,7 +82,7 @@ overwrite older images if there has been no new activity in the git repo.
 
 Images are built using [docker buildx](https://docs.docker.com/buildx/working-with-buildx/#overview),
 which provides support for multi-architecture/multi-platform builds.
-Images are automatically tagged with python version and short git sha.
+Images are automatically tagged with python version and short git hash.
 Build scripts assume that the output image name is the same as the source folder name under `/src`
 
 #### Build Single Image

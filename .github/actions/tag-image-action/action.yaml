@@ -16,7 +16,7 @@ inputs:
     description: Python tag (python-<major.minor>)
     required: true
   git_tag:
-    description: Git short sha
+    description: Git short hash
     required: true
   image_digest:
     description: digest of image

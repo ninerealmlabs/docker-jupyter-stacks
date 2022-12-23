@@ -97,16 +97,6 @@ on: # yamllint disable-line rule:truthy
         description: Registry name
         required: true
         type: string
-    outputs:
-      python_tag:
-        description: Python version tag (python-<major.minor>)
-        value: ${{ jobs.build-image.outputs.python_tag }}
-      git_tag:
-        description: Git short hash
-        value: ${{ jobs.build-image.outputs.git_tag }}
-      image_digest:
-        description: Image digest
-        value: ${{ jobs.build-image.outputs.image_digest }}
 
 # env:
 #   # https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables

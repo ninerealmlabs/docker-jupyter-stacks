@@ -65,7 +65,7 @@ jobs:
   # explicit is better than implicit?
   python-38:
     needs: [export-envs]
-    uses: ./.github/workflows/2-build-stack.yaml
+    uses: ./.github/workflows/2-image-dependencies.yaml
     with:
       python_version: 3.8.*
       platforms:      ${{ needs.export-envs.outputs.platforms }}
@@ -77,7 +77,7 @@ jobs:
   python-39:
     needs: [export-envs]
     # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    uses: ./.github/workflows/2-build-stack.yaml
+    uses: ./.github/workflows/2-image-dependencies.yaml
     with:
       python_version: 3.9.*
       platforms:      ${{ needs.export-envs.outputs.platforms }}
@@ -88,7 +88,7 @@ jobs:
 
   python-310:
     needs: [export-envs]
-    uses: ./.github/workflows/2-build-stack.yaml
+    uses: ./.github/workflows/2-image-dependencies.yaml
     with:
       python_version: 3.10.*
       platforms:      ${{ needs.export-envs.outputs.platforms }}
@@ -103,7 +103,7 @@ jobs:
   #     matrix:
   #       python_version: [3.8.*, 3.9.*, 3.10.*]
   #   needs: [export-envs]
-  #   uses: ./.github/workflows/2-build-stack.yaml
+  #   uses: ./.github/workflows/2-image-dependencies.yaml
   #   with:
   #     python_version: ${{ matrix.python_version }}
   #     platforms:      ${{ needs.export-envs.outputs.platforms }}

@@ -70,7 +70,7 @@ jobs:
   ds-env:
     needs: [base-env]
     # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    if: success()
+    if: ${{ jobs.base-env.result == success }}
     uses: ./.github/workflows/3-build-test-tag.yaml
     secrets: inherit
     with:
@@ -88,7 +88,7 @@ jobs:
   nlp-env:
     needs: [ds-env]
     # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    if: success()
+    if: ${{ jobs.ds-env.result == success }}
     uses: ./.github/workflows/3-build-test-tag.yaml
     secrets: inherit
     with:
@@ -105,7 +105,7 @@ jobs:
   ts-env:
     needs: [ds-env]
     # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    if: success()
+    if: ${{ jobs.ds-env.result == success }}
     uses: ./.github/workflows/3-build-test-tag.yaml
     secrets: inherit
     with:
@@ -122,7 +122,7 @@ jobs:
   web-env:
     needs: [nlp-env]
     # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
-    if: success()
+    if: ${{ jobs.nlp-env.result == success }}
     uses: ./.github/workflows/3-build-test-tag.yaml
     secrets: inherit
     with:

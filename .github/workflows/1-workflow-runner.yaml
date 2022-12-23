@@ -42,7 +42,7 @@ concurrency:
 
 # define 'static' vars here
 env:
-  platforms: "linux/amd64" # ,linux/arm64"
+  platforms: "linux/amd64,linux/arm64"
   gh_registry: ghcr.io/ninerealmlabs
   d_registry: docker.io/ninerealmlabs
   owner: ninerealmlabs

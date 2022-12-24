@@ -8,11 +8,11 @@ on: # yamllint disable-line rule:truthy
     paths:
       - ".github/workflows/hub-overview.yml"
 
-      - "base-env/README.md"
-      - "ds-env/README.md"
-      - "nlp-env/README.md"
-      - "ts-env/README.md"
-      - "web-env/README.md"
+      - "src/base-env/README.md"
+      - "src/ds-env/README.md"
+      - "src/nlp-env/README.md"
+      - "src/ts-env/README.md"
+      - "src/web-env/README.md"
   workflow_dispatch:
 
 env:
@@ -56,4 +56,4 @@ jobs:
           destination_container_repo: ${{ env.OWNER }}/${{ matrix.image }}
           provider: dockerhub
           short_description: ${{ matrix.description }}
-          readme_file: ${{ matrix.image }}/README.md
+          readme_file: src/${{ matrix.image }}/README.md

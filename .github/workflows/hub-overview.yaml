@@ -1,0 +1,59 @@
+---
+name: Update dockerhub overviews
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/hub-overview.yml"
+
+      - "base-env/README.md"
+      - "ds-env/README.md"
+      - "nlp-env/README.md"
+      - "ts-env/README.md"
+      - "web-env/README.md"
+  workflow_dispatch:
+
+env:
+  OWNER: ${{ github.repository_owner }}
+
+jobs:
+  update-dockerhub-overview:
+    name: Update dockerhub overviews
+    runs-on: ubuntu-latest
+    # runs-on: self-hosted
+
+    strategy:
+      matrix:
+        include:
+          - image: base-env
+            description: |
+              Customized version of jupyter/minimal-notebook
+          - image: ds-env
+            description: |
+              Base image from ninerealmlabs/docker-jupyter-stacks with 'standard' data & analytics pacakges
+          - image: nlp-env
+            description: |
+              Environment from ninerealmlabs/docker-jupyter-stacks for nlp & text analysis
+          - image: ts-env
+            description: |
+              Environment from ninerealmlabs/docker-jupyter-stacks for time-series analysis & forecasting
+          - image: web-env
+            description: |
+              Environment from ninerealmlabs/docker-jupyter-stacks, based on nlp-env, customized for web scraping
+
+    steps:
+      - name: Checkout Repo 🛒
+        uses: actions/checkout@v3
+
+      - name: Push README to Dockerhub 🐳
+        uses: christian-korneck/update-container-description-action@d36005551adeaba9698d8d67a296bd16fa91f8e8 # v1
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKERHUB_TOKEN }}
+        with:
+          destination_container_repo: ${{ env.OWNER }}/${{ matrix.image }}
+          provider: dockerhub
+          short_description: ${{ matrix.description }}
+          readme_file: ${{ matrix.image }}/README.md

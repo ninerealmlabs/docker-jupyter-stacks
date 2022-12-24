@@ -34,7 +34,7 @@ outputs:
     description: Python version tag (python-<major.minor>)
     value: ${{ steps.tags.outputs.python_tag }}
   git_tag:
-    description: Git short sha
+    description: Git short hash
     value: ${{ steps.tags.outputs.git_tag }}
   image_digest:
     description: Image digest

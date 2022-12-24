@@ -1,0 +1,114 @@
+---
+name: Build image stack
+# --- Description ------------------------------------------------------------
+# "Outermost" workflow
+# - Triggers on cron, PR, push-to-main, or manual
+# - Exposes 'static' environment variables to subsequent tasks
+# - Sets up stack build for each version of python
+# ----------------------------------------------------------------------------
+
+on: # yamllint disable-line rule:truthy
+  schedule:
+    # # at: 01:00 on the first of every month
+    - cron: "0 1 1 * *"
+  pull_request:
+    paths-ignore:
+      # - ".github/**"
+      - docs/**
+      - scripts/**
+      - '*.md'
+      - '**/.gitignore'
+      - docker-compose.yaml
+      - LICENSE
+  push:
+    branches:
+      - main
+    paths-ignore:
+      # - ".github/**"
+      - docs/**
+      - scripts/**
+      - '*.md'
+      - '**/.gitignore'
+      - docker-compose.yaml
+      - LICENSE
+  workflow_dispatch:
+
+# https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  # only cancel in-progress jobs or runs for the current workflow - matches against branch & tags
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # group: ${{ github.ref }}
+  cancel-in-progress: true
+
+# yamllint disable rule:colons
+env: # define 'static' vars here
+  platforms:   "linux/amd64,linux/arm64"
+  gh_registry: ghcr.io/ninerealmlabs
+  d_registry:  docker.io/ninerealmlabs
+  owner:       ninerealmlabs
+
+jobs:
+  # "Any environment variables set in an env context defined at the workflow level in the caller workflow
+  #  are NOT propagated to the called workflow"
+  export-envs:
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
+    outputs:
+      platforms:   ${{ env.platforms }}
+      gh_registry: ${{ env.gh_registry }}
+      d_registry:  ${{ env.d_registry }}
+      owner:       ${{ env.owner }}
+    steps:
+      - run: echo "Exposing env vars to downstream jobs 📬"
+
+  # matrix doesn't seem to correctly distribute reusable workflows --> python versions
+  # explicit is better than implicit?
+  python-38:
+    needs: [export-envs]
+    uses: ./.github/workflows/2-image-dependencies.yaml
+    with:
+      python_version: 3.8.*
+      platforms:      ${{ needs.export-envs.outputs.platforms }}
+      gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
+      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      owner:          ${{ needs.export-envs.outputs.owner }}
+    secrets: inherit
+
+  python-39:
+    needs: [export-envs]
+    # if: github.repository == 'ninerealmlabs/docker-jupyter-stacks'
+    uses: ./.github/workflows/2-image-dependencies.yaml
+    with:
+      python_version: 3.9.*
+      platforms:      ${{ needs.export-envs.outputs.platforms }}
+      gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
+      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      owner:          ${{ needs.export-envs.outputs.owner }}
+    secrets: inherit
+
+  python-310:
+    needs: [export-envs]
+    uses: ./.github/workflows/2-image-dependencies.yaml
+    with:
+      python_version: 3.10.*
+      platforms:      ${{ needs.export-envs.outputs.platforms }}
+      gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
+      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      owner:          ${{ needs.export-envs.outputs.owner }}
+    secrets: inherit
+
+  # # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+  # build-stack-caller:
+  #   strategy:
+  #     matrix:
+  #       python_version: [3.8.*, 3.9.*, 3.10.*]
+  #   needs: [export-envs]
+  #   uses: ./.github/workflows/2-image-dependencies.yaml
+  #   with:
+  #     python_version: ${{ matrix.python_version }}
+  #     platforms:      ${{ needs.export-envs.outputs.platforms }}
+  #     gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
+  #     d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+  #     owner:          ${{ needs.export-envs.outputs.owner }}
+  #   secrets: inherit
+# yamllint enable

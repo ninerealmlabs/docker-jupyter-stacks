@@ -1,6 +1,6 @@
 # Introduction
 
-[![workflow-runner](https://github.com/ninerealmlabs/docker-jupyter-stacks/actions/workflows/1-workflow-runner.yaml/badge.svg?event=schedule)](https://github.com/ninerealmlabs/docker-jupyter-stacks/actions/workflows/1-workflow-runner.yaml)
+[![Scheduled Build](https://github.com/ninerealmlabs/docker-jupyter-stacks/actions/workflows/1-build-stack.yaml/badge.svg?event=schedule)](https://github.com/ninerealmlabs/docker-jupyter-stacks/actions/workflows/1-build-stack.yaml)
 
 This repo contains the source files for juptyer containers based on [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks).
 
@@ -51,7 +51,8 @@ _on platform architecture and python version._
 > - [./README.md (at repo root)](./README.md)
 > - [./scripts/dependencies.txt](./scripts/dependencies.txt)
 > - [./tests/images-hierarcy.py](./tests/images-hierarcy.py)
-> - [./.github/workflows/1-jobs/build-stack.yaml](./.github/workflows/1-jobs/build-stack.yaml)
+> - [./.github/workflows/2-image-dependencies.yaml](./.github/workflows/2-image-dependencies.yaml)
+> - [./.github/workflows/hub-overview.yaml](./.github/workflows/hub-overview.yaml)
 
 ## Features
 
@@ -62,7 +63,7 @@ _on platform architecture and python version._
 
 ## Versioning
 
-Immages are tagged by _python version_ and _python version_-_git sha_
+Images are tagged by _python version_ and _python version_-_git hash_
 Since images are automatically build on a timer, it is possible to have newer images
 overwrite older images if there has been no new activity in the git repo.
 
@@ -82,7 +83,7 @@ overwrite older images if there has been no new activity in the git repo.
 
 Images are built using [docker buildx](https://docs.docker.com/buildx/working-with-buildx/#overview),
 which provides support for multi-architecture/multi-platform builds.
-Images are automatically tagged with python version and short git sha.
+Images are automatically tagged with python version and short git hash.
 Build scripts assume that the output image name is the same as the source folder name under `/src`
 
 #### Build Single Image

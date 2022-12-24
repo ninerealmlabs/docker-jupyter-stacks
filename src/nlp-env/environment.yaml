@@ -1,24 +1,23 @@
 ---
 name: base
 channels:
+  - huggingface # prefer huggingface to conda-forge for overlapping package
   - conda-forge
-  - huggingface
   - defaults
 dependencies:
   ### package managers
   - pip  # to prevent warnings
   ### Additional dependencies on top of `ds-env` sstandards
   - gensim
-  - huggingface::datasets
-  - huggingface::safetensors
-  # - huggingface::sacremoses
-  - huggingface::tokenizers
-  - huggingface::transformers
+  - datasets # huggingface
   - nltk
   # - pattern==3.6.* # no longer depencency of gensim
   - pyldavis
-  - sacremoses
+  - sacremoses # huggingface
+  # - safetensors # huggingface; for gpu-based work
   - spacy
   - spacy-lookups-data
+  - tokenizers # huggingface
+  - transformers # huggingface
 
 # prefix: /opt/conda/

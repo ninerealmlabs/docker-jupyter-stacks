@@ -1,0 +1,134 @@
+---
+name: Image dependencies
+# --- Description ------------------------------------------------------------
+# Workflow that manages image dependencies & build order
+# ----------------------------------------------------------------------------
+
+on: # yamllint disable-line rule:truthy
+  workflow_call:
+    inputs:
+      python_version:
+        description: Python version (<major.minor.*>)
+        required: true
+        type: string
+      platforms:
+        description: Image platform architecture(s)
+        required: true
+        type: string
+      gh_registry:
+        description: Github registry (ghcr.io/<owner>)
+        required: true
+        type: string
+      d_registry:
+        description: Docker registry (docker.io/<owner>)
+        required: true
+        type: string
+      owner:
+        description: Registry name
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      python_version:
+        description: Python version (<major.minor.*>)
+        required: true
+        type: string
+      platforms:
+        description: Image platform architecture(s)
+        required: true
+        type: string
+      gh_registry:
+        description: Github registry (ghcr.io/<owner>)
+        required: true
+        type: string
+      d_registry:
+        description: Docker registry (docker.io/<owner>)
+        required: true
+        type: string
+      owner:
+        description: Registry name
+        required: true
+        type: string
+
+# yamllint disable rule:colons rule:comments.min-spaces-from-content
+jobs:
+  base-env:
+    # needs: []                                                     # <-- UPDATE ###
+    # if: success()                                                 # <-- UPDATE ###
+    uses: ./.github/workflows/3-build-test-tag.yaml
+    with:
+      source_image:   jupyter/minimal-notebook                    # <-- UPDATE ###
+      # source_tag:     latest                                    # <-- UPDATE ###
+      # source_digest:  ''                                        # <-- UPDATE ###
+      image_name:     base-env                                    # <-- UPDATE ###
+      python_version: ${{ inputs.python_version }}
+      platforms:      ${{ inputs.platforms }}
+      gh_registry:    ${{ inputs.gh_registry }}
+      d_registry:     ${{ inputs.d_registry }}
+      owner:          ${{ inputs.owner }}
+    secrets: inherit
+
+  ds-env:
+    needs: [base-env]                                             # <-- UPDATE ###
+    if: ${{ needs.base-env.result == 'success' }}                 # <-- UPDATE ###
+    uses: ./.github/workflows/3-build-test-tag.yaml
+    with:
+      source_image:   ghcr.io/ninerealmlabs/base-env              # <-- UPDATE ###
+      source_tag:     ${{ needs.base-env.outputs.python_tag }}    # <-- UPDATE ###
+      source_digest:  ${{ needs.base-env.outputs.image_digest }}  # <-- UPDATE ###
+      image_name:     ds-env                                      # <-- UPDATE ###
+      python_version: ${{ inputs.python_version }}
+      platforms:      ${{ inputs.platforms }}
+      gh_registry:    ${{ inputs.gh_registry }}
+      d_registry:     ${{ inputs.d_registry }}
+      owner:          ${{ inputs.owner }}
+    secrets: inherit
+
+  nlp-env:
+    needs: [ds-env]                                               # <-- UPDATE ###
+    if: ${{ needs.ds-env.result == 'success' }}                   # <-- UPDATE ###
+    uses: ./.github/workflows/3-build-test-tag.yaml
+    with:
+      source_image:   ghcr.io/ninerealmlabs/ds-env                # <-- UPDATE ###
+      source_tag:     ${{ needs.ds-env.outputs.python_tag }}      # <-- UPDATE ###
+      source_digest:  ${{ needs.ds-env.outputs.image_digest }}    # <-- UPDATE ###
+      image_name:     nlp-env                                     # <-- UPDATE ###
+      python_version: ${{ inputs.python_version }}
+      platforms:      ${{ inputs.platforms }}
+      gh_registry:    ${{ inputs.gh_registry }}
+      d_registry:     ${{ inputs.d_registry }}
+      owner:          ${{ inputs.owner }}
+    secrets: inherit
+
+  ts-env:
+    needs: [ds-env]                                               # <-- UPDATE ###
+    if: ${{ needs.ds-env.result == 'success' }}                   # <-- UPDATE ###
+    uses: ./.github/workflows/3-build-test-tag.yaml
+    with:
+      source_image:   ghcr.io/ninerealmlabs/ds-env                # <-- UPDATE ###
+      source_tag:     ${{ needs.ds-env.outputs.python_tag }}      # <-- UPDATE ###
+      source_digest:  ${{ needs.ds-env.outputs.image_digest }}    # <-- UPDATE ###
+      image_name:     ts-env                                      # <-- UPDATE ###
+      python_version: ${{ inputs.python_version }}
+      platforms:      ${{ inputs.platforms }}
+      gh_registry:    ${{ inputs.gh_registry }}
+      d_registry:     ${{ inputs.d_registry }}
+      owner:          ${{ inputs.owner }}
+    secrets: inherit
+
+  web-env:
+    needs: [nlp-env]                                              # <-- UPDATE ###
+    if: ${{ needs.nlp-env.result == 'success' }}                  # <-- UPDATE ###
+    uses: ./.github/workflows/3-build-test-tag.yaml
+    with:
+      source_image:   ghcr.io/ninerealmlabs/nlp-env               # <-- UPDATE ###
+      source_tag:     ${{ needs.nlp-env.outputs.python_tag }}     # <-- UPDATE ###
+      source_digest:  ${{ needs.nlp-env.outputs.image_digest }}   # <-- UPDATE ###
+      image_name:     web-env                                     # <-- UPDATE ###
+      python_version: ${{ inputs.python_version }}
+      platforms:      ${{ inputs.platforms }}
+      gh_registry:    ${{ inputs.gh_registry }}
+      d_registry:     ${{ inputs.d_registry }}
+      owner:          ${{ inputs.owner }}
+    secrets: inherit
+# yamllint enable

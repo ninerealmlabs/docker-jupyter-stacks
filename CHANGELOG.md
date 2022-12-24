@@ -15,6 +15,16 @@ thank the particular buid.
 
 ### Changed
 
+### Deprecated
+
+### Removed
+
+### Fixed
+
+## 2022-12-24
+
+### Changed
+
 - updated ci/cd workflows for more consistent/regular builds
 - renamed images `base_env` --> `base-env`
 - renamed `forecast_env` --> `ts-env`

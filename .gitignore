@@ -12,5 +12,10 @@ settings.json
 **.env
 **.envrc
 
+# python stuff
+**/.ipynb*
+**/.pytest*
+**/__pycache__
+
 # except keep
 !**.gitkeep

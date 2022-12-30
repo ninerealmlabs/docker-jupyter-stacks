@@ -24,6 +24,7 @@ dependencies:
   - pycodestyle
   - pylint
   - pytest
+  - pytest-xdist
   - python-dateutil
   - python-dotenv
   - pyyaml

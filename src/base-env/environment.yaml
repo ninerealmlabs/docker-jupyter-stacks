@@ -34,7 +34,6 @@ dependencies:
   - snowflake-connector-python
   - snowflake-sqlalchemy
   - sqlalchemy
-  - sqlite
   ### utils
   - attrs
   - black

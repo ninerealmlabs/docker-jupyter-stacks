@@ -31,6 +31,16 @@ runs:
         pip install --upgrade pip
         pip install --upgrade -r requirements-dev.txt
 
+    - name: Pull ancestor images 📥
+      shell: bash
+      run: |
+        # pull image by sha
+        docker pull jupyter/docker-stacks-foundation:latest
+        docker pull jupyter/base-notebook:latest
+        docker pull jupyter/minimal-notebook:latest
+        # check work
+        docker image list
+
     - name: Pull image 📥
       shell: bash
       run: |

@@ -1,5 +1,11 @@
 # Web Environment
 
+> ⚠️ Deprecation Notice: No longer updating Dockerhub repository ⚠️
+>
+> Due to March 2023 removal of Docker's free Teams organization & history of price changes,
+> images will no longer be pushed to DockerHub.  
+> Please use `ghcr.io/ninerealmlabs/<image-name>:<tag>`
+
 JupyterLab environment that includes packages useful when modeling web traffic and behavior or web scraping.
 
 This image also includes `chrome`/`chromedriver` and `firefox`/`geckodriver`.

@@ -1,5 +1,11 @@
 # Base
 
+> ⚠️ Deprecation Notice: No longer updating Dockerhub repository ⚠️
+>
+> Due to March 2023 removal of Docker's free Teams organization & history of price changes,
+> images will no longer be pushed to DockerHub.  
+> Please use `ghcr.io/ninerealmlabs/<image-name>:<tag>`
+
 JupyterLab environment designed as a base image.
 Built from [jupyter/docker-stacks/minimal-notebook](https://github.com/jupyter/docker-stacks/tree/master/minimal-notebook),
 with additional customization to the "jupyterhub OS" to allow multiple environments,

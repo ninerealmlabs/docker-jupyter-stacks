@@ -1,5 +1,11 @@
 # NLP Environment
 
+> ⚠️ Deprecation Notice: No longer updating Dockerhub repository ⚠️
+>
+> Due to March 2023 removal of Docker's free Teams organization & history of price changes,
+> images will no longer be pushed to DockerHub.  
+> Please use `ghcr.io/ninerealmlabs/<image-name>:<tag>`
+
 JupyterLab environment updated to include packages useful for Natural Language Processing (NLP) tasks
 like `NLTK`, `Gensim`, `HuggingFace`, and `SpaCy`.
 

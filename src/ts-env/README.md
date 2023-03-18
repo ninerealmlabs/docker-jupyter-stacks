@@ -1,5 +1,11 @@
 # Time Series environment
 
+> ⚠️ Deprecation Notice: No longer updating Dockerhub repository ⚠️
+>
+> Due to March 2023 removal of Docker's free Teams organization & history of price changes,
+> images will no longer be pushed to DockerHub.  
+> Please use `ghcr.io/ninerealmlabs/<image-name>:<tag>`
+
 JupyterLab environment with packages for forecasting and time-series data analysis,
 like `prophet`, `pywavelets`, `stumpy`, and `u8darts`.
 

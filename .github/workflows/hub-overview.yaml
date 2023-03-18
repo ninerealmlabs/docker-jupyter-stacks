@@ -6,7 +6,7 @@ on: # yamllint disable-line rule:truthy
     branches:
       - main
     paths:
-      - ".github/workflows/hub-overview.yml"
+      - ".github/workflows/hub-overview.yaml"
 
       - "src/base-env/README.md"
       - "src/ds-env/README.md"
@@ -32,7 +32,7 @@ jobs:
               Customized version of jupyter/minimal-notebook
           - image: ds-env
             description: |
-              Base image from ninerealmlabs/docker-jupyter-stacks with 'standard' data & analytics pacakges
+              Base image from ninerealmlabs/docker-jupyter-stacks with 'standard' data & analytics packages
           - image: nlp-env
             description: |
               Environment from ninerealmlabs/docker-jupyter-stacks for nlp & text analysis

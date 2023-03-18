@@ -5,8 +5,9 @@
 This repo contains the source files for juptyer containers based on [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks).
 
 > ⚠️ Deprecation Notice: No longer updating Dockerhub repository ⚠️
+>
 > Due to March 2023 removal of Docker's free Teams organization & history of price changes,
-> images will no longer be pushed to DockerHub.
+> images will no longer be pushed to DockerHub.  
 > Please use `ghcr.io/ninerealmlabs/<image-name>:<tag>`
 
 - [Introduction](#introduction)

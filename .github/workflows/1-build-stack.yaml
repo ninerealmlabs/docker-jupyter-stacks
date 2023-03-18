@@ -14,6 +14,7 @@ on: # yamllint disable-line rule:truthy
   pull_request:
     paths-ignore:
       # - ".github/**"
+      - .github/workflows/hub-overview.yaml
       - docs/**
       - scripts/**
       - '*.md'

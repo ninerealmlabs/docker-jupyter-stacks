@@ -1,5 +1,11 @@
 # Data Science Environment
 
+> ⚠️ Deprecation Notice: No longer updating Dockerhub repository ⚠️
+>
+> Due to March 2023 removal of Docker's free Teams organization & history of price changes,
+> images will no longer be pushed to DockerHub.  
+> Please use `ghcr.io/ninerealmlabs/<image-name>:<tag>`
+
 JupyterLab environment designed for general data analysis and ML, including a variety of libraries for plotting,
 missing and imbalanced data management, connections to databases.
 Of particular interest might be [`dataprep`](https://github.com/sfu-db/dataprep).

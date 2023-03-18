@@ -39,10 +39,10 @@ on: # yamllint disable-line rule:truthy
         description: Github registry (ghcr.io/<owner>)
         required: true
         type: string
-      d_registry:
-        description: Docker registry (docker.io/<owner>)
-        required: true
-        type: string
+      # d_registry:
+      #   description: Docker registry (docker.io/<owner>)
+      #   required: true
+      #   type: string
       owner:
         description: Registry name
         required: true
@@ -89,10 +89,10 @@ on: # yamllint disable-line rule:truthy
         description: Github registry (ghcr.io/<owner>)
         required: true
         type: string
-      d_registry:
-        description: Docker registry (docker.io/<owner>)
-        required: true
-        type: string
+      # d_registry:
+      #   description: Docker registry (docker.io/<owner>)
+      #   required: true
+      #   type: string
       owner:
         description: Registry name
         required: true
@@ -175,19 +175,19 @@ jobs:
       #     image_name: ${{ inputs.image_name }}
       #     image_digest: ${{ steps.build.outputs.digest }}
 
-      ### push to registry on main branch only
-      - name: Login to DockerHub ✅
-        if: github.ref_name == 'main'
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
+      # ### push to registry on main branch only
+      # - name: Login to DockerHub ✅
+      #   if: github.ref_name == 'main'
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKER_USER }}
+      #     password: ${{ secrets.DOCKER_TOKEN }}
 
-      - if: github.ref_name == 'main'
-        name: Tag & Push image to docker 🏷
-        uses: akhilerm/tag-push-action@v2.1.0
-        with:
-          src: ${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ steps.build.outputs.image_digest }}
-          dst: |
-            ${{ inputs.d_registry }}/${{ inputs.image_name }}:${{ steps.build.outputs.python_tag }}
-            ${{ inputs.d_registry }}/${{ inputs.image_name }}:${{ steps.build.outputs.python_tag }}-${{ steps.build.outputs.git_tag }}
+      # - if: github.ref_name == 'main'
+      #   name: Tag & Push image to docker 🏷
+      #   uses: akhilerm/tag-push-action@v2.1.0
+      #   with:
+      #     src: ${{ inputs.gh_registry }}/${{ inputs.image_name }}@${{ steps.build.outputs.image_digest }}
+      #     dst: |
+      #       ${{ inputs.d_registry }}/${{ inputs.image_name }}:${{ steps.build.outputs.python_tag }}
+      #       ${{ inputs.d_registry }}/${{ inputs.image_name }}:${{ steps.build.outputs.python_tag }}-${{ steps.build.outputs.git_tag }}

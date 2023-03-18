@@ -45,7 +45,7 @@ concurrency:
 env: # define 'static' vars here
   platforms:   "linux/amd64,linux/arm64"
   gh_registry: ghcr.io/ninerealmlabs
-  d_registry:  docker.io/ninerealmlabs
+  # d_registry:  docker.io/ninerealmlabs
   owner:       ninerealmlabs
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
     outputs:
       platforms:   ${{ env.platforms }}
       gh_registry: ${{ env.gh_registry }}
-      d_registry:  ${{ env.d_registry }}
+      # d_registry:  ${{ env.d_registry }}
       owner:       ${{ env.owner }}
     steps:
       - run: echo "Exposing env vars to downstream jobs 📬"
@@ -71,7 +71,7 @@ jobs:
       python_version: 3.8.*
       platforms:      ${{ needs.export-envs.outputs.platforms }}
       gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
-      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      # d_registry:     ${{ needs.export-envs.outputs.d_registry }}
       owner:          ${{ needs.export-envs.outputs.owner }}
     secrets: inherit
 
@@ -83,7 +83,7 @@ jobs:
       python_version: 3.9.*
       platforms:      ${{ needs.export-envs.outputs.platforms }}
       gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
-      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      # d_registry:     ${{ needs.export-envs.outputs.d_registry }}
       owner:          ${{ needs.export-envs.outputs.owner }}
     secrets: inherit
 
@@ -94,7 +94,7 @@ jobs:
       python_version: 3.10.*
       platforms:      ${{ needs.export-envs.outputs.platforms }}
       gh_registry:    ${{ needs.export-envs.outputs.gh_registry }}
-      d_registry:     ${{ needs.export-envs.outputs.d_registry }}
+      # d_registry:     ${{ needs.export-envs.outputs.d_registry }}
       owner:          ${{ needs.export-envs.outputs.owner }}
     secrets: inherit
 

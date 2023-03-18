@@ -19,10 +19,10 @@ on: # yamllint disable-line rule:truthy
         description: Github registry (ghcr.io/<owner>)
         required: true
         type: string
-      d_registry:
-        description: Docker registry (docker.io/<owner>)
-        required: true
-        type: string
+      # d_registry:
+      #   description: Docker registry (docker.io/<owner>)
+      #   required: true
+      #   type: string
       owner:
         description: Registry name
         required: true
@@ -41,10 +41,10 @@ on: # yamllint disable-line rule:truthy
         description: Github registry (ghcr.io/<owner>)
         required: true
         type: string
-      d_registry:
-        description: Docker registry (docker.io/<owner>)
-        required: true
-        type: string
+      # d_registry:
+      #   description: Docker registry (docker.io/<owner>)
+      #   required: true
+      #   type: string
       owner:
         description: Registry name
         required: true
@@ -64,7 +64,7 @@ jobs:
       python_version: ${{ inputs.python_version }}
       platforms:      ${{ inputs.platforms }}
       gh_registry:    ${{ inputs.gh_registry }}
-      d_registry:     ${{ inputs.d_registry }}
+      # d_registry:     ${{ inputs.d_registry }}
       owner:          ${{ inputs.owner }}
     secrets: inherit
 
@@ -80,7 +80,7 @@ jobs:
       python_version: ${{ inputs.python_version }}
       platforms:      ${{ inputs.platforms }}
       gh_registry:    ${{ inputs.gh_registry }}
-      d_registry:     ${{ inputs.d_registry }}
+      # d_registry:     ${{ inputs.d_registry }}
       owner:          ${{ inputs.owner }}
     secrets: inherit
 
@@ -96,7 +96,7 @@ jobs:
       python_version: ${{ inputs.python_version }}
       platforms:      ${{ inputs.platforms }}
       gh_registry:    ${{ inputs.gh_registry }}
-      d_registry:     ${{ inputs.d_registry }}
+      # d_registry:     ${{ inputs.d_registry }}
       owner:          ${{ inputs.owner }}
     secrets: inherit
 
@@ -112,7 +112,7 @@ jobs:
       python_version: ${{ inputs.python_version }}
       platforms:      ${{ inputs.platforms }}
       gh_registry:    ${{ inputs.gh_registry }}
-      d_registry:     ${{ inputs.d_registry }}
+      # d_registry:     ${{ inputs.d_registry }}
       owner:          ${{ inputs.owner }}
     secrets: inherit
 
@@ -128,7 +128,7 @@ jobs:
       python_version: ${{ inputs.python_version }}
       platforms:      ${{ inputs.platforms }}
       gh_registry:    ${{ inputs.gh_registry }}
-      d_registry:     ${{ inputs.d_registry }}
+      # d_registry:     ${{ inputs.d_registry }}
       owner:          ${{ inputs.owner }}
     secrets: inherit
 # yamllint enable

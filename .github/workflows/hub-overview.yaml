@@ -2,17 +2,17 @@
 name: Update dockerhub overviews
 
 on: # yamllint disable-line rule:truthy
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/hub-overview.yaml"
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - ".github/workflows/hub-overview.yaml"
 
-      - "src/base-env/README.md"
-      - "src/ds-env/README.md"
-      - "src/nlp-env/README.md"
-      - "src/ts-env/README.md"
-      - "src/web-env/README.md"
+  #     - "src/base-env/README.md"
+  #     - "src/ds-env/README.md"
+  #     - "src/nlp-env/README.md"
+  #     - "src/ts-env/README.md"
+  #     - "src/web-env/README.md"
   workflow_dispatch:
 
 env:

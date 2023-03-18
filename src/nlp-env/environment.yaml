@@ -11,7 +11,7 @@ dependencies:
   - gensim
   - datasets # huggingface
   - nltk
-  # - pattern==3.6.* # no longer depencency of gensim
+  # - pattern==3.6.* # no longer dependency of gensim
   - pyldavis
   - sacremoses # huggingface
   # - safetensors # huggingface; for gpu-based work

@@ -22,7 +22,7 @@ Linux: [Install .deb or .rpm package](https://docs.docker.com/engine/install/)
 
 ### [Notes on Apple Silicon](https://docs.docker.com/docker-for-mac/apple-silicon/)
 
-Multi-platform builds are not common; you may have to emulate AMD64 archictecture
+Multi-platform builds are not common; you may have to emulate AMD64 architecture
 
 1. You must install Rosetta 2 as some binaries are still Darwin/AMD64.
   To install Rosetta 2 manually from the command line, run the following command:

@@ -39,13 +39,6 @@ dependencies:
   - black
   - bottleneck
   - colorama
-  - flake8
-  - flake8-bugbear
-  - flake8-builtins
-  - flake8-colors
-  - flake8-comprehensions
-  - flake8-isort
-  - isort
   - markdown
   - numba
   - numpydoc
@@ -59,6 +52,7 @@ dependencies:
   - python-dateutil
   - python-dotenv
   - pyyaml
+  - ruff
   - sphinx
   - tqdm
   - xlrd

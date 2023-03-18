@@ -130,13 +130,6 @@ ignore-names = []
 [tool.ruff.pydocstyle]
 convention = "numpy"
 
-# --- jupytext ---------------------------------------------------------------
-# ref: https://jupytext.readthedocs.io/en/latest
-[tool.jupytext]
-formats = "ipynb,py:percent"
-notebook_metadata_filter = "-all"
-cell_metadata_filter = "-all"
-
 # --- pytest -----------------------------------------------------------------
 # ref: https://docs.pytest.org/en/6.2.x/customize.html
 [tool.pytest.ini_options]

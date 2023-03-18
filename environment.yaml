@@ -7,13 +7,6 @@ dependencies:
   - pip
   - black
   - colorama
-  - flake8
-  - flake8-bugbear
-  - flake8-builtins
-  - flake8-colors
-  - flake8-comprehensions
-  - flake8-isort
-  - isort
   - markdown
   - numba
   - numpydoc
@@ -35,6 +28,7 @@ dependencies:
   # # allowing us to run `pytest` tests in parallel
   # - pytest-xdist
   - requests
+  - ruff
   - tabulate
   - pip:
       - docker

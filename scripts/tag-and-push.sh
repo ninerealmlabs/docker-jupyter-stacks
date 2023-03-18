@@ -18,7 +18,7 @@ for IMAGE_NAME in "${IMAGES[@]}"; do
     docker tag "${LONG_TAG}" "${REGISTRY}/${LONG_TAG}"
   done
 
-  # Docker 19.*: pushing without explicity tag will push all tags
+  # Docker 19.*: pushing without explicitly tag will push all tags
   docker push "${REGISTRY}/${IMAGE_NAME}"
   printf "\e[32m%s\e[0m\n" "$(date) -- ${IMAGE_NAME} push complete."
 

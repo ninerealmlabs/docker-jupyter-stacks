@@ -4,6 +4,11 @@
 
 This repo contains the source files for juptyer containers based on [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks).
 
+> ⚠️ Deprecation Notice: No longer updating Dockerhub repository ⚠️
+> Due to March 2023 removal of Docker's free Teams organization & history of price changes,
+> images will no longer be pushed to DockerHub.
+> Please use `ghcr.io/ninerealmlabs/<image-name>:<tag>`
+
 - [Introduction](#introduction)
   - [Prerequisites](#prerequisites)
   - [Quick Start](#quick-start)
@@ -58,7 +63,7 @@ _on platform architecture and python version._
 
 - Images are set to load JupyterLabs, but the standard notebook interface is also available through the menus
 - Included in the image is [jupytext](https://jupytext.readthedocs.io/en/latest/introduction.html),
-  allowing concurrent .ipynb and .py develpment
+  allowing concurrent .ipynb and .py development
 - Jupyterlab-git allows use of git repos from within JupyterLab
 
 ## Versioning

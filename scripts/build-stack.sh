@@ -151,7 +151,7 @@ for PYTHON_VERSION in "${DEFAULT_PYTHONS[@]}"; do
   args+=(--python_version="${PYTHON_VERSION}")
   [[ -n ${PUSH:+x} ]] && args+=(--push)
   [[ -n ${DEBUG:+x} ]] && args+=(--debug)
-  # do not include clean in indivdual build.sh args
+  # do not include clean in individual build.sh args
   [[ -n ${DEBUG:+x} ]] && printf "\e[1;36m%s\e[0m " "build-stack args:" && printf "\e[36m%s\e[0m\n" "${args[*]}"
 
   # call build script
@@ -184,7 +184,7 @@ for PYTHON_VERSION in "${DEFAULT_PYTHONS[@]}"; do
     args+=(--python_version="${PYTHON_VERSION}")
     [[ -n ${PUSH:+x} ]] && args+=(--push)
     [[ -n ${DEBUG:+x} ]] && args+=(--debug)
-    # do not include clean in indivdual build.sh args
+    # do not include clean in individual build.sh args
     [[ -n ${DEBUG:+x} ]] && printf "\e[1;36m%s\e[0m " "build-stack args:" && printf "\e[36m%s\e[0m\n" "${args[*]}"
 
     # call build script

@@ -5,21 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project itself does not use semantic versioning because the versions
 of its dependencies (python, jupyterlab, numpy, etc.) are more critical to track
-thank the particular buid.
+thank the particular build.
 
-## [Unreleased]
-
-### Added
-
-- tests
+## 2023-03-18
 
 ### Changed
 
+- replaced flake8 and isort with ruff
+- precommit configuration
+
 ### Deprecated
+
+- will no longer update dockerhub
+
+### Fixed
+
+- various typos (thanks, codespell!)
 
 ### Removed
 
-### Fixed
+- removed image artifacts for renamed images
 
 ## 2022-12-24
 

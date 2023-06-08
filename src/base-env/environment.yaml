@@ -5,9 +5,7 @@ channels:
   - defaults
 dependencies:
   ### package managers
-  # - conda
-  # - mamba
-  - mamba_gator # Web UI for managing conda environments
+  - mamba
   - pip
   ### core deps
   - cloudpickle
@@ -19,6 +17,7 @@ dependencies:
   - ipywidgets
   # - jupyter_contrib_nbextensions
   # - jupyter_nbextensions_configurator
+  - jupyterlab>=3,<4
   - jupyterlab_code_formatter
   - jupyterlab_widgets # backend for ipywidgets
   # - jupyterlab-flake8
@@ -39,6 +38,7 @@ dependencies:
   - black
   - bottleneck
   - colorama
+  - keyring
   - markdown
   - numba
   - numpydoc
@@ -49,6 +49,7 @@ dependencies:
   - pycodestyle
   - pylint
   - pytest
+  - pytest-asyncio
   - python-dateutil
   - python-dotenv
   - pyyaml

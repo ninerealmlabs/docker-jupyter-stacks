@@ -43,6 +43,8 @@ RUN apt-get update -y --fix-missing \
     jq \
     # Install requirements for SQL connections
     curl \
+    gcc \
+    gfortran \
     gnupg \
     unixodbc \
     unixodbc-dev \

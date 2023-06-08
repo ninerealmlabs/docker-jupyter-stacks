@@ -1,7 +1,6 @@
 ---
 name: base
 channels:
-  - huggingface # prefer huggingface to conda-forge for overlapping package
   - conda-forge
   - defaults
 dependencies:
@@ -13,6 +12,10 @@ dependencies:
   - nltk
   # - pattern==3.6.* # no longer dependency of gensim
   - pyldavis
+  - pytorch
+  - torchaudio
+  - torchtext
+  - torchvision
   - sacremoses # huggingface
   # - safetensors # huggingface; for gpu-based work
   - spacy

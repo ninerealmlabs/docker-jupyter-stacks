@@ -1,6 +1,0 @@
-artifacts-keyring
-build
-keyring
-setuptools
-sphinx-rtd-theme
-twine

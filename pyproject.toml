@@ -1,16 +1,3 @@
-# --- build-system -----------------------------------------------------------
-# ref: https://packaging.python.org/en/latest/tutorials/packaging-projects/
-# these should match the "setup-requires" packages in `setup.cfg`
-[build-system]
-requires = [
-  "artifacts-keyring",
-  "build",
-  "keyring",
-  "setuptools>=42",
-  "twine",
-]
-build-backend = "setuptools.build_meta"
-
 # --- black ------------------------------------------------------------------
 # ref: https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#configuration-via-a-file
 [tool.black]

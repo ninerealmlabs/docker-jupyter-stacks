@@ -7,6 +7,17 @@ This project itself does not use semantic versioning because the versions
 of its dependencies (python, jupyterlab, numpy, etc.) are more critical to track
 thank the particular build.
 
+## 2023-06-07
+
+### Changed
+
+- remove package-building dependencies
+- added pytorch to nlp image
+
+### Fixed
+
+- pin `jupyterhub>=3,<4` until extensions are updated
+
 ## 2023-03-18
 
 ### Changed

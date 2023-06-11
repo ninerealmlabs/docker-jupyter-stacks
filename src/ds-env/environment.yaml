@@ -2,6 +2,7 @@
 name: base
 channels:
   - conda-forge
+  - pytorch
   - defaults
 dependencies:
   ### package managers

@@ -1,0 +1,47 @@
+{
+    // Jupyterlab Code Formatter
+    // jupyterlab_code_formatter:settings
+    // Jupyterlab Code Formatter settings.
+    // ***********************************
+    // Black Config
+    // Config to be passed into black's format_str function call.
+    "black": {
+        "line_length": 100,
+        "string_normalization": true
+    },
+    // Cache formatters
+    // Cache formatters on server for better performance (but will not detected newly installed/uninstalled formatters).
+    "cacheFormatters": false,
+    // Auto format config
+    // Auto format code when save the notebook.
+    "formatOnSave": true,
+    // Isort Config
+    // Config to be passed into isort's SortImports function call.
+    "isort": {
+      "multi_line_output": 3,
+      "include_trailing_comma": true,
+      "force_grid_wrap": 0,
+      "use_parentheses": true,
+      "line_length": 100
+    },
+    // Code Formatter Preferences
+    // Preferences for this plugin
+    "preferences": {
+        "default_formatter": {
+            "python": [
+                "ruff",
+                "black"
+            ]
+        }
+    },
+    // Ruff Config
+    // Command line options to be passed to ruff.
+    "ruff": {
+        "args": [
+            "--select=I"
+        ]
+    },
+    // Suppress formatter errors
+    // Whether to suppress all errors reported by formatter while formatting. Useful when you have format on save mode on.
+    "suppressFormatterErrors": false
+}

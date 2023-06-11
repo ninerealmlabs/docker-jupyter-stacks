@@ -1,4 +1,7 @@
 {
+  "@jupyterlab/apputils-extension:announcements": {
+    "enabled": false
+  },
   "@jupyterlab/console-extension:tracker": {
     "interactionMode": "notebook",
     "promptCellConfig": {
@@ -18,26 +21,6 @@
   "@jupyterlab/extensionmanager-extension:plugin": {
     "enabled": true,
     "disclaimed": true
-  },
-  "@ryantam626/jupyterlab_code_formatter:settings": {
-    "black": {
-      "line_length": 100,
-      "string_normalization": true
-    },
-    "formatOnSave": true,
-    "isort": {
-      "multi_line_output": 3,
-      "include_trailing_comma": true,
-      "force_grid_wrap": 0,
-      "use_parentheses": true,
-      "line_length": 100
-    },
-    "preferences": {
-      "default_formatter": {
-        "python": ["isort", "black"],
-        "r": "formatR"
-      }
-    }
   },
   "@jupyterlab/notebook-extension:tracker": {
     "codeCellConfig": {

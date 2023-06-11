@@ -1,0 +1,2 @@
+aquirdturtle-collapsible-headings
+jupyterlab-material-night-eighties

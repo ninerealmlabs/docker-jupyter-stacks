@@ -7,12 +7,14 @@ This project itself does not use semantic versioning because the versions
 of its dependencies (python, jupyterlab, numpy, etc.) are more critical to track
 thank the particular build.
 
-## 2023-06-07
+## 2023-06-011
 
 ### Changed
 
+- simplify base-env configuration
+- update ds-env configuration due to base-env changes
 - remove package-building dependencies
-- added pytorch to nlp image
+- add pytorch to nlp image
 
 ### Fixed
 

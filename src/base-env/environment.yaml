@@ -8,54 +8,26 @@ dependencies:
   - mamba
   - pip
   ### core deps
-  - cloudpickle
   - cython
-  - dill
-  - distributed
-  - joblib
+  - ipykernel
+  - keyring
   ### JupyterLab "OS-level" extensions
   - ipywidgets
   # - jupyter_contrib_nbextensions
   # - jupyter_nbextensions_configurator
-  - jupyterlab>=3,<4
+  - jupyterlab>=3.6,<4
   - jupyterlab_code_formatter
   - jupyterlab_widgets # backend for ipywidgets
   # - jupyterlab-flake8
   - jupyterlab-git
   - jupytext
-  - nbdime
   - widgetsnbextension
-  ### sql
-  - h5py
-  - hdf5
-  - pyodbc
-  - pyarrow
-  - snowflake-connector-python
-  - snowflake-sqlalchemy
-  - sqlalchemy
-  ### utils
-  - attrs
+  ### linting/formatting
   - black
-  - bottleneck
-  - colorama
-  - keyring
-  - markdown
-  - numba
-  - numpydoc
-  - openpyxl
-  - pep8
-  - pep8-naming
-  - protobuf
-  - pycodestyle
-  - pylint
+  - ruff
+  ### testing
   - pytest
   - pytest-asyncio
-  - python-dateutil
-  - python-dotenv
+  ### utilities
   - pyyaml
-  - ruff
-  - sphinx
-  - tqdm
-  - xlrd
-
 # prefix: /opt/conda/

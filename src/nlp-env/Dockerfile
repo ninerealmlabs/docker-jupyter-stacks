@@ -28,7 +28,6 @@ COPY --chown=${NB_UID}:${NB_GID} environment.yaml "${HOME}/tmp/"
 COPY --chown=${NB_UID}:${NB_GID} requirements.txt "${HOME}/tmp/"
 
 RUN mamba env update -n base --quiet --file "${HOME}/tmp/environment.yaml"  \
- && mamba update -n base --update-all --yes --quiet \
  && mamba clean --all --yes --quiet \
  && pip install --no-cache-dir --no-deps --quiet -r "${HOME}/tmp/requirements.txt" \
  && pip cache purge \

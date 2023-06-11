@@ -5,7 +5,12 @@ channels:
   - defaults
 dependencies:
   ### package managers
-  - pip  # to prevent warnings
+  - mamba
+  - pip
+  ### core deps
+  - cython
+  - ipykernel
+  - 'conda-forge::blas=*=openblas'
   ### data & ml
   - category_encoders
   - faker
@@ -18,6 +23,7 @@ dependencies:
   - numpy
   - pandas
   - patsy
+  - pytables
   - scikit-image
   - scikit-learn
   - scipy
@@ -29,9 +35,27 @@ dependencies:
   - altair
   - bokeh
   - ipympl
+  - ipywidgets
   - matplotlib-base
   - plotnine
   - plotly
-
-
+  - widgetsnbextension
+  ### utils
+  - attrs
+  - cloudpickle
+  - colorama
+  - dill
+  - h5py
+  - hdf5
+  - joblib
+  - markdown
+  - openpyxl
+  - protobuf
+  - pyarrow
+  - pyodbc
+  - python-dateutil
+  - pyyaml
+  - sqlalchemy
+  - tqdm
+  - xlrd
 # prefix: /opt/conda/

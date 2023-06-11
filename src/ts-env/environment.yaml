@@ -8,7 +8,7 @@ dependencies:
   - pip  # to prevent warnings
   ### Additional dependencies on top of `ds-env` standards
   - arch-py
-  - u8darts # can't install 'u8darts-all' due to pytorch requirements
+  - u8darts
   - pmdarima
   - prophet
   # - pystan # arm issues; maybe isn't a hard dependency for prophet now?

@@ -1,0 +1,6 @@
+# Always pair ipynb notebooks to py:percent files
+formats = "ipynb,py:percent"
+
+# Text files created by Jupytext have no metadata - the metadata is only preserved in the .ipynb file.
+notebook_metadata_filter = "-all"
+cell_metadata_filter = "-all"

@@ -34,8 +34,7 @@ USER ${NB_UID}
 COPY --chown=${NB_UID}:${NB_GID} environment.yaml "${HOME}/tmp/"
 # COPY --chown=${NB_UID}:${NB_GID} requirements.txt "${HOME}/tmp/"
 
-RUN mamba env update -n base --quiet --file "${HOME}/tmp/environment.yaml"  \
- && mamba update -n base --update-all --yes --quiet \
+RUN mamba env update -n base --prune --quiet --file "${HOME}/tmp/environment.yaml"  \
  && mamba clean --all --yes --quiet \
 #  && pip install --no-deps --quiet -r "${HOME}/tmp/requirements.txt" \
 #  && pip cache purge \
@@ -43,12 +42,8 @@ RUN mamba env update -n base --quiet --file "${HOME}/tmp/environment.yaml"  \
  && fix-permissions "${HOME}"
 
 # Import matplotlib the first time to build the font cache.
-RUN mamba activate ds; MPLBACKEND=Agg python -c "import matplotlib.pyplot" \
+RUN MPLBACKEND=Agg python -c "import matplotlib.pyplot" \
  && fix-permissions "${HOME}"
-
-RUN fix-permissions /etc/jupyter \
-  && fix-permissions "${CONDA_DIR}" \
-  && fix-permissions "/home/${NB_USER}"
 
 # Don't launch as root
 USER ${NB_UID}

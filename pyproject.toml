@@ -1,6 +1,7 @@
 # --- black ------------------------------------------------------------------
 # ref: https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#configuration-via-a-file
 [tool.black]
+target-version = ['py39']
 line-length = 100
 # target-version = ['py39']
 include = '\.pyi?$|\.ipynb$'
@@ -37,6 +38,10 @@ unfixable = ["B"]
 
 ignore = [
   "B905",  # zip strict=True; remove once python <3.10 support is dropped.
+  "D100",  # do not require module-level docstrings
+  "D104",  # do not require package docstrings
+  "D107",  # do not require docstrings in __init__ files
+  "D205",  # don't require linebreak after docstring (ruff vs black conflict)
   # "E203", # not in ruff
   # "E265", # not in ruff
   # "E266", # not in ruff
@@ -45,19 +50,12 @@ ignore = [
   "F403", # import *
   "F405", # defined from import *
   # "F541", # f-string missing placeholders
-  "S101", # assert
+  "N999",  # allow "invalid" module names due to jinja templates  "S101", # assert
   "SIM105", # allow except: pass
   "TRY003", # Avoid specifying messages outside exception class; overly strict, especially for ValueError
   "TRY201", # Allow raise without exception name (align with Sonarlint)
   # "W503", # not in ruff
 ]
-
-[per-file-ignores]
-# # Ignore `E402` (import violations) in all `__init__.py` files,
-# # and in `path/to/file.py`.
-# "__init__.py" = ["E402"]
-# "path/to/file.py" = ["E402"]
-"notebooks/*" = ["D"]
 
 exclude = [
   "*.egg-info",
@@ -93,6 +91,16 @@ src = ["notebooks", "src", "tests"]
 # Assumed Python version
 target-version = "py39"
 
+[tool.ruff.per-file-ignores]
+# # Ignore `E402` (import violations) in all `__init__.py` files,
+# # and in `path/to/file.py`.
+# "__init__.py" = ["E402"]
+# "path/to/file.py" = ["E402"]
+".ci/*" = ["D"]
+"docs/*" = ["D"]
+"notebooks/*" = ["B018", "D", "S101"]
+"tests/*" = ["D", "S101"]
+
 # --- ruff plugins --------------------
 [tool.ruff.flake8-bugbear]
 extend-immutable-calls = [
@@ -103,10 +111,12 @@ extend-immutable-calls = [
 
 [tool.ruff.isort]
 combine-as-imports = true
+# extra-standard-library = ["path"]
+forced-separate = ["scipy", "sklearn", "statsmodels", "ds_utils", "src"]
 force-sort-within-sections = true
 force-wrap-aliases = true
-# extra-standard-library = ["path"]
-known-first-party = ["ds_utils","src",]
+known-first-party = ["ds_utils", "src"]
+# known-local-folder = ["src"] # for relative imports
 
 [tool.ruff.mccabe]
 max-complexity = 18
@@ -118,7 +128,7 @@ ignore-names = []
 convention = "numpy"
 
 # --- pytest -----------------------------------------------------------------
-# ref: https://docs.pytest.org/en/6.2.x/customize.html
+# ref: https://docs.pytest.org/en/7.3.x/reference/customize.html
 [tool.pytest.ini_options]
 addopts = '''
     -ra
@@ -150,6 +160,7 @@ python_files = [
     "*_test.py",
     "tests.py",
 ]
+pythonpath = "src"
 testpaths = [
     "tests",
 ]
@@ -166,19 +177,3 @@ source = ["src"]
 
 [tool.coverage.report]
 show_missing = true
-
-# --- check-manifest ---------------------------------------------------------
-# ref: https://github.com/mgedmin/check-manifest
-[tool.check-manifest]
-ignore = [
-    ".ci/",
-    "data/",
-    "docker/",
-    "functions/",
-    "notebooks/",
-    "queries/",
-    "writeup/",
-    "noxfile.py",
-    "*.md",
-    ".*",
-]

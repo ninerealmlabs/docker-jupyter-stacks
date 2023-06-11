@@ -40,7 +40,7 @@ This workflow handles the dependencies between images.
 >
 > - [./README.md (at repo root)](./README.md)
 > - [./scripts/dependencies.txt](./scripts/dependencies.txt)
-> - [./tests/images-hierarcy.py](./tests/images-hierarcy.py)
+> - [./tests/images-hierarchy.py](./tests/images-hierarchy.py)
 > - [./.github/workflows/2-image-dependencies.yaml](./.github/workflows/2-image-dependencies.yaml)
 > - [./.github/workflows/hub-overview.yaml](./.github/workflows/hub-overview.yaml)
 

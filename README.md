@@ -56,7 +56,7 @@ _on platform architecture and python version._
 >
 > - [./README.md (at repo root)](./README.md)
 > - [./scripts/dependencies.txt](./scripts/dependencies.txt)
-> - [./tests/images-hierarcy.py](./tests/images-hierarcy.py)
+> - [./tests/images-hierarchy.py](./tests/images-hierarchy.py)
 > - [./.github/workflows/2-image-dependencies.yaml](./.github/workflows/2-image-dependencies.yaml)
 > - [./.github/workflows/hub-overview.yaml](./.github/workflows/hub-overview.yaml)
 
@@ -145,7 +145,7 @@ To build all images in the stack, run `bash ./scripts/build-stack.sh` from proje
 
 - Consider whether to update the python version(s) specified
 - Review/Update dependencies in `./scripts/dependencies.txt`
-- Review/Update dependencies in `./tests/images_hierarcy.py`
+- Review/Update dependencies in `./tests/images_hierarchy.py`
 
 `build-stack.sh` takes the following keyword arguments in `flag=value` format:
 | `short flag` | `long flag` | `default value` |
